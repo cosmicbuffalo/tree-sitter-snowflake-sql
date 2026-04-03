@@ -289,12 +289,12 @@
   (keyword_within)
   (keyword_integration)
   (keyword_execute)
+  (keyword_account)
   (snowflake_object_type)
   (snowflake_show_target)
   (snowflake_alter_object_type)
   (snowflake_drop_object_type)
   (snowflake_create_object_type)
-  (describe_object_type)
 ] @keyword
 
 [

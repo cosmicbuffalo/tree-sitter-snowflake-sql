@@ -716,6 +716,23 @@ DESCRIBE my_table
           name: (identifier))))))
 
 ================================================================================
+Describe table with object type
+================================================================================
+
+DESCRIBE TABLE my_table
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (describe_statement
+        (keyword_describe)
+        (keyword_table)
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
 Use database
 ================================================================================
 
@@ -1184,6 +1201,77 @@ SHOW tasks
   (statement
     (keyword_show)
     (snowflake_show_target)))
+
+================================================================================
+Show tables
+================================================================================
+
+SHOW tables
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (keyword_show)
+    (snowflake_show_target)))
+
+================================================================================
+Show tables with LIKE filter
+================================================================================
+
+SHOW tables LIKE '%sales%'
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_like)
+        (literal)))))
+
+================================================================================
+Show schemas with LIKE and IN DATABASE
+================================================================================
+
+SHOW schemas LIKE '%prod%' IN DATABASE my_db
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_like)
+        (literal)
+        (keyword_in)
+        (keyword_database)
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Show tables IN SCHEMA
+================================================================================
+
+SHOW tables IN SCHEMA my_db.my_schema
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_in)
+        (keyword_schema)
+        (object_reference
+          schema: (identifier)
+          name: (identifier))))))
 
 ================================================================================
 Create task with WHEN SYSTEM$STREAM_HAS_DATA conditional

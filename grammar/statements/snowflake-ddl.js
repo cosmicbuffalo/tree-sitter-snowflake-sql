@@ -13,6 +13,7 @@ export default {
     $.undrop_statement,
     $.put_statement,
     $.get_statement,
+    $.snowflake_show_statement,
   ),
 
   // --- Snowflake property helpers ---
@@ -178,12 +179,18 @@ export default {
 
   // --- DESCRIBE statement ---
   // DESCRIBE [object_type] object_name
-  // Uses regex token to avoid state explosion from 13 keyword choices
-  describe_object_type: _ => /[tT][aA][bB][lL][eE]|[vV][iI][eE][wW]|[sS][cC][hH][eE][mM][aA]|[dD][aA][tT][aA][bB][aA][sS][eE]|[sS][tT][aA][gG][eE]|[pP][iI][pP][eE]|[sS][tT][rR][eE][aA][mM]|[tT][aA][sS][kK]|[wW][aA][rR][eE][hH][oO][uU][sS][eE]|[fF][uU][nN][cC][tT][iI][oO][nN]|[pP][rR][oO][cC][eE][dD][uU][rR][eE]|[sS][eE][qQ][uU][eE][nN][cC][eE]|[iI][nN][tT][eE][gG][rR][aA][tT][iI][oO][nN]/,
+  // Hidden rule using keyword references to avoid regex/keyword token conflict.
+  // (A regex token matching TABLE would lose to keyword_table, breaking parsing.)
+  _describe_object_type: $ => choice(
+    $.keyword_table, $.keyword_view, $.keyword_schema, $.keyword_database,
+    $.keyword_stage, $.keyword_pipe, $.keyword_stream, $.keyword_task,
+    $.keyword_warehouse, $.keyword_function, $.keyword_procedure,
+    $.keyword_integration,
+  ),
 
   describe_statement: $ => seq(
     $.keyword_describe,
-    optional($.describe_object_type),
+    optional($._describe_object_type),
     $.object_reference,
   ),
 
@@ -297,8 +304,8 @@ export default {
   // share the SHOW keyword prefix and avoid parse table explosion.
 
   // Single token matching all SHOW-able Snowflake plural object types
-  // Added: ALERTS, TAGS, SHARES, INTEGRATIONS
-  snowflake_show_target: _ => /[sS][tT][aA][gG][eE][sS]|[pP][iI][pP][eE][sS]|[sS][tT][rR][eE][aA][mM][sS]|[tT][aA][sS][kK][sS]|[wW][aA][rR][eE][hH][oO][uU][sS][eE][sS]|[dD][aA][tT][aA][bB][aA][sS][eE][sS]|[sS][cC][hH][eE][mM][aA][sS]|[vV][iI][eE][wW][sS]|[rR][oO][lL][eE][sS]|[uU][sS][eE][rR][sS]|[gG][rR][aA][nN][tT][sS]|[aA][lL][eE][rR][tT][sS]|[tT][aA][gG][sS]|[sS][hH][aA][rR][eE][sS]|[iI][nN][tT][eE][gG][rR][aA][tT][iI][oO][nN][sS]/,
+  // Added: ALERTS, TAGS, SHARES, INTEGRATIONS, TABLES
+  snowflake_show_target: _ => /[tT][aA][bB][lL][eE][sS]|[sS][tT][aA][gG][eE][sS]|[pP][iI][pP][eE][sS]|[sS][tT][rR][eE][aA][mM][sS]|[tT][aA][sS][kK][sS]|[wW][aA][rR][eE][hH][oO][uU][sS][eE][sS]|[dD][aA][tT][aA][bB][aA][sS][eE][sS]|[sS][cC][hH][eE][mM][aA][sS]|[vV][iI][eE][wW][sS]|[rR][oO][lL][eE][sS]|[uU][sS][eE][rR][sS]|[gG][rR][aA][nN][tT][sS]|[aA][lL][eE][rR][tT][sS]|[tT][aA][gG][sS]|[sS][hH][aA][rR][eE][sS]|[iI][nN][tT][eE][gG][rR][aA][tT][iI][oO][nN][sS]/,
 
   // Snowflake SHOW with LIKE and/or IN — placed in snowflake_statement to avoid
   // state explosion from optional_parenthesis wrapping in _dml_read.
