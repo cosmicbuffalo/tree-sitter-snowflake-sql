@@ -6,7 +6,7 @@ import transaction_rules from "./grammar/transactions.js";
 import statement_rules from "./grammar/statements/index.js";
 
 export default grammar({
-  name: 'sql',
+  name: 'snowflake_sql',
 
   extras: $ => [
     /\s\n/,
@@ -30,6 +30,7 @@ export default grammar({
     [$.between_expression, $.binary_expression],
     [$.time],
     [$.timestamp],
+    [$._qualified_field, $.variant_access],
   ],
 
   precedences: $ => [

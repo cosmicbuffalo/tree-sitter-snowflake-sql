@@ -15,6 +15,7 @@ import copy_rules from "./copy.js";
 import select_rules from "./select.js";
 import set_rules from "./set.js";
 import refresh_rules from "./refresh.js";
+import snowflake_ddl_rules from "./snowflake-ddl.js";
 
 export default {
 
@@ -77,13 +78,17 @@ export default {
     $._create_statement,
     $._alter_statement,
     $._drop_statement,
-    $._rename_statement,
-    $._optimize_statement,
+    // $._rename_statement, // removed: MySQL-specific, frees parse table budget
+    // $._optimize_statement, // removed: Hive/Impala/Athena/MariaDB, frees parse table budget
     $._merge_statement,
-    $._refresh_statement,
-    $.comment_statement,
+    // $._refresh_statement, // removed: Postgres-specific, frees parse table budget
+    // $.comment_statement, // removed: Postgres-specific syntax, frees parse table budget
     $.set_statement,
-    $.reset_statement,
+    // $.reset_statement, // removed: Postgres-specific, frees parse table budget
+    // Snowflake DDL
+    $.grant_statement,
+    $.revoke_statement,
+    $.snowflake_statement,
   ),
 
   ...create_rules,
@@ -105,7 +110,9 @@ export default {
         $._insert_statement,
         $._update_statement,
         $._truncate_statement,
-        $._copy_statement,
+        // $._copy_statement, // removed: Postgres-specific COPY FROM, Snowflake uses snowflake_copy_into
+        // Snowflake
+        $.snowflake_copy_into,
       ),
     ),
   ),
@@ -123,7 +130,7 @@ export default {
         $._select_statement,
         $.set_operation,
         $._show_statement,
-        $._unload_statement,
+        // $._unload_statement, // removed: Athena-specific, frees parse table budget
       ),
     ),
   ),
@@ -135,21 +142,17 @@ export default {
     $.keyword_show,
     choice(
       $._show_create,
-      $.keyword_all, // Postgres
-      $._show_tables // trino/presto
+      // $.keyword_all, // removed: Postgres-specific, frees parse table budget
+      $.snowflake_show_target,
     ),
   ),
 
   _show_create: $ => seq(
     $.keyword_create,
     choice(
-      // Trino/Presto/MySQL
       $.keyword_schema,
       $.keyword_table,
-      seq(optional($.keyword_materialized), $.keyword_view),
-      // MySQL
-      $.keyword_user,
-      $.keyword_trigger,
+      $.keyword_view,
       $.keyword_procedure,
       $.keyword_function
     ),
@@ -170,5 +173,7 @@ export default {
     $._single_quote_string,
     $.storage_parameters,
   ),
+
+  ...snowflake_ddl_rules,
 
 };

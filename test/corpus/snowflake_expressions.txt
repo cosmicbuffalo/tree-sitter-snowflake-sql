@@ -1,0 +1,454 @@
+================================================================================
+Snowflake QUALIFY clause
+================================================================================
+SELECT *
+FROM t
+WHERE x = 1
+QUALIFY ROW_NUMBER() OVER (PARTITION BY id ORDER BY ts) = 1;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))
+      (where
+        (keyword_where)
+        predicate: (binary_expression
+          left: (field
+            name: (identifier))
+          right: (literal)))
+      (qualify
+        (keyword_qualify)
+        (binary_expression
+          left: (window_function
+            (invocation
+              (object_reference
+                name: (identifier)))
+            (keyword_over)
+            (window_specification
+              (partition_by
+                (keyword_partition)
+                (keyword_by)
+                (field
+                  name: (identifier)))
+              (order_by
+                (keyword_order)
+                (keyword_by)
+                (order_target
+                  (field
+                    name: (identifier))))))
+          right: (literal))))))
+
+================================================================================
+Snowflake QUALIFY without WHERE
+================================================================================
+SELECT id, name
+FROM t
+QUALIFY RANK() OVER (ORDER BY score DESC) <= 10;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            name: (identifier)))
+        (term
+          value: (field
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))
+      (qualify
+        (keyword_qualify)
+        (binary_expression
+          left: (window_function
+            (invocation
+              (object_reference
+                name: (identifier)))
+            (keyword_over)
+            (window_specification
+              (order_by
+                (keyword_order)
+                (keyword_by)
+                  (order_target
+                  (field
+                    name: (identifier))
+                  (direction
+                    (keyword_desc))))))
+          right: (literal))))))
+
+
+================================================================================
+Snowflake named parameter in function call
+================================================================================
+SELECT RESULT_SCAN(LAST_QUERY_ID => 'abc');
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (named_parameter
+              name: (identifier)
+              value: (literal))))))))
+
+================================================================================
+Snowflake multiple named parameters
+================================================================================
+SELECT FLATTEN(INPUT => v:arr, PATH => 'items', OUTER => TRUE);
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (named_parameter
+              name: (identifier)
+              value: (variant_access
+                expression: (field
+                  name: (identifier))
+                path: (identifier)))
+            parameter: (named_parameter
+              name: (identifier)
+              value: (literal))
+            parameter: (named_parameter
+              name: (identifier)
+              value: (literal
+                (keyword_true)))))))))
+
+================================================================================
+Snowflake TRY_CAST
+================================================================================
+SELECT TRY_CAST('123' AS INT);
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (try_cast
+            name: (keyword_try_cast)
+            parameter: (literal)
+            (keyword_as)
+            (int
+              (keyword_int))))))))
+
+================================================================================
+Snowflake TRY_CAST with complex expression
+================================================================================
+SELECT TRY_CAST(col1 AS NUMERIC(10, 2)) AS safe_num FROM t;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (try_cast
+            name: (keyword_try_cast)
+            parameter: (field
+              name: (identifier))
+            (keyword_as)
+            (numeric
+              (keyword_numeric)
+              precision: (literal)
+              scale: (literal)))
+          (keyword_as)
+          alias: (identifier))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Snowflake variant access with colon notation
+================================================================================
+SELECT v:name FROM t;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (variant_access
+            expression: (field
+              name: (identifier))
+            path: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Snowflake variant access with cast
+================================================================================
+SELECT v:name::STRING FROM t;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (cast
+            (variant_access
+              expression: (field
+                name: (identifier))
+              path: (identifier))
+            (keyword_string)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Snowflake stage reference user stage
+================================================================================
+SELECT * FROM @~/my_files/data.csv;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (stage_reference)))))
+
+================================================================================
+Snowflake stage reference table stage
+================================================================================
+SELECT * FROM @%my_table/path/file.csv;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (stage_reference)))))
+
+================================================================================
+Snowflake stage reference named stage with path
+================================================================================
+SELECT * FROM @my_db.my_schema.my_stage/path/to/file.csv;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (stage_reference)))))
+
+================================================================================
+Snowflake LATERAL FLATTEN
+================================================================================
+SELECT f.value
+FROM t, LATERAL FLATTEN(INPUT => t.arr) f;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))
+      (lateral_relation
+        (keyword_lateral)
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (named_parameter
+            name: (identifier)
+            value: (field
+              (object_reference
+                name: (identifier))
+              name: (identifier))))
+        alias: (identifier)))))
+
+================================================================================
+Snowflake TABLE(FLATTEN(...))
+================================================================================
+SELECT f.value
+FROM TABLE(FLATTEN(INPUT => v:arr)) f;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (term
+            value: (invocation
+              (object_reference
+                name: (identifier))
+              parameter: (named_parameter
+                name: (identifier)
+                value: (variant_access
+                  expression: (field
+                    name: (identifier))
+                  path: (identifier))))))
+        alias: (identifier)))))
+
+================================================================================
+Snowflake SELECT * EXCLUDE
+================================================================================
+SELECT * EXCLUDE (col1, col2) FROM t;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields
+            (keyword_exclude)
+            (identifier)
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Snowflake SELECT * RENAME
+================================================================================
+SELECT * RENAME (col1 AS new_col1, col2 AS new_col2) FROM t;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields
+            (keyword_rename)
+            (identifier)
+            (keyword_as)
+            (identifier)
+            (identifier)
+            (keyword_as)
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Snowflake SELECT * EXCLUDE and RENAME combined
+================================================================================
+SELECT * EXCLUDE (a) RENAME (b AS c) FROM t;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields
+            (keyword_exclude)
+            (identifier)
+            (keyword_rename)
+            (identifier)
+            (keyword_as)
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Snowflake table.* EXCLUDE
+================================================================================
+SELECT t.* EXCLUDE (id) FROM t;
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields
+            (object_reference
+              name: (identifier))
+            (keyword_exclude)
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))

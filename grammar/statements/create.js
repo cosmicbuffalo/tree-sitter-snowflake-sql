@@ -9,17 +9,24 @@ export default {
     choice(
       $.create_table,
       $.create_view,
-      $.create_materialized_view,
-      $.create_index,
+      // $.create_materialized_view, // removed: Postgres-specific, frees parse table budget
+      // $.create_index, // removed: Postgres/MySQL-specific, Snowflake has no user indexes
       $.create_function,
       $.create_procedure,
-      $.create_type,
+      // $.create_type, // removed: Postgres-specific, frees parse table budget
       $.create_database,
       $.create_role,
-      $.create_sequence,
-      $.create_extension,
-      $.create_trigger,
-      $.create_policy,
+      // $.create_sequence, // removed: Postgres-specific, frees parse table budget
+      // $.create_extension, // removed: Postgres-specific, frees parse table budget
+      // $.create_trigger,   // removed: Postgres-specific, frees parse table budget
+      // $.create_policy,    // removed: Postgres-specific, frees parse table budget
+      // Snowflake
+      $.create_snowflake_named_object,
+      $.create_pipe,
+      $.create_stream,
+      $.create_task,
+      $.create_dynamic_table,
+      $.create_snowflake_object,
       prec.left(seq(
         $.create_schema,
         repeat($._create_statement),

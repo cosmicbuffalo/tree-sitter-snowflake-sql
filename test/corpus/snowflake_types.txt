@@ -1,0 +1,288 @@
+================================================================================
+Snowflake VARIANT type
+================================================================================
+
+CREATE TABLE t (v VARIANT);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (keyword_variant))))))
+
+================================================================================
+Snowflake OBJECT type
+================================================================================
+
+CREATE TABLE t (o OBJECT);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (keyword_object))))))
+
+================================================================================
+Snowflake NUMBER type without parameters
+================================================================================
+
+CREATE TABLE t (n NUMBER);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number)))))))
+
+================================================================================
+Snowflake NUMBER type with precision
+================================================================================
+
+CREATE TABLE t (n NUMBER(10));
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number)
+            precision: (literal)))))))
+
+================================================================================
+Snowflake NUMBER type with precision and scale
+================================================================================
+
+CREATE TABLE t (n NUMBER(38, 0));
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number)
+            precision: (literal)
+            scale: (literal)))))))
+
+================================================================================
+Snowflake TIMESTAMP_LTZ type
+================================================================================
+
+CREATE TABLE t (ts TIMESTAMP_LTZ);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (timestamp_ltz
+            (keyword_timestamp_ltz)))))))
+
+================================================================================
+Snowflake TIMESTAMP_NTZ type with precision
+================================================================================
+
+CREATE TABLE t (ts TIMESTAMP_NTZ(9));
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (timestamp_ntz
+            (keyword_timestamp_ntz)
+            size: (literal)))))))
+
+================================================================================
+Snowflake TIMESTAMP_TZ type
+================================================================================
+
+CREATE TABLE t (ts TIMESTAMP_TZ);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (timestamp_tz
+            (keyword_timestamp_tz)))))))
+
+================================================================================
+Snowflake VECTOR type
+================================================================================
+
+CREATE TABLE t (emb VECTOR(FLOAT, 768));
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (vector
+            (keyword_vector)
+            element_type: (identifier)
+            dimension: (literal)))))))
+
+================================================================================
+Snowflake cast to VARIANT
+================================================================================
+
+SELECT col::VARIANT FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (cast
+            (field
+              name: (identifier))
+            (keyword_variant)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Snowflake cast to NUMBER
+================================================================================
+
+SELECT col::NUMBER(10, 2) FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (cast
+            (field
+              name: (identifier))
+            (number
+              (keyword_number)
+              precision: (literal)
+              scale: (literal))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Snowflake table with multiple Snowflake types
+================================================================================
+
+CREATE TABLE events (
+  id NUMBER(38, 0),
+  payload VARIANT,
+  metadata OBJECT,
+  created_at TIMESTAMP_LTZ,
+  embedding VECTOR(FLOAT, 256)
+);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number)
+            precision: (literal)
+            scale: (literal)))
+        (column_definition
+          name: (identifier)
+          type: (keyword_variant))
+        (column_definition
+          name: (identifier)
+          type: (keyword_object))
+        (column_definition
+          name: (identifier)
+          type: (timestamp_ltz
+            (keyword_timestamp_ltz)))
+        (column_definition
+          name: (identifier)
+          type: (vector
+            (keyword_vector)
+            element_type: (identifier)
+            dimension: (literal)))))))

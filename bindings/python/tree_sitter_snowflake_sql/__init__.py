@@ -1,4 +1,4 @@
-"""Tree-sitter Grammar for SQL"""
+"""Tree-sitter Grammar for Snowflake SQL"""
 
 from importlib.resources import files as _files
 

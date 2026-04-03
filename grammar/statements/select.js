@@ -91,7 +91,7 @@ export default {
     optional($._alias),
   ),
 
-  all_fields: $ => seq(
+  all_fields: $ => prec.right(seq(
     optional(
       seq(
         $.object_reference,
@@ -99,7 +99,19 @@ export default {
       ),
     ),
     '*',
-  ),
+    // Snowflake: SELECT * EXCLUDE (col1, col2) RENAME (col1 AS new_col1)
+    optional(seq(
+      $.keyword_exclude,
+      paren_list($.identifier, true),
+    )),
+    optional(seq(
+      $.keyword_rename,
+      paren_list(
+        seq($.identifier, $.keyword_as, $.identifier),
+        true,
+      ),
+    )),
+  )),
 
   partition_by: $ => seq(
       $.keyword_partition,
@@ -209,7 +221,7 @@ export default {
     optional(
       $.keyword_only,
     ),
-    comma_list($.relation, true),
+    comma_list(choice($.relation, $.lateral_relation), true),
     optional($.index_hint),
     repeat(
       choice(
@@ -222,6 +234,7 @@ export default {
     optional($.where),
     optional($.group_by),
     optional($.having),
+    optional($.qualify),
     optional($.window_clause),
     optional($.order_by),
     optional($.limit),
@@ -233,8 +246,23 @@ export default {
         $.subquery,
         $.invocation,
         $.object_reference,
+        $.stage_reference,
         wrapped_in_parenthesis($.values),
       ),
+      optional(
+        seq(
+          $._alias,
+          optional(alias($._column_list, $.list)),
+        ),
+      ),
+    ),
+  ),
+
+  // Snowflake: LATERAL FLATTEN(...) or LATERAL subquery in comma-separated FROM
+  lateral_relation: $ => prec.right(
+    seq(
+      $.keyword_lateral,
+      choice($.invocation, $.subquery),
       optional(
         seq(
           $._alias,
@@ -260,7 +288,7 @@ export default {
   index_hint: $ => seq(
     choice(
       $.keyword_force,
-      $.keyword_use,
+      // $.keyword_use, // removed: conflicts with Snowflake USE DATABASE/SCHEMA/WAREHOUSE/ROLE
       $.keyword_ignore,
     ),
     $.keyword_index,
@@ -389,6 +417,11 @@ export default {
 
   having: $ => seq(
     $.keyword_having,
+    $._expression,
+  ),
+
+  qualify: $ => seq(
+    $.keyword_qualify,
     $._expression,
   ),
 

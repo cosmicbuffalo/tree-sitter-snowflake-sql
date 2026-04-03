@@ -1,7 +1,7 @@
 {
     "targets": [
         {
-            "target_name": "tree_sitter_sql_binding",
+            "target_name": "tree_sitter_snowflake_sql_binding",
             "dependencies": [
                 "<!(node -p \"require('node-addon-api').targets\"):node_addon_api_except",
             ],

@@ -1,4 +1,4 @@
-module github.com/DerekStride/tree-sitter-sql
+module github.com/hectron/tree-sitter-snowflake-sql
 
 go 1.23
 

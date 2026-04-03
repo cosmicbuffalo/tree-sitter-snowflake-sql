@@ -25,10 +25,10 @@ type NodeInfo =
  *
  * @example
  * import Parser from "tree-sitter";
- * import SQL from "tree-sitter-sql";
+ * import SnowflakeSQL from "tree-sitter-snowflake-sql";
  *
  * const parser = new Parser();
- * parser.setLanguage(SQL);
+ * parser.setLanguage(SnowflakeSQL);
  */
 declare const binding: {
   /**

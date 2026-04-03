@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(tree-sitter-sql
-        VERSION "0.3.11"
-        DESCRIPTION "Tree-sitter Grammar for SQL"
-        HOMEPAGE_URL "git+https://github.com/derekstride/tree-sitter-sql.git"
+project(tree-sitter-snowflake-sql
+        VERSION "0.1.0"
+        DESCRIPTION "Tree-sitter Grammar for Snowflake SQL"
+        HOMEPAGE_URL "git+https://github.com/hectron/tree-sitter-snowflake-sql.git"
         LANGUAGES C)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
@@ -34,38 +34,38 @@ add_custom_command(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/parser.c"
                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
                    COMMENT "Generating parser.c")
 
-add_library(tree-sitter-sql src/parser.c)
+add_library(tree-sitter-snowflake-sql src/parser.c)
 if(EXISTS src/scanner.c)
-  target_sources(tree-sitter-sql PRIVATE src/scanner.c)
+  target_sources(tree-sitter-snowflake-sql PRIVATE src/scanner.c)
 endif()
-target_include_directories(tree-sitter-sql
+target_include_directories(tree-sitter-snowflake-sql
                            PRIVATE src
                            INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/bindings/c>
                                      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 
-target_compile_definitions(tree-sitter-sql PRIVATE
+target_compile_definitions(tree-sitter-snowflake-sql PRIVATE
                            $<$<BOOL:${TREE_SITTER_REUSE_ALLOCATOR}>:TREE_SITTER_REUSE_ALLOCATOR>
                            $<$<CONFIG:Debug>:TREE_SITTER_DEBUG>)
 
-set_target_properties(tree-sitter-sql
+set_target_properties(tree-sitter-snowflake-sql
                       PROPERTIES
                       C_STANDARD 11
                       POSITION_INDEPENDENT_CODE ON
                       SOVERSION "${TREE_SITTER_ABI_VERSION}.${PROJECT_VERSION_MAJOR}"
                       DEFINE_SYMBOL "")
 
-configure_file(bindings/c/tree-sitter-sql.pc.in
-               "${CMAKE_CURRENT_BINARY_DIR}/tree-sitter-sql.pc" @ONLY)
+configure_file(bindings/c/tree-sitter-snowflake-sql.pc.in
+               "${CMAKE_CURRENT_BINARY_DIR}/tree-sitter-snowflake-sql.pc" @ONLY)
 
 include(GNUInstallDirs)
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bindings/c/tree_sitter"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
         FILES_MATCHING PATTERN "*.h")
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tree-sitter-sql.pc"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tree-sitter-snowflake-sql.pc"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig")
-install(TARGETS tree-sitter-sql
+install(TARGETS tree-sitter-snowflake-sql
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
 add_custom_target(ts-test "${TREE_SITTER_CLI}" test

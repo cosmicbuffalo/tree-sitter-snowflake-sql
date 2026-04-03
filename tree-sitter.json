@@ -1,12 +1,13 @@
 {
   "grammars": [
     {
-      "name": "sql",
-      "camelcase": "SQL",
-      "scope": "source.sql",
+      "name": "snowflake_sql",
+      "camelcase": "SnowflakeSQL",
+      "scope": "source.snowflake_sql",
       "path": ".",
       "file-types": [
-        "sql"
+        "sql",
+        "snowsql"
       ],
       "highlights": [
         "queries/highlights.scm"
@@ -14,16 +15,19 @@
     }
   ],
   "metadata": {
-    "version": "0.3.11",
+    "version": "0.1.0",
     "license": "MIT",
-    "description": "Tree-sitter Grammar for SQL",
+    "description": "Tree-sitter Grammar for Snowflake SQL",
     "authors": [
       {
         "name": "derek stride"
+      },
+      {
+        "name": "hectron"
       }
     ],
     "links": {
-      "repository": "git+https://github.com/derekstride/tree-sitter-sql.git"
+      "repository": "git+https://github.com/hectron/tree-sitter-snowflake-sql.git"
     }
   },
   "bindings": {

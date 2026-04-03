@@ -426,4 +426,43 @@ export default {
 
   keyword_array: _ => make_keyword("array"), // not included in _type since it's a constructor literal
 
+  // Snowflake keywords
+  keyword_qualify: _ => make_keyword("qualify"),
+  keyword_try_cast: _ => make_keyword("try_cast"),
+  keyword_flatten: _ => make_keyword("flatten"),
+  keyword_stage: _ => make_keyword("stage"),
+  keyword_pipe: _ => make_keyword("pipe"),
+  keyword_stream: _ => make_keyword("stream"),
+  keyword_task: _ => make_keyword("task"),
+  keyword_dynamic: _ => make_keyword("dynamic"),
+  keyword_warehouse: _ => make_keyword("warehouse"),
+  keyword_file_format: _ => make_keyword("file_format"),
+  keyword_grant: _ => make_keyword("grant"),
+  keyword_revoke: _ => make_keyword("revoke"),
+  keyword_privileges: _ => make_keyword("privileges"),
+  keyword_describe: _ => make_keyword("describe"),
+  keyword_call: _ => make_keyword("call"),
+  keyword_undrop: _ => make_keyword("undrop"),
+  keyword_put: _ => make_keyword("put"),
+  keyword_get: _ => make_keyword("get"),
+  keyword_suspend: _ => make_keyword("suspend"),
+  keyword_resume: _ => make_keyword("resume"),
+  keyword_within: _ => make_keyword("within"),
+  keyword_integration: _ => make_keyword("integration"),
+  keyword_tag: _ => make_keyword("tag"),
+  keyword_alert: _ => make_keyword("alert"),
+  keyword_share: _ => make_keyword("share"),
+  keyword_network: _ => make_keyword("network"),
+  keyword_resource: _ => make_keyword("resource"),
+  keyword_monitor: _ => make_keyword("monitor"),
+
+  // Snowflake types
+  keyword_variant: _ => make_keyword("variant"),
+  keyword_object: _ => make_keyword("object"),
+  keyword_number: _ => make_keyword("number"),
+  keyword_timestamp_ltz: _ => make_keyword("timestamp_ltz"),
+  keyword_timestamp_ntz: _ => make_keyword("timestamp_ntz"),
+  keyword_timestamp_tz: _ => make_keyword("timestamp_tz"),
+  keyword_vector: _ => make_keyword("vector"),
+
 }

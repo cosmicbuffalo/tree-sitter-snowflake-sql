@@ -1,13 +1,13 @@
 [package]
-name = "tree-sitter-sequel"
-description = "Tree-sitter Grammar for SQL"
-version = "0.3.11"
-authors = ["derek stride"]
+name = "tree-sitter-snowflake-sql"
+description = "Tree-sitter Grammar for Snowflake SQL"
+version = "0.1.0"
+authors = ["derek stride", "hectron"]
 license = "MIT"
 readme = "README.md"
-keywords = ["incremental", "parsing", "tree-sitter", "sql"]
+keywords = ["incremental", "parsing", "tree-sitter", "sql", "snowflake"]
 categories = ["parsing", "text-editors"]
-repository = "https://github.com/derekstride/tree-sitter-sql.git"
+repository = "https://github.com/hectron/tree-sitter-snowflake-sql.git"
 edition = "2021"
 autoexamples = false
 

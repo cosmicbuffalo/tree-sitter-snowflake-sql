@@ -6,14 +6,17 @@ export default {
     choice(
       $.alter_table,
       $.alter_view,
-      $.alter_materialized_view,
+      // $.alter_materialized_view, // removed: Postgres-specific, frees parse table budget
       $.alter_schema,
-      $.alter_type,
-      $.alter_index,
+      // $.alter_type,   // removed: Postgres-specific, frees parse table budget
+      // $.alter_index,  // removed: Postgres-specific, frees parse table budget
       $.alter_database,
       $.alter_role,
-      $.alter_sequence,
-      $.alter_policy,
+      // $.alter_sequence, // removed: Postgres-specific, frees parse table budget
+      // $.alter_policy, // removed: Postgres-specific, frees parse table budget
+      // Snowflake
+      $.alter_snowflake_named_object,
+      $.alter_snowflake_object,
     ),
   ),
 

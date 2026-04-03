@@ -178,8 +178,7 @@ END
             (keyword_select)
             (select_expression
               (term
-                value: (field
-                  name: (identifier)))))
+                value: (stage_reference))))
           (from
             (keyword_from)
             (relation

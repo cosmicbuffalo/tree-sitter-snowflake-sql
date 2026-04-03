@@ -1245,8 +1245,7 @@ RETURNS int
               (object_reference
                 (identifier)))))
         (keyword_return)
-        (field
-          (identifier))
+        (stage_reference)
         (keyword_end)))))
 
 ================================================================================
@@ -1318,8 +1317,7 @@ RETURNS int
               (object_reference
                 (identifier)))))
         (keyword_return)
-        (field
-          (identifier))
+        (stage_reference)
         (keyword_end)))))
 
 ================================================================================
@@ -1403,8 +1401,7 @@ RETURNS int
               (object_reference
                 (identifier)))))
         (keyword_return)
-        (field
-          (identifier))
+        (stage_reference)
         (keyword_end)))))
 
 ================================================================================
@@ -1496,6 +1493,5 @@ RETURNS int
                 (identifier)))))
         (keyword_end)
         (keyword_return)
-        (field
-          (identifier))
+        (stage_reference)
         (keyword_end)))))

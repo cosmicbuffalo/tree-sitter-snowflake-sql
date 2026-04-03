@@ -15,6 +15,7 @@ export default {
       $.window_function,
       $.subquery,
       $.cast,
+      $.try_cast,
       alias($.implicit_cast, $.cast),
       $.exists,
       $.invocation,
@@ -25,6 +26,8 @@ export default {
       $.interval,
       $.between_expression,
       $.parenthesized_expression,
+      $.variant_access,
+      $.stage_reference,
       $.object_id,
     )
   ),
@@ -120,6 +123,17 @@ export default {
     ),
   ),
 
+  try_cast: $ => seq(
+    field('name', $.keyword_try_cast),
+    wrapped_in_parenthesis(
+      seq(
+        field('parameter', $._expression),
+        $.keyword_as,
+        $._type,
+      ),
+    ),
+  ),
+
   exists: $ => seq(
     $.keyword_exists,
     $.subquery,
@@ -135,7 +149,10 @@ export default {
             optional($.keyword_distinct),
             field(
               'parameter',
-              $.term,
+              choice(
+                $.named_parameter,
+                $.term,
+              ),
             ),
             optional($.order_by)
           )
@@ -167,13 +184,30 @@ export default {
       ),
       optional(
         $.filter_expression
-      )
+      ),
+      // Snowflake: WITHIN GROUP (ORDER BY ...)
+      // Used with LISTAGG, PERCENTILE_CONT, etc.
+      optional(
+        $.within_group,
+      ),
     ),
+  ),
+
+  named_parameter: $ => seq(
+    field('name', $.identifier),
+    '=>',
+    field('value', $._expression),
   ),
 
   filter_expression : $ => seq(
     $.keyword_filter,
     wrapped_in_parenthesis($.where),
+  ),
+
+  within_group: $ => seq(
+    $.keyword_within,
+    $.keyword_group,
+    wrapped_in_parenthesis($.order_by),
   ),
 
   parenthesized_expression: $ => prec(2,
@@ -195,6 +229,18 @@ export default {
       "]",
     ),
   ),
+
+  // Snowflake semi-structured data access: v:key, v:key.nested, v:key1:key2
+  variant_access: $ => prec.left('binary_is',
+    seq(
+      field('expression', $._expression),
+      ':',
+      field('path', $.identifier),
+    ),
+  ),
+
+  // Snowflake stage references: @~, @%table, @stage, @stage/path, @db.schema.stage/path
+  stage_reference: _ => /@(~|%[A-Za-z_][0-9A-Za-z_]*)(\/[^\s;,)]*)?|@[A-Za-z_][0-9A-Za-z_]*(\.[A-Za-z_][0-9A-Za-z_]*)*(\/[^\s;,)]*)?/,
 
   op_other: $ => token(
     choice(
@@ -416,7 +462,8 @@ export default {
   ),
   _tsql_parameter: $ => seq('@', $._identifier),
   // support nordic chars and umlaue
-  _identifier: _ => /[A-Za-z_\u00C0-\u017F][0-9A-Za-z_\u00C0-\u017F]*/,
+  // Snowflake allows $ in identifiers (e.g. SYSTEM$STREAM_HAS_DATA)
+  _identifier: _ => /[A-Za-z_\u00C0-\u017F][0-9A-Za-z_$\u00C0-\u017F]*/,
 
   object_id: $ => seq(
     $.keyword_object_id,

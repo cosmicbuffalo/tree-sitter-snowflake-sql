@@ -3,10 +3,10 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tree-sitter-sql"
-description = "Tree-sitter Grammar for SQL"
-version = "0.3.11"
-keywords = ["incremental", "parsing", "tree-sitter", "sql"]
+name = "tree-sitter-snowflake-sql"
+description = "Tree-sitter Grammar for Snowflake SQL"
+version = "0.1.0"
+keywords = ["incremental", "parsing", "tree-sitter", "sql", "snowflake"]
 classifiers = [
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
@@ -20,7 +20,7 @@ license.text = "MIT"
 readme = "README.md"
 
 [project.urls]
-Homepage = "https://github.com/derekstride/tree-sitter-sql.git"
+Homepage = "https://github.com/hectron/tree-sitter-snowflake-sql.git"
 
 [project.optional-dependencies]
 core = ["tree-sitter~=0.25"]

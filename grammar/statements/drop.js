@@ -6,16 +6,19 @@ export default {
     choice(
       $.drop_table,
       $.drop_view,
-      $.drop_materialized_view,
-      $.drop_index,
-      $.drop_type,
+      // $.drop_materialized_view, // removed: Postgres-specific, frees parse table budget
+      // $.drop_index, // removed: Postgres/MySQL-specific, frees parse table budget
+      // $.drop_type,  // removed: Postgres-specific, frees parse table budget
       $.drop_schema,
       $.drop_database,
       $.drop_role,
-      $.drop_sequence,
-      $.drop_extension,
+      // $.drop_sequence, // removed: Postgres-specific, frees parse table budget
+      // $.drop_extension, // removed: Postgres-specific, frees parse table budget
       $.drop_function,
       $.drop_procedure,
+      // Snowflake
+      $.drop_snowflake_named_object,
+      $.drop_snowflake_object,
     ),
   ),
 

@@ -1,7 +1,7 @@
 {
-  "name": "@derekstride/tree-sitter-sql",
-  "version": "0.3.11",
-  "description": "Tree-sitter Grammar for SQL",
+  "name": "tree-sitter-snowflake-sql",
+  "version": "0.1.0",
+  "description": "Tree-sitter Grammar for Snowflake SQL",
   "main": "bindings/node",
   "types": "bindings/node",
   "scripts": {
@@ -38,12 +38,12 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/derekstride/tree-sitter-sql.git"
+    "url": "git+https://github.com/hectron/tree-sitter-snowflake-sql.git"
   },
   "bugs": {
-    "url": "https://github.com/derekstride/tree-sitter-sql/issues"
+    "url": "https://github.com/hectron/tree-sitter-snowflake-sql/issues"
   },
-  "homepage": "https://github.com/derekstride/tree-sitter-sql#readme",
+  "homepage": "https://github.com/hectron/tree-sitter-snowflake-sql#readme",
   "commit-and-tag-version": {
     "skip": {
       "tag": true
@@ -51,7 +51,8 @@
   },
   "keywords": [
     "parser",
-    "sql"
+    "sql",
+    "snowflake"
   ],
   "files": [
     "grammar.js",

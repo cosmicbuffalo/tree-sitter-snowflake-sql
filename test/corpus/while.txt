@@ -11,8 +11,7 @@ WHILE @par < 1
     (while_statement
       (keyword_while)
       (binary_expression
-        (field
-          (identifier))
+        (stage_reference)
         (literal))
       (statement
         (select
@@ -41,8 +40,7 @@ WHILE @par < 1
     (while_statement
       (keyword_while)
       (binary_expression
-        (field
-          (identifier))
+        (stage_reference)
         (literal))
       (statement
         (select

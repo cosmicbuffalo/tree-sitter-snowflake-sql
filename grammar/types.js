@@ -69,6 +69,21 @@ export default {
         $.keyword_regproc,
         $.keyword_regtype,
 
+        // Snowflake semi-structured types
+        $.keyword_variant,
+        $.keyword_object,
+
+        // Snowflake numeric
+        $.number,
+
+        // Snowflake timestamp variants
+        $.timestamp_ltz,
+        $.timestamp_ntz,
+        $.timestamp_tz,
+
+        // Snowflake vector type
+        $.vector,
+
         field("custom_type", $.object_reference)
       ),
       optional($.array_size_definition)
@@ -147,6 +162,24 @@ export default {
     optional($._include_time_zone),
   ),
   timestamptz: $ => parametric_type($, $.keyword_timestamptz),
+
+  // Snowflake types
+  number: $ => choice(
+    parametric_type($, $.keyword_number, ['precision']),
+    parametric_type($, $.keyword_number, ['precision', 'scale']),
+  ),
+  timestamp_ltz: $ => parametric_type($, $.keyword_timestamp_ltz),
+  timestamp_ntz: $ => parametric_type($, $.keyword_timestamp_ntz),
+  timestamp_tz: $ => parametric_type($, $.keyword_timestamp_tz),
+  // VECTOR(INT, 256) or VECTOR(FLOAT, 768)
+  vector: $ => seq(
+    $.keyword_vector,
+    '(',
+    field('element_type', $.identifier),
+    ',',
+    field('dimension', alias($._natural_number, $.literal)),
+    ')',
+  ),
 
   enum: $ => seq(
     $.keyword_enum,
