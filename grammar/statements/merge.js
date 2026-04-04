@@ -13,7 +13,11 @@ export default {
       wrapped_in_parenthesis($.values),
       $.object_reference
     ),
-    optional($._alias),
+    optional(seq(
+      $._alias,
+      // Optional column list after alias: AS source (col1, col2, ...)
+      optional(wrapped_in_parenthesis(commaSep1($.identifier))),
+    )),
     $.keyword_on,
     optional_parenthesis(field("predicate", $._expression)),
     repeat1($.when_clause)
@@ -45,3 +49,7 @@ export default {
   )),
 
 };
+
+function commaSep1(rule) {
+  return seq(rule, repeat(seq(',', rule)));
+}

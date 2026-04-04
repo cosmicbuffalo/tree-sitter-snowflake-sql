@@ -190,20 +190,28 @@ export default {
     paren_list(field("value", alias($._literal_string, $.literal)), true)
   ),
 
-  array: $ => seq(
-    $.keyword_array,
-    choice(
-      seq(
-        "[",
-        comma_list($._expression),
-        "]"
-      ),
-      seq(
-        "(",
-        $._dml_read,
-        ")",
+  array: $ => choice(
+    seq(
+      $.keyword_array,
+      choice(
+        seq(
+          "[",
+          comma_list($._expression),
+          "]"
+        ),
+        seq(
+          "(",
+          $._dml_read,
+          ")",
+        )
       )
-    )
+    ),
+    // Standalone array literal: ['a', 'b', 'c'] (sugar for ARRAY_CONSTRUCT)
+    seq(
+      "[",
+      comma_list($._expression),
+      "]"
+    ),
   ),
 
 };

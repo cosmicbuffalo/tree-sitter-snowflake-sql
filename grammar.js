@@ -38,6 +38,14 @@ export default grammar({
     [$.object_reference, $.let_statement],
     // create_procedure has repeated attribute blocks before and after body
     [$.create_procedure],
+    // BEGIN; could start a scripting block or a standalone begin_transaction_statement
+    [$.begin_transaction_statement, $.snowflake_scripting_block],
+    // BEGIN TRANSACTION; could be standalone or start a full transaction block
+    [$.begin_transaction_statement, $.transaction],
+    // COMMIT inside scripting: standalone commit_statement vs scripting_transaction terminator
+    [$.commit_statement, $.scripting_transaction],
+    // ROLLBACK inside scripting: standalone rollback_statement vs scripting_transaction terminator
+    [$.rollback_statement, $.scripting_transaction],
   ],
 
   precedences: $ => [
@@ -70,6 +78,9 @@ export default grammar({
             $.transaction,
             $.statement,
             $.block,
+            $.commit_statement,
+            $.rollback_statement,
+            $.begin_transaction_statement,
           ),
           ';',
         ),

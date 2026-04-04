@@ -115,6 +115,8 @@ export default {
     $.close_statement,
     $.snowflake_scripting_block,
     $.scripting_transaction,
+    $.commit_statement,
+    $.rollback_statement,
     $.async_statement,
     prec(-1, alias($.invocation, $.bare_call_statement)),  // bare function calls without CALL keyword
   ),
@@ -145,12 +147,23 @@ export default {
         field('value', $._dml_read),
         ')',
       ),
-      // LET var [TYPE] {DEFAULT | :=} expr
-      seq(
-        optional(field('type', $._type)),
-        choice(
-          seq($.keyword_default, field('value', $._expression)),
-          seq(':=', field('value', $._expression)),
+      // LET var [TYPE] [{DEFAULT | :=} expr]
+      // Type or initialization (or both) must be present
+      choice(
+        // With type: LET var TYPE [{DEFAULT | :=} expr]
+        seq(
+          field('type', $._type),
+          optional(choice(
+            seq($.keyword_default, field('value', $._expression)),
+            seq(':=', field('value', $._expression)),
+          )),
+        ),
+        // Without type: LET var {DEFAULT | :=} expr (init required)
+        seq(
+          choice(
+            seq($.keyword_default, field('value', $._expression)),
+            seq(':=', field('value', $._expression)),
+          ),
         ),
       ),
     ),

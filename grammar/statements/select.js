@@ -273,15 +273,13 @@ export default {
     ),
   ),
 
-  values: $ => prec.left(seq(
+  values: $ => prec.right(seq(
     $.keyword_values,
     $.list,
-    optional(
-        repeat(
-        seq(
-          ',',
-          $.list,
-        ),
+    repeat(
+      seq(
+        ',',
+        $.list,
       ),
     ),
   )),

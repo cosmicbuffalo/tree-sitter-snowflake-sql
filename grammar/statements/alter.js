@@ -51,12 +51,20 @@ export default {
 
   _alter_specifications: $ => choice(
     $.add_column,
+    // Bare ADD COLUMN continuation: COLUMN col TYPE (after ADD COLUMN c1 TYPE, COLUMN c2 TYPE, ...)
+    alias($._bare_add_column, $.add_column),
+    // Bare column_definition continuation: col TYPE (after ADD COLUMN IF NOT EXISTS c1 TYPE, c2 TYPE, ...)
+    alias($._bare_column_def, $.add_column),
     $.add_constraint,
     $.drop_constraint,
     $.alter_column,
+    // Bare column action continuation: col DROP NOT NULL (after ALTER COLUMN c1 DROP NOT NULL, ...)
+    alias($._bare_alter_column, $.alter_column),
     $.modify_column,
     $.change_column,
     $.drop_column,
+    // Bare DROP COLUMN continuation: COLUMN IF EXISTS col or bare col (after DROP COLUMN c1, ...)
+    alias($._bare_drop_column, $.drop_column),
     $.rename_object,
     $.rename_column,
     $.set_schema,
@@ -75,14 +83,28 @@ export default {
       $.keyword_on, paren_list($.identifier, true)),
   ),
 
-  // TODO: optional `keyword_add` is necessary to allow for chained alter statements in t-sql
-  // maybe needs refactoring
+  // ADD COLUMN — keyword_add is required to prevent ambiguity with drop_column continuations
   add_column: $ => seq(
-    optional($.keyword_add),
+    $.keyword_add,
     optional(
       $.keyword_column,
     ),
     optional($._if_not_exists),
+    $.column_definition,
+    optional($.column_position),
+  ),
+
+  // Bare ADD COLUMN continuation: COLUMN col TYPE (after ADD COLUMN c1 TYPE, COLUMN c2 TYPE)
+  // Requires COLUMN keyword to disambiguate from other specs
+  _bare_add_column: $ => seq(
+    $.keyword_column,
+    $.column_definition,
+    optional($.column_position),
+  ),
+
+  // Bare column_definition continuation: col TYPE (after ADD COLUMN IF NOT EXISTS c1 TYPE, c2 TYPE)
+  // No COLUMN keyword — just a raw column_definition for multi-column ADD without COLUMN on continuations
+  _bare_column_def: $ => seq(
     $.column_definition,
     optional($.column_position),
   ),
@@ -109,61 +131,69 @@ export default {
       $.keyword_column,
     ),
     field('name', $.identifier),
-    choice(
-      seq(
-        choice(
-          $.keyword_set,
-          $.keyword_drop,
-        ),
-        $.keyword_not,
-        $.keyword_null,
-      ),
-      // Snowflake: ALTER COLUMN col NOT NULL (bare, without SET/DROP)
-      $._not_null,
-      seq(
-        optional(
-          seq(
-            $.keyword_set,
-            $.keyword_data,
-          ),
-        ),
-        $.keyword_type,
-        field('type', $._type),
-      ),
-      seq(
+    $._alter_column_action,
+  ),
+
+  // Bare column action for multi-column ALTER: col DROP NOT NULL (no ALTER keyword)
+  _bare_alter_column: $ => seq(
+    field('name', $.identifier),
+    $._alter_column_action,
+  ),
+
+  _alter_column_action: $ => choice(
+    seq(
+      choice(
         $.keyword_set,
-        choice(
-          seq(
-            $.keyword_statistics,
-            field('statistics', $._integer)
-          ),
-          seq(
-            $.keyword_storage,
-            choice(
-              $.keyword_plain,
-              $.keyword_external,
-              $.keyword_extended,
-              $.keyword_main,
-              $.keyword_default,
-            ),
-          ),
-          seq(
-            $.keyword_compression,
-            field('compression_method', $._identifier)
-          ),
-          seq(
-            paren_list($._key_value_pair, true),
-          ),
-          seq(
-            $.keyword_default,
-            $._expression,
-          ),
-        )
-      ),
-      seq(
         $.keyword_drop,
-        $.keyword_default,
       ),
+      $.keyword_not,
+      $.keyword_null,
+    ),
+    // Snowflake: ALTER COLUMN col NOT NULL (bare, without SET/DROP)
+    $._not_null,
+    seq(
+      optional(
+        seq(
+          $.keyword_set,
+          $.keyword_data,
+        ),
+      ),
+      $.keyword_type,
+      field('type', $._type),
+    ),
+    seq(
+      $.keyword_set,
+      choice(
+        seq(
+          $.keyword_statistics,
+          field('statistics', $._integer)
+        ),
+        seq(
+          $.keyword_storage,
+          choice(
+            $.keyword_plain,
+            $.keyword_external,
+            $.keyword_extended,
+            $.keyword_main,
+            $.keyword_default,
+          ),
+        ),
+        seq(
+          $.keyword_compression,
+          field('compression_method', $._identifier)
+        ),
+        seq(
+          paren_list($._key_value_pair, true),
+        ),
+        seq(
+          $.keyword_default,
+          $._expression,
+        ),
+      )
+    ),
+    seq(
+      $.keyword_drop,
+      $.keyword_default,
     ),
   ),
 
@@ -212,6 +242,14 @@ export default {
       field('name', $.identifier),
     )),
   )),
+
+  // Bare DROP COLUMN continuation: COLUMN IF EXISTS col (no DROP keyword)
+  // IF EXISTS is required to disambiguate from ADD COLUMN continuations
+  _bare_drop_column: $ => seq(
+    $.keyword_column,
+    $._if_exists,
+    field('name', $.identifier),
+  ),
 
   rename_column: $ => seq(
     $.keyword_rename,

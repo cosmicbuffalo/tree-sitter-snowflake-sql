@@ -709,9 +709,8 @@ T-SQL: alter table add multiple columns at once
 ================================================================================
 
 ALTER TABLE tab
-ADD
-col1 VARCHAR(255) NOT NULL DEFAULT('EMPTY'),
-col2 VARCHAR(255) NOT NULL DEFAULT('EMPTY');
+ADD col1 VARCHAR(255) NOT NULL DEFAULT('EMPTY'),
+ADD col2 VARCHAR(255) NOT NULL DEFAULT('EMPTY');
 
 --------------------------------------------------------------------------------
 
@@ -735,6 +734,7 @@ col2 VARCHAR(255) NOT NULL DEFAULT('EMPTY');
           (list
             (literal))))
       (add_column
+        (keyword_add)
         (column_definition
           (identifier)
           (varchar
@@ -1195,4 +1195,133 @@ ALTER TABLE table_name
         (keyword_set)
         (keyword_statistics)))))
 
+
+================================================================================
+Snowflake: ADD COLUMN with COLUMN continuation
+================================================================================
+
+ALTER TABLE t
+ADD COLUMN c1 VARCHAR(100), COLUMN c2 NUMBER;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (add_column
+        (keyword_add)
+        (keyword_column)
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar)
+            size: (literal))))
+      (add_column
+        (keyword_column)
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number)))))))
+
+================================================================================
+Snowflake: ADD COLUMN IF NOT EXISTS multi-column bare continuation
+================================================================================
+
+ALTER TABLE t
+ADD COLUMN IF NOT EXISTS c1 VARCHAR(100),
+c2 NUMBER,
+c3 STRING NOT NULL;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (add_column
+        (keyword_add)
+        (keyword_column)
+        (keyword_if)
+        (keyword_not)
+        (keyword_exists)
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar)
+            size: (literal))))
+      (add_column
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number))))
+      (add_column
+        (column_definition
+          name: (identifier)
+          type: (keyword_string)
+          (keyword_not)
+          (keyword_null))))))
+
+================================================================================
+Snowflake: ALTER COLUMN multi-column bare continuation
+================================================================================
+
+ALTER TABLE t
+ALTER COLUMN c1 DROP NOT NULL, c2 DROP NOT NULL;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (alter_column
+        (keyword_alter)
+        (keyword_column)
+        name: (identifier)
+        (keyword_drop)
+        (keyword_not)
+        (keyword_null))
+      (alter_column
+        name: (identifier)
+        (keyword_drop)
+        (keyword_not)
+        (keyword_null)))))
+
+================================================================================
+Snowflake: DROP COLUMN IF EXISTS multi-column bare continuation
+================================================================================
+
+ALTER TABLE t
+DROP COLUMN IF EXISTS c1, COLUMN IF EXISTS c2;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (drop_column
+        (keyword_drop)
+        (keyword_column)
+        (keyword_if)
+        (keyword_exists)
+        name: (identifier))
+      (drop_column
+        (keyword_column)
+        (keyword_if)
+        (keyword_exists)
+        name: (identifier)))))
 

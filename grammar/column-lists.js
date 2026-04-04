@@ -101,8 +101,8 @@ export default {
       $.unary_expression,
       $.array,
       $.invocation,
-      $.keyword_current_timestamp,
-      $.keyword_current_date,
+      prec.left(seq($.keyword_current_timestamp, optional(seq('(', optional($._expression), ')')), optional(seq('::', $._type)))),
+      prec.left(seq($.keyword_current_date, optional(seq('(', optional($._expression), ')')), optional(seq('::', $._type)))),
       alias($.implicit_cast, $.cast),
   ),
 

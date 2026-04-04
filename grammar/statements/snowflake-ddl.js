@@ -35,6 +35,7 @@ export default {
     field('value', choice(
       $.literal,
       $.identifier,
+      $.snowflake_variable_reference,
       seq('(', $._snowflake_options, ')'),
     )),
   ),
