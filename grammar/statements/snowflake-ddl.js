@@ -1,4 +1,4 @@
-import { comma_list } from "../helpers.js";
+import { comma_list, paren_list } from "../helpers.js";
 
 export default {
 
@@ -191,6 +191,32 @@ export default {
     optional($._if_exists),
     $.object_reference,
     $._snowflake_alter_actions,
+  )),
+
+  // --- CREATE DATA METRIC FUNCTION ---
+  // CREATE [OR REPLACE] DATA METRIC FUNCTION [IF NOT EXISTS] name(ARG_T TABLE(col type, ...))
+  // RETURNS NUMBER [COMMENT = 'text'] AS $$ body $$
+  create_data_metric_function: $ => prec.left(seq(
+    $.keyword_create,
+    optional($._or_replace),
+    $.keyword_data,
+    $.keyword_metric,
+    $.keyword_function,
+    optional($._if_not_exists),
+    $.object_reference,
+    '(',
+    field('arg_name', $.identifier),
+    $.keyword_table,
+    $.column_definitions,
+    ')',
+    $.keyword_returns,
+    $._type,
+    optional(seq($.keyword_comment, '=', alias($._literal_string, $.literal))),
+    $.keyword_as,
+    alias($._dollar_quoted_string_start_tag, $.dollar_quote),
+    $.statement,
+    optional(';'),
+    alias($._dollar_quoted_string_end_tag, $.dollar_quote),
   )),
 
   // --- Snowflake COPY INTO ---

@@ -67,6 +67,12 @@ export default {
     seq($.keyword_set, $._snowflake_options),
     // Snowflake: ALTER TABLE t DROP PRIMARY KEY
     seq($.keyword_drop, $._primary_key),
+    // Snowflake: ALTER TABLE t ADD DATA METRIC FUNCTION func ON (col1, col2)
+    seq($.keyword_add, $.keyword_data, $.keyword_metric, $.keyword_function, $.object_reference,
+      $.keyword_on, paren_list($.identifier, true)),
+    // Snowflake: ALTER TABLE t DROP DATA METRIC FUNCTION func ON (col1, col2)
+    seq($.keyword_drop, $.keyword_data, $.keyword_metric, $.keyword_function, $.object_reference,
+      $.keyword_on, paren_list($.identifier, true)),
   ),
 
   // TODO: optional `keyword_add` is necessary to allow for chained alter statements in t-sql
@@ -194,14 +200,18 @@ export default {
     ),
   ),
 
-  drop_column: $ => seq(
+  drop_column: $ => prec.left(seq(
     $.keyword_drop,
-    optional(
-      $.keyword_column,
-    ),
+    optional($.keyword_column),
     optional($._if_exists),
     field('name', $.identifier),
-  ),
+    repeat(seq(
+      ',',
+      optional($.keyword_column),
+      optional($._if_exists),
+      field('name', $.identifier),
+    )),
+  )),
 
   rename_column: $ => seq(
     $.keyword_rename,

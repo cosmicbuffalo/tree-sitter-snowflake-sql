@@ -28,18 +28,18 @@ HAVING other_id > 10;
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (group_by
-        (keyword_group)
-        (keyword_by)
-        (field
-          name: (identifier)))
-	(having
-        (keyword_having)
-        (binary_expression
-          left: (field
-            name: (identifier))
-          right: (literal))))))
+          name: (identifier))))
+    (group_by
+      (keyword_group)
+      (keyword_by)
+      (field
+        name: (identifier)))
+    (having
+      (keyword_having)
+      (binary_expression
+        left: (field
+          name: (identifier))
+        right: (literal)))))
 
 ================================================================================
 Group by numbered alias
@@ -70,17 +70,17 @@ HAVING other_id > 10;
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (group_by
-        (keyword_group)
-        (keyword_by)
-        (literal))
-	(having
-        (keyword_having)
-        (binary_expression
-          left: (field
-            name: (identifier))
-          right: (literal))))))
+          name: (identifier))))
+    (group_by
+      (keyword_group)
+      (keyword_by)
+      (literal))
+    (having
+      (keyword_having)
+      (binary_expression
+        left: (field
+          name: (identifier))
+        right: (literal)))))
 
 ================================================================================
 Group by with mixed list
@@ -114,19 +114,19 @@ HAVING other_id > 10;
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (group_by
-        (keyword_group)
-        (keyword_by)
-        (literal)
-        (field
-          name: (identifier)))
-	  (having
-        (keyword_having)
-        (binary_expression
-          left: (field
-            name: (identifier))
-          right: (literal))))))
+          name: (identifier))))
+    (group_by
+      (keyword_group)
+      (keyword_by)
+      (literal)
+      (field
+        name: (identifier)))
+    (having
+      (keyword_having)
+      (binary_expression
+        left: (field
+          name: (identifier))
+        right: (literal)))))
 
 ================================================================================
 Having with count function
@@ -158,21 +158,21 @@ HAVING COUNT(*) = 2;
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (group_by
-        (keyword_group)
-        (keyword_by)
-        (field
-          name: (identifier)))
-	  (having
-        (keyword_having)
-        (binary_expression
-          left: (invocation
-            (object_reference
-              name: (identifier))
-            parameter: (term
-              value: (all_fields)))
-          right: (literal))))))
+          name: (identifier))))
+    (group_by
+      (keyword_group)
+      (keyword_by)
+      (field
+        name: (identifier)))
+    (having
+      (keyword_having)
+      (binary_expression
+        left: (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (term
+            value: (all_fields)))
+        right: (literal)))))
 
 ================================================================================
 Having without group by
@@ -185,28 +185,28 @@ HAVING cnt = 2
 
 --------------------------------------------------------------------------------
 
-    (program
-      (statement
-        (select
-          (keyword_select)
-          (select_expression
-            (term
-              (invocation
-                (object_reference
-                  (identifier))
-                (term
-                  (all_fields)))
-              (keyword_as)
-              (identifier))))
-        (from
-          (keyword_from)
-          (relation
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (invocation
             (object_reference
-              (identifier)
-              (identifier)))
-          (having
-            (keyword_having)
-            (binary_expression
-              (field
-                (identifier))
-              (literal))))))
+              (identifier))
+            (term
+              (all_fields)))
+          (keyword_as)
+          (identifier))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier)
+          (identifier))))
+    (having
+      (keyword_having)
+      (binary_expression
+        (field
+          (identifier))
+        (literal)))))

@@ -121,7 +121,7 @@ export default {
     $._check_constraint
   ),
 
-  _constraint_literal: $ => seq(
+  _constraint_literal: $ => prec.left(seq(
     $.keyword_constraint,
     field('name', $.identifier),
     choice(
@@ -131,9 +131,14 @@ export default {
       ),
       seq(
         $._check_constraint
-      )
-    )
-  ),
+      ),
+      seq(
+        $.keyword_unique,
+        $.ordered_columns,
+      ),
+    ),
+    optional($._column_comment),
+  )),
 
   _primary_key_constraint: $ => seq(
     $._primary_key,

@@ -59,6 +59,13 @@ export default {
         ),
       ),
       optional($.from),
+      optional($.where),
+      optional($.group_by),
+      optional($.having),
+      optional($.qualify),
+      optional($.window_clause),
+      optional($.order_by),
+      optional($.limit),
     ),
   ),
 
@@ -231,13 +238,6 @@ export default {
         $.lateral_cross_join,
       ),
     ),
-    optional($.where),
-    optional($.group_by),
-    optional($.having),
-    optional($.qualify),
-    optional($.window_clause),
-    optional($.order_by),
-    optional($.limit),
   ),
 
   relation: $ => prec.right(
@@ -248,6 +248,7 @@ export default {
         $.object_reference,
         $.stage_reference,
         wrapped_in_parenthesis($.values),
+        $.values,
       ),
       optional(
         seq(
@@ -272,7 +273,7 @@ export default {
     ),
   ),
 
-  values: $ => seq(
+  values: $ => prec.left(seq(
     $.keyword_values,
     $.list,
     optional(
@@ -283,7 +284,7 @@ export default {
         ),
       ),
     ),
-  ),
+  )),
 
   index_hint: $ => seq(
     choice(
@@ -409,11 +410,14 @@ export default {
     field("predicate", $._expression),
   ),
 
-  group_by: $ => seq(
+  group_by: $ => prec.left(1, seq(
     $.keyword_group,
     $.keyword_by,
-    comma_list($._expression, true),
-  ),
+    choice(
+      $.keyword_all,
+      comma_list($._expression, true),
+    ),
+  )),
 
   having: $ => seq(
     $.keyword_having,

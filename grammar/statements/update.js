@@ -30,6 +30,7 @@ export default {
       $.relation,
       $._set_values,
       optional($.from),
+      optional($.where),
     ),
   ),
 

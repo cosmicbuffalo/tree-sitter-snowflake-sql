@@ -456,13 +456,13 @@ FROM
               (keyword_from)
               (relation
                 (object_reference
-                  (identifier)))
-              (where
-                (keyword_where)
-                (binary_expression
-                  (field
-                    (identifier))
-                  (literal)))))
+                  (identifier))))
+            (where
+              (keyword_where)
+              (binary_expression
+                (field
+                  (identifier))
+                (literal))))
           (identifier))))))
 
 ================================================================================
@@ -521,13 +521,13 @@ FROM
               (keyword_from)
               (relation
                 (object_reference
-                  (identifier)))
-              (where
-                (keyword_where)
-                (binary_expression
-                  (field
-                    (identifier))
-                  (literal)))))
+                  (identifier))))
+            (where
+              (keyword_where)
+              (binary_expression
+                (field
+                  (identifier))
+                (literal))))
           (identifier))))))
 
 ================================================================================
@@ -625,5 +625,3 @@ ON DUPLICATE KEY UPDATE
           left: (field
             name: (identifier))
           right: (literal))))))
-
-

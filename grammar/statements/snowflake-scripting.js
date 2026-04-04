@@ -161,6 +161,7 @@ export default {
   // For RESULTSETs: var := [ASYNC] (query) ;
   // =========================================================================
   assignment_statement: $ => prec.left(seq(
+    optional($.keyword_set),
     field('name', $.identifier),
     ':=',
     field('value', $._expression),

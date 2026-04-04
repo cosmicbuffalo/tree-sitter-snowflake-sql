@@ -272,12 +272,12 @@ GROUP BY some_field;
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (group_by
-        (keyword_group)
-        (keyword_by)
-        (field
-          name: (identifier))))))
+          name: (identifier))))
+    (group_by
+      (keyword_group)
+      (keyword_by)
+      (field
+        name: (identifier)))))
 
 ================================================================================
 GROUP CONCAT with all optional fields
@@ -316,12 +316,12 @@ GROUP BY some_field;
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (group_by
-        (keyword_group)
-        (keyword_by)
-        (field
-          name: (identifier))))))
+          name: (identifier))))
+    (group_by
+      (keyword_group)
+      (keyword_by)
+      (field
+        name: (identifier)))))
 
 ================================================================================
 GROUP CONCAT Impala
@@ -351,12 +351,12 @@ GROUP BY some_field;
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (group_by
-        (keyword_group)
-        (keyword_by)
-        (field
-          name: (identifier))))))
+          name: (identifier))))
+    (group_by
+      (keyword_group)
+      (keyword_by)
+      (field
+        name: (identifier)))))
 
 ================================================================================
 Unary ANY, ALL, SOME
@@ -381,20 +381,20 @@ WHERE id = ANY (
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
-          left: (field
-            name: (identifier))
-          right: (unary_expression
-            operator: (keyword_any)
-            operand: (subquery
-              (select
-                (keyword_select)
-                (select_expression
-                  (term
-                    value: (literal)))))))))))
+          name: (identifier))))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (field
+          name: (identifier))
+        right: (unary_expression
+          operator: (keyword_any)
+          operand: (subquery
+            (select
+              (keyword_select)
+              (select_expression
+                (term
+                  value: (literal))))))))))
 
 ================================================================================
 In with subquery
@@ -420,24 +420,24 @@ WHERE id IN (
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
-          left: (field
-            name: (identifier))
-          operator: (keyword_in)
-          right: (subquery
-            (select
-              (keyword_select)
-              (select_expression
-                (term
-                  value: (literal))))
-            (from
-              (keyword_from)
-              (relation
-                (object_reference
-                  name: (identifier))))))))))
+          name: (identifier))))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (field
+          name: (identifier))
+        operator: (keyword_in)
+        right: (subquery
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                value: (literal))))
+          (from
+            (keyword_from)
+            (relation
+              (object_reference
+                name: (identifier)))))))))
 
 ================================================================================
 exists & not exists
@@ -470,31 +470,14 @@ WHERE (
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (where
-        (keyword_where)
-        predicate: (parenthesized_expression
-          (binary_expression
-            left: (unary_expression
-              operator: (keyword_not)
-              operand: (exists
-                (keyword_exists)
-                (subquery
-                  (select
-                    (keyword_select)
-                    (select_expression
-                      (term
-                        value: (literal))))
-                  (from
-                    (keyword_from)
-                    (relation
-                      (object_reference
-                        name: (identifier)))
-                    (where
-                      (keyword_where)
-                      predicate: (literal))))))
-            operator: (keyword_or)
-            right: (exists
+          name: (identifier))))
+    (where
+      (keyword_where)
+      predicate: (parenthesized_expression
+        (binary_expression
+          left: (unary_expression
+            operator: (keyword_not)
+            operand: (exists
               (keyword_exists)
               (subquery
                 (select
@@ -506,10 +489,27 @@ WHERE (
                   (keyword_from)
                   (relation
                     (object_reference
-                      name: (identifier)))
-                  (where
-                    (keyword_where)
-                    predicate: (literal)))))))))))
+                      name: (identifier))))
+                (where
+                  (keyword_where)
+                  predicate: (literal)))))
+          operator: (keyword_or)
+          right: (exists
+            (keyword_exists)
+            (subquery
+              (select
+                (keyword_select)
+                (select_expression
+                  (term
+                    value: (literal))))
+              (from
+                (keyword_from)
+                (relation
+                  (object_reference
+                    name: (identifier))))
+              (where
+                (keyword_where)
+                predicate: (literal)))))))))
 
 ================================================================================
 Basic SQL function creation
@@ -1017,19 +1017,19 @@ $function$
                       (keyword_from)
                       (relation
                         (object_reference
-                          (identifier)))
-                      (limit
-                        (keyword_limit)
-                        (literal))))
+                          (identifier))))
+                    (limit
+                      (keyword_limit)
+                      (literal)))
                   (keyword_as)
-                  (identifier))
-                (group_by
-                  (keyword_group)
-                  (keyword_by)
-                  (field
-                    (object_reference
-                      (identifier))
-                    (identifier))))))
+                  (identifier)))
+              (group_by
+                (keyword_group)
+                (keyword_by)
+                (field
+                  (object_reference
+                    (identifier))
+                  (identifier)))))
           (update
             (keyword_update)
             (relation
@@ -1048,18 +1048,18 @@ $function$
               (keyword_from)
               (relation
                 (object_reference
-                  (identifier)))
-              (where
-                (keyword_where)
-                (binary_expression
-                  (field
-                    (object_reference
-                      (identifier))
+                  (identifier))))
+            (where
+              (keyword_where)
+              (binary_expression
+                (field
+                  (object_reference
                     (identifier))
-                  (field
-                    (object_reference
-                      (identifier))
-                    (identifier)))))))
+                  (identifier))
+                (field
+                  (object_reference
+                    (identifier))
+                  (identifier))))))
         (keyword_return)
         (field
           (identifier))

@@ -27,6 +27,7 @@ export default {
       $.create_task,
       $.create_dynamic_table,
       $.create_snowflake_object,
+      $.create_data_metric_function,
       prec.left(seq(
         $.create_schema,
         repeat($._create_statement),

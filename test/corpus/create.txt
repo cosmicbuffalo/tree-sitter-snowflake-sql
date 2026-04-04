@@ -1224,6 +1224,7 @@ CREATE TABLE some_table(
       (table_option
         name: (keyword_engine)
         value: (identifier)))))
+
 ================================================================================
 Create table as select
 ================================================================================
@@ -1723,17 +1724,17 @@ CREATE SCHEMA hollywood
           (keyword_from)
           (relation
             (object_reference
-              (identifier)))
-          (where
-            (keyword_where)
-            (binary_expression
-              (field
-                (identifier))
-              (is_not
-                (keyword_is)
-                (keyword_not))
-              (literal
-                (keyword_null)))))))))
+              (identifier))))
+        (where
+          (keyword_where)
+          (binary_expression
+            (field
+              (identifier))
+            (is_not
+              (keyword_is)
+              (keyword_not))
+            (literal
+              (keyword_null))))))))
 
 ================================================================================
 Create database
@@ -1830,7 +1831,7 @@ INHERIT;
 
 ===============================================================================
 Create view rule conflict with time and timestamp rules (check create_view)
-================================================================================
+===============================================================================
 
 create view toto as select '123'::timestamp with check option;
 
@@ -1856,9 +1857,10 @@ create view toto as select '123'::timestamp with check option;
       (keyword_with)
       (keyword_check)
       (keyword_option))))
+
 ===============================================================================
 Create table column REFERENCES constraint
-================================================================================
+===============================================================================
 
 CREATE TABLE foo (
 	bar int NOT NULL REFERENCES bar(foo) ON DELETE CASCADE

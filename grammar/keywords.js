@@ -490,6 +490,7 @@ export default {
   // Snowflake types
   keyword_variant: _ => make_keyword("variant"),
   keyword_object: _ => make_keyword("object"),
+  keyword_metric: _ => make_keyword("metric"),
   keyword_number: _ => make_keyword("number"),
   keyword_timestamp_ltz: _ => make_keyword("timestamp_ltz"),
   keyword_timestamp_ntz: _ => make_keyword("timestamp_ntz"),

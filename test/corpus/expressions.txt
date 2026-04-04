@@ -20,13 +20,13 @@ WHERE m.is_not_deleted;
       (relation
         (object_reference
           name: (identifier))
-        alias: (identifier))
-      (where
-        (keyword_where)
-        predicate: (field
-          (object_reference
-            name: (identifier))
-          name: (identifier))))))
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (field
+        (object_reference
+          name: (identifier))
+        name: (identifier)))))
 
 ================================================================================
 Multiple Field Predicates
@@ -50,19 +50,19 @@ WHERE m.is_not_deleted AND m.is_visible;
       (relation
         (object_reference
           name: (identifier))
-        alias: (identifier))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
-          left: (field
-            (object_reference
-              name: (identifier))
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (field
+          (object_reference
             name: (identifier))
-          operator: (keyword_and)
-          right: (field
-            (object_reference
-              name: (identifier))
-            name: (identifier)))))))
+          name: (identifier))
+        operator: (keyword_and)
+        right: (field
+          (object_reference
+            name: (identifier))
+          name: (identifier))))))
 
 ================================================================================
 Single Unary Predicate
@@ -86,15 +86,15 @@ WHERE NOT m.is_not_deleted;
       (relation
         (object_reference
           name: (identifier))
-        alias: (identifier))
-      (where
-        (keyword_where)
-        predicate: (unary_expression
-          operator: (keyword_not)
-          operand: (field
-            (object_reference
-              name: (identifier))
-            name: (identifier)))))))
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (unary_expression
+        operator: (keyword_not)
+        operand: (field
+          (object_reference
+            name: (identifier))
+          name: (identifier))))))
 
 ================================================================================
 Multiple Unary Predicates
@@ -119,23 +119,23 @@ WHERE NOT m.is_not_deleted
       (relation
         (object_reference
           name: (identifier))
-        alias: (identifier))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
-          left: (unary_expression
-            operator: (keyword_not)
-            operand: (field
-              (object_reference
-                name: (identifier))
-              name: (identifier)))
-          operator: (keyword_and)
-          right: (unary_expression
-            operator: (keyword_not)
-            operand: (field
-              (object_reference
-                name: (identifier))
-              name: (identifier))))))))
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (unary_expression
+          operator: (keyword_not)
+          operand: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))
+        operator: (keyword_and)
+        right: (unary_expression
+          operator: (keyword_not)
+          operand: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))))))
 
 ================================================================================
 Mixed Predicate types
@@ -162,25 +162,18 @@ WHERE m.status = "success"
       (relation
         (object_reference
           name: (identifier))
-        alias: (identifier))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (binary_expression
           left: (binary_expression
             left: (binary_expression
-              left: (binary_expression
-                left: (field
-                  (object_reference
-                    name: (identifier))
+              left: (field
+                (object_reference
                   name: (identifier))
-                right: (literal))
-              operator: (keyword_and)
-              right: (binary_expression
-                left: (field
-                  (object_reference
-                    name: (identifier))
-                  name: (identifier))
-                right: (literal)))
+                name: (identifier))
+              right: (literal))
             operator: (keyword_and)
             right: (binary_expression
               left: (field
@@ -189,10 +182,17 @@ WHERE m.status = "success"
                 name: (identifier))
               right: (literal)))
           operator: (keyword_and)
-          right: (field
-            (object_reference
+          right: (binary_expression
+            left: (field
+              (object_reference
+                name: (identifier))
               name: (identifier))
-            name: (identifier)))))))
+            right: (literal)))
+        operator: (keyword_and)
+        right: (field
+          (object_reference
+            name: (identifier))
+          name: (identifier))))))
 
 ================================================================================
 Disjunctive Predicate
@@ -219,37 +219,37 @@ WHERE m.status = "success"
       (relation
         (object_reference
           name: (identifier))
-        alias: (identifier))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (binary_expression
           left: (binary_expression
-            left: (binary_expression
-              left: (field
-                (object_reference
-                  name: (identifier))
-                name: (identifier))
-              right: (literal))
-            operator: (keyword_and)
-            right: (binary_expression
-              left: (field
-                (object_reference
-                  name: (identifier))
-                name: (identifier))
-              right: (literal)))
-          operator: (keyword_or)
-          right: (binary_expression
-            left: (binary_expression
-              left: (field
-                (object_reference
-                  name: (identifier))
-                name: (identifier))
-              right: (literal))
-            operator: (keyword_and)
-            right: (field
+            left: (field
               (object_reference
                 name: (identifier))
-              name: (identifier))))))))
+              name: (identifier))
+            right: (literal))
+          operator: (keyword_and)
+          right: (binary_expression
+            left: (field
+              (object_reference
+                name: (identifier))
+              name: (identifier))
+            right: (literal)))
+        operator: (keyword_or)
+        right: (binary_expression
+          left: (binary_expression
+            left: (field
+              (object_reference
+                name: (identifier))
+              name: (identifier))
+            right: (literal))
+          operator: (keyword_and)
+          right: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))))))
 
 ================================================================================
 Field Predicate w/ unary predicate
@@ -273,15 +273,15 @@ WHERE NOT m.is_deleted;
       (relation
         (object_reference
           name: (identifier))
-        alias: (identifier))
-      (where
-        (keyword_where)
-        predicate: (unary_expression
-          operator: (keyword_not)
-          operand: (field
-            (object_reference
-              name: (identifier))
-            name: (identifier)))))))
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (unary_expression
+        operator: (keyword_not)
+        operand: (field
+          (object_reference
+            name: (identifier))
+          name: (identifier))))))
 
 ================================================================================
 Field Predicate w/ anonymous unary predicate
@@ -305,15 +305,15 @@ WHERE !m.is_deleted;
       (relation
         (object_reference
           name: (identifier))
-        alias: (identifier))
-      (where
-        (keyword_where)
-        predicate: (unary_expression
-          operator: (bang)
-          operand: (field
-            (object_reference
-              name: (identifier))
-            name: (identifier)))))))
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (unary_expression
+        operator: (bang)
+        operand: (field
+          (object_reference
+            name: (identifier))
+          name: (identifier))))))
 
 ================================================================================
 Field Predicate w/ multiple unary predicate
@@ -338,23 +338,23 @@ WHERE NOT m.is_deleted
       (relation
         (object_reference
           name: (identifier))
-        alias: (identifier))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
-          left: (unary_expression
-            operator: (keyword_not)
-            operand: (field
-              (object_reference
-                name: (identifier))
-              name: (identifier)))
-          operator: (keyword_and)
-          right: (unary_expression
-            operator: (keyword_not)
-            operand: (field
-              (object_reference
-                name: (identifier))
-              name: (identifier))))))))
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (unary_expression
+          operator: (keyword_not)
+          operand: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))
+        operator: (keyword_and)
+        right: (unary_expression
+          operator: (keyword_not)
+          operand: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))))))
 
 ================================================================================
 IS DISTINCT FROM
@@ -377,18 +377,18 @@ WHERE col IS DISTINCT FROM NULL;
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
-          left: (field
-            name: (identifier))
-          operator: (distinct_from
-            (keyword_is)
-            (keyword_distinct)
-            (keyword_from))
-          right: (literal
-            (keyword_null)))))))
+          name: (identifier))))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (field
+          name: (identifier))
+        operator: (distinct_from
+          (keyword_is)
+          (keyword_distinct)
+          (keyword_from))
+        right: (literal
+          (keyword_null))))))
 
 ================================================================================
 IS NOT DISTINCT FROM
@@ -411,19 +411,19 @@ WHERE col IS NOT DISTINCT FROM NULL;
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
-          left: (field
-            name: (identifier))
-          operator: (not_distinct_from
-            (keyword_is)
-            (keyword_not)
-            (keyword_distinct)
-            (keyword_from))
-          right: (literal
-            (keyword_null)))))))
+          name: (identifier))))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (field
+          name: (identifier))
+        operator: (not_distinct_from
+          (keyword_is)
+          (keyword_not)
+          (keyword_distinct)
+          (keyword_from))
+        right: (literal
+          (keyword_null))))))
 
 ================================================================================
 Predicates with keywords
@@ -447,25 +447,25 @@ WHERE id IS NOT NULL
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
-          left: (binary_expression
-            left: (field
-              name: (identifier))
-            operator: (is_not
-              (keyword_is)
-              (keyword_not))
-            right: (literal
-              (keyword_null)))
-          operator: (keyword_and)
-          right: (binary_expression
-            left: (field
-              name: (identifier))
-            operator: (keyword_is)
-            right: (literal
-              (keyword_null))))))))
+          name: (identifier))))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (binary_expression
+          left: (field
+            name: (identifier))
+          operator: (is_not
+            (keyword_is)
+            (keyword_not))
+          right: (literal
+            (keyword_null)))
+        operator: (keyword_and)
+        right: (binary_expression
+          left: (field
+            name: (identifier))
+          operator: (keyword_is)
+          right: (literal
+            (keyword_null)))))))
 
 ================================================================================
 Complex Predicates
@@ -490,21 +490,21 @@ WHERE m.id > 4 AND id < 3;
       (relation
         (object_reference
           name: (identifier))
-        alias: (identifier))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
-          left: (binary_expression
-            left: (field
-              (object_reference
-                name: (identifier))
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (binary_expression
+          left: (field
+            (object_reference
               name: (identifier))
-            right: (literal))
-          operator: (keyword_and)
-          right: (binary_expression
-            left: (field
-              name: (identifier))
-            right: (literal)))))))
+            name: (identifier))
+          right: (literal))
+        operator: (keyword_and)
+        right: (binary_expression
+          left: (field
+            name: (identifier))
+          right: (literal))))))
 
 ================================================================================
 Where with pattern matching
@@ -534,42 +534,42 @@ WHERE
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
+          name: (identifier))))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (binary_expression
           left: (binary_expression
             left: (binary_expression
-              left: (binary_expression
-                left: (field
-                  name: (identifier))
-                operator: (keyword_like)
-                right: (literal))
-              operator: (keyword_and)
-              right: (binary_expression
-                left: (field
-                  name: (identifier))
-                operator: (not_like
-                  (keyword_not)
-                  (keyword_like))
-                right: (literal)))
+              left: (field
+                name: (identifier))
+              operator: (keyword_like)
+              right: (literal))
             operator: (keyword_and)
             right: (binary_expression
               left: (field
                 name: (identifier))
-              operator: (similar_to
-                (keyword_similar)
-                (keyword_to))
+              operator: (not_like
+                (keyword_not)
+                (keyword_like))
               right: (literal)))
           operator: (keyword_and)
           right: (binary_expression
             left: (field
               name: (identifier))
-            operator: (not_similar_to
-              (keyword_not)
+            operator: (similar_to
               (keyword_similar)
               (keyword_to))
-            right: (literal)))))))
+            right: (literal)))
+        operator: (keyword_and)
+        right: (binary_expression
+          left: (field
+            name: (identifier))
+          operator: (not_similar_to
+            (keyword_not)
+            (keyword_similar)
+            (keyword_to))
+          right: (literal))))))
 
 ================================================================================
 Where with RLIKE pattern matching
@@ -599,37 +599,37 @@ WHERE
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
+          name: (identifier))))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (binary_expression
           left: (binary_expression
             left: (binary_expression
-              left: (binary_expression
-                left: (field
-                  name: (identifier))
-                operator: (keyword_rlike)
-                right: (literal))
-              operator: (keyword_and)
-              right: (binary_expression
-                left: (field
-                  name: (identifier))
-                operator: (not_rlike
-                  (keyword_not)
-                  (keyword_rlike))
-                right: (literal)))
+              left: (field
+                name: (identifier))
+              operator: (keyword_rlike)
+              right: (literal))
             operator: (keyword_and)
             right: (binary_expression
               left: (field
                 name: (identifier))
-              operator: (keyword_rlike)
+              operator: (not_rlike
+                (keyword_not)
+                (keyword_rlike))
               right: (literal)))
           operator: (keyword_and)
           right: (binary_expression
             left: (field
               name: (identifier))
             operator: (keyword_rlike)
-            right: (literal)))))))
+            right: (literal)))
+        operator: (keyword_and)
+        right: (binary_expression
+          left: (field
+            name: (identifier))
+          operator: (keyword_rlike)
+          right: (literal))))))
 
 ================================================================================
 NOT EQUAL <> OPERATOR
@@ -655,13 +655,13 @@ WHERE
       (keyword_from)
       (relation
         (object_reference
-          name: (identifier)))
-      (where
-        (keyword_where)
-        predicate: (binary_expression
-          left: (field
-            name: (identifier))
-          right: (literal))))))
+          name: (identifier))))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (field
+          name: (identifier))
+        right: (literal)))))
 
 ================================================================================
 string operator concat and start with

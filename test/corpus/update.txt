@@ -291,15 +291,15 @@ WHERE b.a = a.uid;
             (field
               (object_reference
                 (identifier))
-              (identifier))))
-        (where
-          (keyword_where)
-          (binary_expression
-            (field
-              (object_reference
-                (identifier))
+              (identifier)))))
+      (where
+        (keyword_where)
+        (binary_expression
+          (field
+            (object_reference
               (identifier))
-            (field
-              (object_reference
-                (identifier))
-              (identifier))))))))
+            (identifier))
+          (field
+            (object_reference
+              (identifier))
+            (identifier)))))))
