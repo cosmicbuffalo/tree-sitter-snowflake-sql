@@ -7,7 +7,7 @@ export default {
   // context is done by _dollar_string.
   dollar_quote: () => /\$[^\$]*\$/,
 
-  create_function: $ => seq(
+  create_function: $ => prec.left(seq(
     $.keyword_create,
     optional($._or_replace),
     $.keyword_function,
@@ -20,6 +20,7 @@ export default {
       seq($.keyword_table, $.column_definitions),
       $.keyword_trigger,
     ),
+    optional($._not_null),
     repeat(
       choice(
         $.function_language,
@@ -31,6 +32,7 @@ export default {
         $.function_cost,
         $.function_rows,
         $.function_support,
+        $.procedure_comment,
       ),
     ),
     // ensure that there's only one function body -- other specifiers are less
@@ -47,9 +49,10 @@ export default {
         $.function_cost,
         $.function_rows,
         $.function_support,
+        $.procedure_comment,
       ),
     ),
-  ),
+  )),
 
   _argmode: $ => choice(
     $.keyword_in,

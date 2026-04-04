@@ -16,7 +16,7 @@ export default {
       // $.create_type, // removed: Postgres-specific, frees parse table budget
       $.create_database,
       $.create_role,
-      // $.create_sequence, // removed: Postgres-specific, frees parse table budget
+      $.create_sequence,
       // $.create_extension, // removed: Postgres-specific, frees parse table budget
       // $.create_trigger,   // removed: Postgres-specific, frees parse table budget
       // $.create_policy,    // removed: Postgres-specific, frees parse table budget
@@ -41,6 +41,7 @@ export default {
   create_table: $ => prec.left(
     seq(
       $.keyword_create,
+      optional($._or_replace),
       optional(
         choice(
           $._temporary,
@@ -69,6 +70,12 @@ export default {
             $.create_query,
           ),
         ),
+        // CREATE TABLE ... LIKE other_table (Snowflake clone-structure)
+        seq(
+          $.keyword_like,
+          $.object_reference,
+          repeat($._table_settings),
+        ),
       ),
     ),
   ),
@@ -78,6 +85,7 @@ export default {
     $.stored_as,
     $.storage_location,
     $.table_sort,
+    $.cluster_by,
     $.row_format,
     seq(
       $.keyword_tblproperties,
@@ -86,6 +94,13 @@ export default {
     seq($.keyword_without, $.keyword_oids),
     $.storage_parameters,
     $.table_option,
+  ),
+
+  // Snowflake: CLUSTER BY (col1, col2, expr)
+  cluster_by: $ => seq(
+    $.keyword_cluster,
+    $.keyword_by,
+    paren_list($._expression, true),
   ),
 
   stored_as: $ => seq(
@@ -442,27 +457,18 @@ export default {
 
   create_sequence: $ => seq(
     $.keyword_create,
-    optional(
-      choice(
-        choice($.keyword_temporary, $.keyword_temp),
-        $.keyword_unlogged,
-      )
-    ),
+    optional($._or_replace),
     $.keyword_sequence,
     optional($._if_not_exists),
     $.object_reference,
     repeat(
       choice(
-        seq($.keyword_as, $._type),
-        seq($.keyword_increment, optional($.keyword_by), field("increment", alias($._integer, $.literal))),
-        seq($.keyword_minvalue, choice($.literal, seq($.keyword_no, $.keyword_minvalue))),
-        seq($.keyword_no, $.keyword_minvalue),
-        seq($.keyword_maxvalue, choice($.literal, seq($.keyword_no, $.keyword_maxvalue))),
-        seq($.keyword_no, $.keyword_maxvalue),
-        seq($.keyword_start, optional($.keyword_with), field("start", alias($._integer, $.literal))),
+        seq($.keyword_increment, optional(choice($.keyword_by, '=')), field("increment", alias($._integer, $.literal))),
+        seq($.keyword_start, optional(choice($.keyword_with, '=')), field("start", alias($._integer, $.literal))),
         seq($.keyword_cache, field("cache", alias($._integer, $.literal))),
-        seq(optional($.keyword_no), $.keyword_cycle),
-        seq($.keyword_owned, $.keyword_by, choice($.keyword_none, $.object_reference)),
+        seq($.keyword_order),
+        seq($.keyword_no, $.keyword_order),
+        $.table_option,
       )
     ),
   ),

@@ -29,6 +29,8 @@ export default {
       $.variant_access,
       $.stage_reference,
       $.object_id,
+      $.snowflake_variable_reference,
+      $.snowflake_object_literal,
     )
   ),
 
@@ -46,6 +48,8 @@ export default {
         field('name', $.identifier),
       ),
       field('name', $.identifier),
+      // IDENTIFIER(:var) — Snowflake dynamic object reference
+      $.snowflake_identifier_ref,
     ),
 
     field: $ => field('name', $.identifier),
@@ -424,7 +428,7 @@ export default {
   _backtick_quoted_string: _ => /`[^`]*`/,
   // The norm specify that between two consecutive string must be a return,
   // but this is good enough.
-  _single_quote_string: _ => seq(/([uU]&|[nN])?'([^']|'')*'/, repeat(/'([^']|'')*'/)),
+  _single_quote_string: _ => seq(/([uU]&|[nN])?'([^'\\]|''|\\.)*'/, repeat(/'([^'\\]|''|\\.)*'/)),
 
   _postgres_escape_string: _ => /(e|E)'([^']|\\')*'/,
 
@@ -478,6 +482,35 @@ export default {
         ),
       ),
     ),
+  ),
+
+  // Snowflake object literal: { 'key': value, 'key2': value2 }
+  // Shorthand for OBJECT_CONSTRUCT('key', value, ...)
+  // Keys are always string literals in Snowflake.
+  snowflake_object_literal: $ => seq(
+    '{',
+    optional(seq(
+      $.snowflake_object_literal_pair,
+      repeat(seq(',', $.snowflake_object_literal_pair)),
+      optional(','),
+    )),
+    '}',
+  ),
+
+  snowflake_object_literal_pair: $ => seq(
+    field('key', alias($._literal_string, $.literal)),
+    ':',
+    field('value', $._expression),
+  ),
+
+  // IDENTIFIER(:var) or IDENTIFIER('string') — Snowflake dynamic object reference
+  // Converts a string or variable to an object reference at runtime.
+  // Used in DDL positions: DROP STREAM IF EXISTS IDENTIFIER(:stream_name)
+  snowflake_identifier_ref: $ => seq(
+    $.keyword_identifier,
+    '(',
+    choice($.snowflake_variable_reference, $._expression),
+    ')',
   ),
 
 };

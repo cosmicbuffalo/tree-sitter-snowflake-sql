@@ -1,18 +1,19 @@
 SELECT MAX(m.id) max
 -- <- keyword
-    -- ^ function.call
-        -- ^ type
-          -- ^ field
-              -- ^ variable
+--     ^ function.call
+--         ^ type
+--           ^ variable.member
+--               ^ variable
 FROM my_table m
 -- <- keyword
-  -- ^ type
-           -- ^ variable
+--   ^ type
+--            ^ variable
 WHERE m.id > 4
 -- <- keyword
-     -- ^ field
-        -- ^ operator
-          -- ^ string
+--      ^ variable.member
+--         ^ operator
+--           ^ number
   AND m.title LIKE '%foo%';
   -- <- keyword.operator
-                -- ^ string
+                 -- ^ string
+

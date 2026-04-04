@@ -1,10 +1,10 @@
 export default {
 
   transaction: $ => seq(
-    $.keyword_begin,
-    optional(
-      $.keyword_transaction,
-    ),
+    choice($.keyword_begin, $.keyword_start),
+    // TRANSACTION keyword is required to disambiguate from scripting blocks.
+    // Snowflake docs recommend BEGIN TRANSACTION (not bare BEGIN) for transactions.
+    $.keyword_transaction,
     optional(';'),
     repeat(
       seq(

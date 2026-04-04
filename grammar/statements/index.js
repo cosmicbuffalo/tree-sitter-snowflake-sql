@@ -16,20 +16,12 @@ import select_rules from "./select.js";
 import set_rules from "./set.js";
 import refresh_rules from "./refresh.js";
 import snowflake_ddl_rules from "./snowflake-ddl.js";
+import snowflake_scripting_rules from "./snowflake-scripting.js";
 
 export default {
 
-  block: $ => seq(
-    $.keyword_begin,
-    optional(';'),
-    repeat(
-      seq(
-        $.statement,
-        ';'
-      ),
-    ),
-    $.keyword_end,
-  ),
+  // Top-level block — now delegates to the full Snowflake scripting block
+  block: $ => $.snowflake_scripting_block,
 
   statement: $ => seq(
     optional(seq(
@@ -41,25 +33,8 @@ export default {
       $._ddl_statement,
       $._dml_write,
       optional_parenthesis($._dml_read),
-      $.while_statement,
     ),
   ),
-
-  while_statement: $ => prec.left(seq(
-    $.keyword_while,
-    optional_parenthesis($._expression),
-    choice(
-      seq(
-        $.statement,
-        optional(';'),
-      ),
-      seq(
-        $.keyword_begin,
-        repeat($.statement),
-        $.keyword_end,
-      ),
-    ),
-  )),
 
   var_declarations: $ => seq($.keyword_declare, repeat1($.var_declaration)),
   var_declaration: $ => seq(
@@ -82,7 +57,7 @@ export default {
     // $._optimize_statement, // removed: Hive/Impala/Athena/MariaDB, frees parse table budget
     $._merge_statement,
     // $._refresh_statement, // removed: Postgres-specific, frees parse table budget
-    // $.comment_statement, // removed: Postgres-specific syntax, frees parse table budget
+    $.comment_statement,
     $.set_statement,
     // $.reset_statement, // removed: Postgres-specific, frees parse table budget
     // Snowflake DDL
@@ -130,6 +105,7 @@ export default {
         $._select_statement,
         $.set_operation,
         $._show_statement,
+        prec(-1, $.snowflake_show_statement),
         // $._unload_statement, // removed: Athena-specific, frees parse table budget
       ),
     ),
@@ -140,11 +116,11 @@ export default {
 
   _show_statement: $ => seq(
     $.keyword_show,
-    choice(
-      $._show_create,
-      // $.keyword_all, // removed: Postgres-specific, frees parse table budget
-      $.snowflake_show_target,
-    ),
+    // $._show_create removed: MySQL/Postgres-specific SHOW CREATE, frees parse table budget
+    // $.keyword_all removed: Postgres-specific, frees parse table budget
+    optional($.keyword_terse),
+    $.snowflake_show_target,
+    optional(seq($.keyword_root, $.keyword_only)),
   ),
 
   _show_create: $ => seq(
@@ -175,5 +151,6 @@ export default {
   ),
 
   ...snowflake_ddl_rules,
+  ...snowflake_scripting_rules,
 
 };

@@ -1,3 +1,5 @@
+import { comma_list } from "../helpers.js";
+
 export default {
 
   _delete_statement: $ => seq(
@@ -12,6 +14,15 @@ export default {
       $.keyword_only,
     ),
     $.object_reference,
+    optional($.identifier),
+    // Snowflake: DELETE FROM t1 alias USING t2, t3, (subquery) AS alias WHERE ...
+    optional(seq(
+      $.keyword_using,
+      comma_list(seq(
+        choice($.subquery, $.object_reference),
+        optional($._alias),
+      ), true),
+    )),
     optional($.where),
     optional($.order_by),
     optional($.limit),

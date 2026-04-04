@@ -25,12 +25,19 @@ export default grammar({
   conflicts: $ => [
     [$.object_reference, $._qualified_field],
     [$.field, $._qualified_field],
-    [$._column, $._qualified_field],
     [$.object_reference],
     [$.between_expression, $.binary_expression],
     [$.time],
     [$.timestamp],
     [$._qualified_field, $.variant_access],
+    // FOR x IN cursor_name — cursor_name could be identifier or start of object_reference
+    [$.object_reference, $.for_statement],
+    // CURSOR FOR name — name could be identifier or start of object_reference
+    [$.object_reference, $.snowflake_declare_cursor],
+    // LET var CURSOR FOR name — same ambiguity
+    [$.object_reference, $.let_statement],
+    // create_procedure has repeated attribute blocks before and after body
+    [$.create_procedure],
   ],
 
   precedences: $ => [

@@ -1,3 +1,5 @@
+; Identifiers and references
+
 (object_reference
   name: (identifier) @type)
 
@@ -15,7 +17,7 @@
   alias: (identifier) @variable)
 
 (field
-  name: (identifier) @field)
+  name: (identifier) @variable.member)
 
 (term
   alias: (identifier) @variable)
@@ -25,22 +27,42 @@
     name: (keyword_cast) @function.call
     parameter: [(literal)]?)))
 
+; Snowflake: TRY_CAST as function
+((term
+   value: (try_cast
+    name: (keyword_try_cast) @function.call
+    parameter: [(literal)]?)))
+
+; Literals
+
 (literal) @string
 (comment) @comment @spell
 (marginalia) @comment
 
 ((literal) @number
-   (#match? @number "^[-+]?%d+$"))
+   (#match? @number "^[-+]?\\d+$"))
 
-((literal) @float
-  (#match? @float "^[-+]?%d*\.%d*$"))
+((literal) @number.float
+  (#match? @number.float "^[-+]?\\d*\\.\\d*$"))
 
-(parameter) @parameter
+(parameter) @variable.parameter
 
 [
  (keyword_true)
  (keyword_false)
 ] @boolean
+
+; Snowflake: stage references (@~, @%table, @stage/path)
+(stage_reference) @string.special
+
+; Snowflake: variant path access (col:key, col:key.nested)
+(variant_access) @variable.member
+
+; Snowflake: named parameters (param => value)
+(named_parameter
+  name: (identifier) @variable.parameter)
+
+; Attributes
 
 [
  (keyword_asc)
@@ -61,7 +83,8 @@
  (keyword_preceding)
  (keyword_following)
  (keyword_first)
- (keyword_current_timestamp)
+  (keyword_current_timestamp)
+  (keyword_current_date)
  (keyword_immutable)
  (keyword_atomic)
  (keyword_parallel)
@@ -70,6 +93,8 @@
  (keyword_cost)
  (keyword_strict)
 ] @attribute
+
+; Modifiers (storage class → keyword.modifier)
 
 [
  (keyword_materialized)
@@ -87,14 +112,30 @@
  (keyword_jsonfile)
  (keyword_sequencefile)
  (keyword_volatile)
-] @storageclass
+ (keyword_dynamic)
+] @keyword.modifier
+
+; Snowflake scripting: variable references (:var)
+(snowflake_variable_reference) @variable
+
+; Conditionals (conditional → keyword.conditional)
 
 [
  (keyword_case)
  (keyword_when)
  (keyword_then)
  (keyword_else)
-] @conditional
+ (keyword_elseif)
+] @keyword.conditional
+
+; Loops (repeat → keyword.repeat)
+
+[
+ (keyword_loop)
+ (keyword_repeat)
+] @keyword.repeat
+
+; Keywords
 
 [
   (keyword_select)
@@ -290,12 +331,42 @@
   (keyword_integration)
   (keyword_execute)
   (keyword_account)
+  (keyword_qualify)
+  (keyword_grant)
+  (keyword_revoke)
+  (keyword_privileges)
   (snowflake_object_type)
   (snowflake_show_target)
   (snowflake_alter_object_type)
   (snowflake_drop_object_type)
   (snowflake_create_object_type)
+
+  ; Snowflake scripting keywords
+  (keyword_let)
+  (keyword_resultset)
+  (keyword_cursor)
+  (keyword_exception)
+  (keyword_raise)
+  (keyword_break)
+  (keyword_continue)
+  (keyword_iterate)
+  (keyword_exit)
+  (keyword_open)
+  (keyword_fetch)
+  (keyword_close)
+  (keyword_async)
+  (keyword_other)
+  (keyword_reverse)
+  (keyword_caller)
+  (keyword_terse)
+  (keyword_identifier)
+  (keyword_unset)
+  (keyword_root)
+  (keyword_remove)
+  (keyword_event)
 ] @keyword
+
+; Qualifiers
 
 [
  (keyword_restrict)
@@ -313,6 +384,8 @@
  (keyword_cascaded)
  (keyword_statistics)
 ] @type.qualifier
+
+; Types
 
 [
   (keyword_int)
@@ -365,7 +438,16 @@
   (keyword_box2d)
   (keyword_box3d)
   (keyword_interval)
+  (keyword_variant)
+  (keyword_object)
+  (keyword_number)
+  (keyword_vector)
+  (keyword_timestamp_ltz)
+  (keyword_timestamp_ntz)
+  (keyword_timestamp_tz)
 ] @type.builtin
+
+; Keyword operators
 
 [
   (keyword_in)
@@ -379,6 +461,8 @@
   (keyword_except)
   (keyword_intersect)
 ] @keyword.operator
+
+; Operators
 
 [
   "+"
@@ -399,9 +483,13 @@
   (op_unary_other)
 ] @operator
 
+; Punctuation
+
 [
   "("
   ")"
+  "{"
+  "}"
 ] @punctuation.bracket
 
 [

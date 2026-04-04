@@ -2,18 +2,22 @@ export default {
 
   create_procedure: $ => seq(
     $.keyword_create,
-    optional($._or_replace),
+    optional(choice($._or_replace, $._or_alter)),
     // mariadb/mysql
     optional(seq($.keyword_definer, '=', $.identifier)),
     $.keyword_procedure,
     optional($._if_not_exists),
     $.object_reference,
     optional($.function_arguments),
+    // Snowflake: RETURNS type [NOT NULL]
+    optional($.procedure_returns),
     repeat(
       choice(
         $.function_language,
         $.function_security,
         $.function_safety,
+        $.procedure_execute_as,
+        $.procedure_comment,
       ),
     ),
     $.procedure_body,
@@ -22,8 +26,54 @@ export default {
         $.function_language,
         $.function_security,
         $.function_safety,
+        $.procedure_execute_as,
+        $.procedure_comment,
       ),
     ),
+  ),
+
+  // Snowflake: RETURNS type [NOT NULL] | RETURNS TABLE (col type, ...)
+  procedure_returns: $ => seq(
+    $.keyword_returns,
+    choice(
+      // Scalar return: RETURNS type [NOT NULL]
+      seq($._type, optional($._not_null)),
+      // Table return: RETURNS TABLE (col type, ...)
+      seq(
+        $.keyword_table,
+        '(',
+        optional(
+          seq(
+            $.procedure_returns_column,
+            repeat(seq(',', $.procedure_returns_column)),
+          ),
+        ),
+        ')',
+      ),
+    ),
+  ),
+
+  procedure_returns_column: $ => seq(
+    field('name', $.identifier),
+    field('type', $._type),
+  ),
+
+  // Snowflake: EXECUTE AS {CALLER | OWNER | RESTRICTED CALLER}
+  procedure_execute_as: $ => seq(
+    $.keyword_execute,
+    $.keyword_as,
+    choice(
+      seq($.keyword_restricted, $.keyword_caller),
+      $.keyword_caller,
+      $.keyword_owner,
+    ),
+  ),
+
+  // Snowflake: COMMENT = 'string'
+  procedure_comment: $ => seq(
+    $.keyword_comment,
+    '=',
+    alias($._single_quote_string, $.literal),
   ),
 
   procedure_body: $ => choice(
@@ -39,27 +89,19 @@ export default {
       ),
       $.keyword_end,
     ),
-    // Dollar-quoted with optional DECLARE (PostgreSQL)
+    // Dollar-quoted Snowflake scripting block
     seq(
       $.keyword_as,
       alias($._dollar_quoted_string_start_tag, $.dollar_quote),
-      optional(
-        seq(
-          $.keyword_declare,
-          repeat1(
-            $.function_declaration,
-          ),
-        ),
-      ),
-      $.keyword_begin,
-      repeat1(
-        seq(
-          $._function_body_statement,
-          ';',
-        ),
-      ),
-      $.keyword_end,
+      $.snowflake_scripting_block,
       optional(';'),
+      alias($._dollar_quoted_string_end_tag, $.dollar_quote),
+    ),
+    // Dollar-quoted single/multiple statements (no BEGIN/END wrapper)
+    seq(
+      $.keyword_as,
+      alias($._dollar_quoted_string_start_tag, $.dollar_quote),
+      repeat1(seq($._function_body_statement, ';')),
       alias($._dollar_quoted_string_end_tag, $.dollar_quote),
     ),
     // String literal body
@@ -73,31 +115,11 @@ export default {
         $.literal
       ),
     ),
-    // Dollar-quoted single statement (PostgreSQL)
+    // Snowflake scripting block without dollar quoting: AS [DECLARE...] BEGIN...END
     seq(
       $.keyword_as,
-      alias($._dollar_quoted_string_start_tag, $.dollar_quote),
-      $._function_body_statement,
-      optional(';'),
-      alias($._dollar_quoted_string_end_tag, $.dollar_quote),
+      $.snowflake_scripting_block,
     ),
-    // T-SQL style (no required RETURN)
-    $._tsql_procedure_body_statement,
-  ),
-
-  _tsql_procedure_body_statement: $ => seq(
-    optional($.keyword_as),
-    $.keyword_begin,
-    optional($.var_declarations),
-    choice(
-      repeat($.statement),
-      repeat1(seq(
-        $.keyword_begin,
-        repeat($.statement),
-        $.keyword_end,
-      )),
-    ),
-    $.keyword_end,
   ),
 
 };

@@ -11,6 +11,15 @@
       ],
       "highlights": [
         "queries/highlights.scm"
+      ],
+      "injections": [
+        "queries/injections.scm"
+      ],
+      "indents": [
+        "queries/indents.scm"
+      ],
+      "folds": [
+        "queries/folds.scm"
       ]
     }
   ],

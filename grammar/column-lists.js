@@ -39,6 +39,7 @@ export default {
       $._not_null,
     ),
     seq(
+      optional(seq($.keyword_foreign, $.keyword_key)),
       $.keyword_references,
       $.object_reference,
       paren_list($.identifier, true),
@@ -61,7 +62,7 @@ export default {
     ),
     $._default_expression,
     $._primary_key,
-    $.keyword_auto_increment,
+    seq($.keyword_auto_increment, optional(choice($.keyword_order, seq($.keyword_no, $.keyword_order)))),
     $.direction,
     $._column_comment,
     $._check_constraint,
@@ -101,6 +102,7 @@ export default {
       $.array,
       $.invocation,
       $.keyword_current_timestamp,
+      $.keyword_current_date,
       alias($.implicit_cast, $.cast),
   ),
 

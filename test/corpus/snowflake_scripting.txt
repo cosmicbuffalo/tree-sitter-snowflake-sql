@@ -1,0 +1,2653 @@
+================================================================================
+Simple scripting block
+================================================================================
+
+BEGIN
+  SELECT 1;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (literal)))))
+      (keyword_end))))
+
+================================================================================
+Scripting block with DECLARE variable
+================================================================================
+
+DECLARE
+  x INTEGER DEFAULT 0;
+BEGIN
+  x := x + 1;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_variable
+          (identifier)
+          (int
+            (keyword_int))
+          (keyword_default)
+          (literal)))
+      (keyword_begin)
+      (assignment_statement
+        (identifier)
+        (binary_expression
+          (field
+            (identifier))
+          (literal)))
+      (keyword_end))))
+
+================================================================================
+DECLARE multiple variables
+================================================================================
+
+DECLARE
+  x INTEGER DEFAULT 0;
+  y VARCHAR DEFAULT 'hello';
+  z FLOAT;
+BEGIN
+  SELECT 1;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_variable
+          (identifier)
+          (int
+            (keyword_int))
+          (keyword_default)
+          (literal))
+        (snowflake_declare_variable
+          (identifier)
+          (varchar
+            (keyword_varchar))
+          (keyword_default)
+          (literal))
+        (snowflake_declare_variable
+          (identifier)
+          (float
+            (keyword_float))))
+      (keyword_begin)
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (literal)))))
+      (keyword_end))))
+
+================================================================================
+DECLARE variable with := assignment
+================================================================================
+
+DECLARE
+  counter INTEGER := 10;
+BEGIN
+  RETURN counter;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_variable
+          (identifier)
+          (int
+            (keyword_int))
+          (literal)))
+      (keyword_begin)
+      (return_statement
+        (keyword_return)
+        (field
+          (identifier)))
+      (keyword_end))))
+
+================================================================================
+DECLARE cursor
+================================================================================
+
+DECLARE
+  c1 CURSOR FOR SELECT id FROM t1;
+BEGIN
+  OPEN c1;
+  CLOSE c1;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_cursor
+          (identifier)
+          (keyword_cursor)
+          (keyword_for)
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (field
+                  (identifier)))))
+          (from
+            (keyword_from)
+            (relation
+              (object_reference
+                (identifier))))))
+      (keyword_begin)
+      (open_statement
+        (keyword_open)
+        (identifier))
+      (close_statement
+        (keyword_close)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+DECLARE resultset with DEFAULT
+================================================================================
+
+DECLARE
+  rs RESULTSET DEFAULT (SELECT * FROM t1);
+BEGIN
+  RETURN TABLE(rs);
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_variable
+          (identifier)
+          (keyword_resultset)
+          (keyword_default)
+          (subquery
+            (select
+              (keyword_select)
+              (select_expression
+                (term
+                  (all_fields))))
+            (from
+              (keyword_from)
+              (relation
+                (object_reference
+                  (identifier)))))))
+      (keyword_begin)
+      (return_statement
+        (keyword_return)
+        (invocation
+          (object_reference
+            (identifier))
+          (term
+            (field
+              (identifier)))))
+      (keyword_end))))
+
+================================================================================
+DECLARE resultset with :=
+================================================================================
+
+DECLARE
+  rs RESULTSET := (SELECT * FROM t1);
+BEGIN
+  RETURN TABLE(rs);
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_variable
+          (identifier)
+          (keyword_resultset)
+          (subquery
+            (select
+              (keyword_select)
+              (select_expression
+                (term
+                  (all_fields))))
+            (from
+              (keyword_from)
+              (relation
+                (object_reference
+                  (identifier)))))))
+      (keyword_begin)
+      (return_statement
+        (keyword_return)
+        (invocation
+          (object_reference
+            (identifier))
+          (term
+            (field
+              (identifier)))))
+      (keyword_end))))
+
+================================================================================
+DECLARE resultset without initializer
+================================================================================
+
+DECLARE
+  rs RESULTSET;
+BEGIN
+  SELECT 1;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_variable
+          (identifier)
+          (keyword_resultset)))
+      (keyword_begin)
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (literal)))))
+      (keyword_end))))
+
+================================================================================
+DECLARE exception
+================================================================================
+
+DECLARE
+  my_exception EXCEPTION (-20001, 'Something went wrong');
+BEGIN
+  RAISE my_exception;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_exception
+          (identifier)
+          (keyword_exception)
+          (literal)
+          (literal)))
+      (keyword_begin)
+      (raise_statement
+        (keyword_raise)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+Multiple declarations of different types
+================================================================================
+
+DECLARE
+  counter INTEGER DEFAULT 0;
+  c1 CURSOR FOR SELECT id FROM t1;
+  rs RESULTSET;
+  my_err EXCEPTION (-20001, 'oops');
+BEGIN
+  RETURN counter;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_variable
+          (identifier)
+          (int
+            (keyword_int))
+          (keyword_default)
+          (literal))
+        (snowflake_declare_cursor
+          (identifier)
+          (keyword_cursor)
+          (keyword_for)
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (field
+                  (identifier)))))
+          (from
+            (keyword_from)
+            (relation
+              (object_reference
+                (identifier)))))
+        (snowflake_declare_variable
+          (identifier)
+          (keyword_resultset))
+        (snowflake_declare_exception
+          (identifier)
+          (keyword_exception)
+          (literal)
+          (literal)))
+      (keyword_begin)
+      (return_statement
+        (keyword_return)
+        (field
+          (identifier)))
+      (keyword_end))))
+
+================================================================================
+LET variable with DEFAULT
+================================================================================
+
+BEGIN
+  LET x INTEGER DEFAULT 5;
+  RETURN x;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (int
+          (keyword_int))
+        (keyword_default)
+        (literal))
+      (return_statement
+        (keyword_return)
+        (field
+          (identifier)))
+      (keyword_end))))
+
+================================================================================
+LET variable with :=
+================================================================================
+
+BEGIN
+  LET x := 42;
+  RETURN x;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (return_statement
+        (keyword_return)
+        (field
+          (identifier)))
+      (keyword_end))))
+
+================================================================================
+LET variable with type and :=
+================================================================================
+
+BEGIN
+  LET x VARCHAR := 'hello';
+  RETURN x;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (varchar
+          (keyword_varchar))
+        (literal))
+      (return_statement
+        (keyword_return)
+        (field
+          (identifier)))
+      (keyword_end))))
+
+================================================================================
+LET cursor
+================================================================================
+
+BEGIN
+  LET c1 CURSOR FOR SELECT id FROM t1;
+  OPEN c1;
+  CLOSE c1;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (keyword_cursor)
+        (keyword_for)
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (field
+                (identifier)))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              (identifier)))))
+      (open_statement
+        (keyword_open)
+        (identifier))
+      (close_statement
+        (keyword_close)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+LET resultset
+================================================================================
+
+BEGIN
+  LET rs RESULTSET := (SELECT * FROM t1);
+  RETURN TABLE(rs);
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (keyword_resultset)
+        (subquery
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (all_fields))))
+          (from
+            (keyword_from)
+            (relation
+              (object_reference
+                (identifier))))))
+      (return_statement
+        (keyword_return)
+        (invocation
+          (object_reference
+            (identifier))
+          (term
+            (field
+              (identifier)))))
+      (keyword_end))))
+
+================================================================================
+Assignment statement
+================================================================================
+
+BEGIN
+  LET x := 0;
+  x := x + 1;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (assignment_statement
+        (identifier)
+        (binary_expression
+          (field
+            (identifier))
+          (literal)))
+      (keyword_end))))
+
+================================================================================
+IF statement simple
+================================================================================
+
+BEGIN
+  IF (TRUE) THEN
+    SELECT 1;
+  END IF;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (if_statement
+        (keyword_if)
+        (literal
+          (keyword_true))
+        (keyword_then)
+        (statement
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (literal)))))
+        (keyword_end)
+        (keyword_if))
+      (keyword_end))))
+
+================================================================================
+IF ELSEIF ELSE
+================================================================================
+
+BEGIN
+  IF (x > 10) THEN
+    RETURN 'big';
+  ELSEIF (x > 5) THEN
+    RETURN 'medium';
+  ELSE
+    RETURN 'small';
+  END IF;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (if_statement
+        (keyword_if)
+        (binary_expression
+          (field
+            (identifier))
+          (literal))
+        (keyword_then)
+        (return_statement
+          (keyword_return)
+          (literal))
+        (elseif_clause
+          (keyword_elseif)
+          (binary_expression
+            (field
+              (identifier))
+            (literal))
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (else_clause
+          (keyword_else)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (keyword_end)
+        (keyword_if))
+      (keyword_end))))
+
+================================================================================
+IF with multiple ELSEIF
+================================================================================
+
+BEGIN
+  IF (x = 1) THEN
+    RETURN 'one';
+  ELSEIF (x = 2) THEN
+    RETURN 'two';
+  ELSEIF (x = 3) THEN
+    RETURN 'three';
+  ELSE
+    RETURN 'other';
+  END IF;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (if_statement
+        (keyword_if)
+        (binary_expression
+          (field
+            (identifier))
+          (literal))
+        (keyword_then)
+        (return_statement
+          (keyword_return)
+          (literal))
+        (elseif_clause
+          (keyword_elseif)
+          (binary_expression
+            (field
+              (identifier))
+            (literal))
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (elseif_clause
+          (keyword_elseif)
+          (binary_expression
+            (field
+              (identifier))
+            (literal))
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (else_clause
+          (keyword_else)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (keyword_end)
+        (keyword_if))
+      (keyword_end))))
+
+================================================================================
+FOR cursor-based loop
+================================================================================
+
+DECLARE
+  c1 CURSOR FOR SELECT id, name FROM t1;
+BEGIN
+  FOR row_var IN c1 DO
+    INSERT INTO t2 VALUES (row_var.id);
+  END FOR;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_cursor
+          (identifier)
+          (keyword_cursor)
+          (keyword_for)
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (field
+                  (identifier)))
+              (term
+                (field
+                  (identifier)))))
+          (from
+            (keyword_from)
+            (relation
+              (object_reference
+                (identifier))))))
+      (keyword_begin)
+      (for_statement
+        (keyword_for)
+        (identifier)
+        (keyword_in)
+        (object_reference
+          (identifier))
+        (keyword_do)
+        (statement
+          (insert
+            (keyword_insert)
+            (keyword_into)
+            (object_reference
+              (identifier))
+            (keyword_values)
+            (list
+              (field
+                (object_reference
+                  (identifier))
+                (identifier)))))
+        (keyword_end)
+        (keyword_for))
+      (keyword_end))))
+
+================================================================================
+FOR counter-based loop with DO
+================================================================================
+
+BEGIN
+  LET total := 0;
+  FOR i IN 1 TO 10 DO
+    total := total + i;
+  END FOR;
+  RETURN total;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (for_statement
+        (keyword_for)
+        (identifier)
+        (keyword_in)
+        (literal)
+        (keyword_to)
+        (literal)
+        (keyword_do)
+        (assignment_statement
+          (identifier)
+          (binary_expression
+            (field
+              (identifier))
+            (field
+              (identifier))))
+        (keyword_end)
+        (keyword_for))
+      (return_statement
+        (keyword_return)
+        (field
+          (identifier)))
+      (keyword_end))))
+
+================================================================================
+FOR counter-based REVERSE with LOOP
+================================================================================
+
+BEGIN
+  FOR i IN REVERSE 10 TO 1 LOOP
+    SELECT i;
+  END LOOP;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (for_statement
+        (keyword_for)
+        (identifier)
+        (keyword_in)
+        (keyword_reverse)
+        (literal)
+        (keyword_to)
+        (literal)
+        (keyword_loop)
+        (statement
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (field
+                  (identifier))))))
+        (keyword_end)
+        (keyword_loop))
+      (keyword_end))))
+
+================================================================================
+FOR with trailing label
+================================================================================
+
+BEGIN
+  FOR i IN 1 TO 5 DO
+    SELECT i;
+  END FOR my_loop;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (for_statement
+        (keyword_for)
+        (identifier)
+        (keyword_in)
+        (literal)
+        (keyword_to)
+        (literal)
+        (keyword_do)
+        (statement
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (field
+                  (identifier))))))
+        (keyword_end)
+        (keyword_for)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+WHILE DO loop
+================================================================================
+
+BEGIN
+  LET counter := 0;
+  WHILE (counter < 10) DO
+    counter := counter + 1;
+  END WHILE;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (while_do_statement
+        (keyword_while)
+        (binary_expression
+          (field
+            (identifier))
+          (literal))
+        (keyword_do)
+        (assignment_statement
+          (identifier)
+          (binary_expression
+            (field
+              (identifier))
+            (literal)))
+        (keyword_end)
+        (keyword_while))
+      (keyword_end))))
+
+================================================================================
+WHILE LOOP variant
+================================================================================
+
+BEGIN
+  LET counter := 0;
+  WHILE (counter < 10) LOOP
+    counter := counter + 1;
+  END LOOP;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (while_do_statement
+        (keyword_while)
+        (binary_expression
+          (field
+            (identifier))
+          (literal))
+        (keyword_loop)
+        (assignment_statement
+          (identifier)
+          (binary_expression
+            (field
+              (identifier))
+            (literal)))
+        (keyword_end)
+        (keyword_loop))
+      (keyword_end))))
+
+================================================================================
+WHILE with trailing label
+================================================================================
+
+BEGIN
+  LET x := 0;
+  WHILE (x < 5) DO
+    x := x + 1;
+  END WHILE outer_loop;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (while_do_statement
+        (keyword_while)
+        (binary_expression
+          (field
+            (identifier))
+          (literal))
+        (keyword_do)
+        (assignment_statement
+          (identifier)
+          (binary_expression
+            (field
+              (identifier))
+            (literal)))
+        (keyword_end)
+        (keyword_while)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+LOOP statement
+================================================================================
+
+BEGIN
+  LET counter := 0;
+  LOOP
+    counter := counter + 1;
+    IF (counter >= 5) THEN
+      BREAK;
+    END IF;
+  END LOOP;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (loop_statement
+        (keyword_loop)
+        (assignment_statement
+          (identifier)
+          (binary_expression
+            (field
+              (identifier))
+            (literal)))
+        (if_statement
+          (keyword_if)
+          (binary_expression
+            (field
+              (identifier))
+            (literal))
+          (keyword_then)
+          (break_statement
+            (keyword_break))
+          (keyword_end)
+          (keyword_if))
+        (keyword_end)
+        (keyword_loop))
+      (keyword_end))))
+
+================================================================================
+LOOP with label
+================================================================================
+
+BEGIN
+  LOOP
+    BREAK my_loop;
+  END LOOP my_loop;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (loop_statement
+        (keyword_loop)
+        (break_statement
+          (keyword_break)
+          (identifier))
+        (keyword_end)
+        (keyword_loop)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+REPEAT statement
+================================================================================
+
+BEGIN
+  LET counter := 0;
+  REPEAT
+    counter := counter + 1;
+  UNTIL (counter >= 5)
+  END REPEAT;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (repeat_statement
+        (keyword_repeat)
+        (assignment_statement
+          (identifier)
+          (binary_expression
+            (field
+              (identifier))
+            (literal)))
+        (keyword_until)
+        (binary_expression
+          (field
+            (identifier))
+          (literal))
+        (keyword_end)
+        (keyword_repeat))
+      (keyword_end))))
+
+================================================================================
+REPEAT with label
+================================================================================
+
+BEGIN
+  REPEAT
+    SELECT 1;
+  UNTIL (TRUE)
+  END REPEAT my_repeat;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (repeat_statement
+        (keyword_repeat)
+        (statement
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (literal)))))
+        (keyword_until)
+        (literal
+          (keyword_true))
+        (keyword_end)
+        (keyword_repeat)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+CASE statement simple
+================================================================================
+
+BEGIN
+  CASE (x)
+    WHEN 1 THEN
+      RETURN 'one';
+    WHEN 2 THEN
+      RETURN 'two';
+    ELSE
+      RETURN 'other';
+  END CASE;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (case_statement
+        (keyword_case)
+        (field
+          (identifier))
+        (case_statement_when_clause
+          (keyword_when)
+          (literal)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (case_statement_when_clause
+          (keyword_when)
+          (literal)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (case_statement_else_clause
+          (keyword_else)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (keyword_end)
+        (keyword_case))
+      (keyword_end))))
+
+================================================================================
+CASE statement searched
+================================================================================
+
+BEGIN
+  CASE
+    WHEN x > 10 THEN
+      RETURN 'big';
+    WHEN x > 5 THEN
+      RETURN 'medium';
+    ELSE
+      RETURN 'small';
+  END CASE;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (case_statement
+        (keyword_case)
+        (case_statement_when_clause
+          (keyword_when)
+          (binary_expression
+            (field
+              (identifier))
+            (literal))
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (case_statement_when_clause
+          (keyword_when)
+          (binary_expression
+            (field
+              (identifier))
+            (literal))
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (case_statement_else_clause
+          (keyword_else)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (keyword_end)
+        (keyword_case))
+      (keyword_end))))
+
+================================================================================
+CASE statement without trailing CASE keyword
+================================================================================
+
+BEGIN
+  CASE (x)
+    WHEN 1 THEN
+      RETURN 'one';
+  END;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (case_statement
+        (keyword_case)
+        (field
+          (identifier))
+        (case_statement_when_clause
+          (keyword_when)
+          (literal)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (keyword_end))
+      (keyword_end))))
+
+================================================================================
+BREAK statement
+================================================================================
+
+BEGIN
+  LOOP
+    BREAK;
+  END LOOP;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (loop_statement
+        (keyword_loop)
+        (break_statement
+          (keyword_break))
+        (keyword_end)
+        (keyword_loop))
+      (keyword_end))))
+
+================================================================================
+EXIT statement synonym for BREAK
+================================================================================
+
+BEGIN
+  LOOP
+    EXIT;
+  END LOOP;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (loop_statement
+        (keyword_loop)
+        (break_statement
+          (keyword_exit))
+        (keyword_end)
+        (keyword_loop))
+      (keyword_end))))
+
+================================================================================
+BREAK with label
+================================================================================
+
+BEGIN
+  LOOP
+    BREAK outer_loop;
+  END LOOP outer_loop;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (loop_statement
+        (keyword_loop)
+        (break_statement
+          (keyword_break)
+          (identifier))
+        (keyword_end)
+        (keyword_loop)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+CONTINUE statement
+================================================================================
+
+BEGIN
+  FOR i IN 1 TO 10 DO
+    IF (i = 5) THEN
+      CONTINUE;
+    END IF;
+    SELECT i;
+  END FOR;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (for_statement
+        (keyword_for)
+        (identifier)
+        (keyword_in)
+        (literal)
+        (keyword_to)
+        (literal)
+        (keyword_do)
+        (if_statement
+          (keyword_if)
+          (binary_expression
+            (field
+              (identifier))
+            (literal))
+          (keyword_then)
+          (continue_statement
+            (keyword_continue))
+          (keyword_end)
+          (keyword_if))
+        (statement
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (field
+                  (identifier))))))
+        (keyword_end)
+        (keyword_for))
+      (keyword_end))))
+
+================================================================================
+ITERATE statement synonym for CONTINUE
+================================================================================
+
+BEGIN
+  FOR i IN 1 TO 10 DO
+    IF (i = 5) THEN
+      ITERATE;
+    END IF;
+  END FOR;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (for_statement
+        (keyword_for)
+        (identifier)
+        (keyword_in)
+        (literal)
+        (keyword_to)
+        (literal)
+        (keyword_do)
+        (if_statement
+          (keyword_if)
+          (binary_expression
+            (field
+              (identifier))
+            (literal))
+          (keyword_then)
+          (continue_statement
+            (keyword_iterate))
+          (keyword_end)
+          (keyword_if))
+        (keyword_end)
+        (keyword_for))
+      (keyword_end))))
+
+================================================================================
+CONTINUE with label
+================================================================================
+
+BEGIN
+  FOR i IN 1 TO 10 DO
+    CONTINUE my_loop;
+  END FOR my_loop;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (for_statement
+        (keyword_for)
+        (identifier)
+        (keyword_in)
+        (literal)
+        (keyword_to)
+        (literal)
+        (keyword_do)
+        (continue_statement
+          (keyword_continue)
+          (identifier))
+        (keyword_end)
+        (keyword_for)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+RETURN with expression
+================================================================================
+
+BEGIN
+  RETURN 42;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (return_statement
+        (keyword_return)
+        (literal))
+      (keyword_end))))
+
+================================================================================
+RETURN without expression
+================================================================================
+
+BEGIN
+  RETURN;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (return_statement
+        (keyword_return))
+      (keyword_end))))
+
+================================================================================
+RAISE statement
+================================================================================
+
+BEGIN
+  RAISE my_exception;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (raise_statement
+        (keyword_raise)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+RAISE without exception name re-raise
+================================================================================
+
+BEGIN
+  RAISE;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (raise_statement
+        (keyword_raise))
+      (keyword_end))))
+
+================================================================================
+OPEN cursor
+================================================================================
+
+DECLARE
+  c1 CURSOR FOR SELECT 1;
+BEGIN
+  OPEN c1;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_cursor
+          (identifier)
+          (keyword_cursor)
+          (keyword_for)
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (literal))))))
+      (keyword_begin)
+      (open_statement
+        (keyword_open)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+OPEN cursor with USING
+================================================================================
+
+DECLARE
+  c1 CURSOR FOR SELECT 1;
+BEGIN
+  OPEN c1 USING (x, y, z);
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_cursor
+          (identifier)
+          (keyword_cursor)
+          (keyword_for)
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (literal))))))
+      (keyword_begin)
+      (open_statement
+        (keyword_open)
+        (identifier)
+        (keyword_using)
+        (identifier)
+        (identifier)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+FETCH cursor INTO variables
+================================================================================
+
+DECLARE
+  c1 CURSOR FOR SELECT id, name FROM t1;
+BEGIN
+  OPEN c1;
+  FETCH c1 INTO id_var, name_var;
+  CLOSE c1;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_cursor
+          (identifier)
+          (keyword_cursor)
+          (keyword_for)
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (field
+                  (identifier)))
+              (term
+                (field
+                  (identifier)))))
+          (from
+            (keyword_from)
+            (relation
+              (object_reference
+                (identifier))))))
+      (keyword_begin)
+      (open_statement
+        (keyword_open)
+        (identifier))
+      (fetch_statement
+        (keyword_fetch)
+        (identifier)
+        (keyword_into)
+        (identifier)
+        (identifier))
+      (close_statement
+        (keyword_close)
+        (identifier))
+      (keyword_end))))
+
+================================================================================
+Exception handling basic
+================================================================================
+
+DECLARE
+  my_exception EXCEPTION (-20001, 'error');
+BEGIN
+  SELECT 1;
+EXCEPTION
+  WHEN my_exception THEN
+    RETURN 'caught';
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_exception
+          (identifier)
+          (keyword_exception)
+          (literal)
+          (literal)))
+      (keyword_begin)
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (literal)))))
+      (exception_clause
+        (keyword_exception)
+        (exception_when_clause
+          (keyword_when)
+          (identifier)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal))))
+      (keyword_end))))
+
+================================================================================
+Exception with WHEN OTHER
+================================================================================
+
+BEGIN
+  SELECT 1;
+EXCEPTION
+  WHEN OTHER THEN
+    RETURN 'caught';
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (literal)))))
+      (exception_clause
+        (keyword_exception)
+        (exception_when_clause
+          (keyword_when)
+          (keyword_other)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal))))
+      (keyword_end))))
+
+================================================================================
+Exception with OR chaining
+================================================================================
+
+DECLARE
+  ex1 EXCEPTION (-20001, 'error1');
+  ex2 EXCEPTION (-20002, 'error2');
+BEGIN
+  SELECT 1;
+EXCEPTION
+  WHEN ex1 OR ex2 THEN
+    RETURN 'caught';
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_exception
+          (identifier)
+          (keyword_exception)
+          (literal)
+          (literal))
+        (snowflake_declare_exception
+          (identifier)
+          (keyword_exception)
+          (literal)
+          (literal)))
+      (keyword_begin)
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (literal)))))
+      (exception_clause
+        (keyword_exception)
+        (exception_when_clause
+          (keyword_when)
+          (identifier)
+          (keyword_or)
+          (identifier)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal))))
+      (keyword_end))))
+
+================================================================================
+Exception with EXIT qualifier
+================================================================================
+
+BEGIN
+  SELECT 1;
+EXCEPTION
+  WHEN OTHER EXIT THEN
+    RETURN 'exiting';
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (literal)))))
+      (exception_clause
+        (keyword_exception)
+        (exception_when_clause
+          (keyword_when)
+          (keyword_other)
+          (keyword_exit)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal))))
+      (keyword_end))))
+
+================================================================================
+Exception with CONTINUE qualifier
+================================================================================
+
+BEGIN
+  SELECT 1;
+EXCEPTION
+  WHEN OTHER CONTINUE THEN
+    RETURN 'continuing';
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (literal)))))
+      (exception_clause
+        (keyword_exception)
+        (exception_when_clause
+          (keyword_when)
+          (keyword_other)
+          (keyword_continue)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal))))
+      (keyword_end))))
+
+================================================================================
+Exception with multiple WHEN clauses
+================================================================================
+
+DECLARE
+  ex1 EXCEPTION (-20001, 'error1');
+BEGIN
+  SELECT 1;
+EXCEPTION
+  WHEN ex1 THEN
+    RETURN 'specific';
+  WHEN OTHER THEN
+    RETURN 'generic';
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_exception
+          (identifier)
+          (keyword_exception)
+          (literal)
+          (literal)))
+      (keyword_begin)
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (literal)))))
+      (exception_clause
+        (keyword_exception)
+        (exception_when_clause
+          (keyword_when)
+          (identifier)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (exception_when_clause
+          (keyword_when)
+          (keyword_other)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal))))
+      (keyword_end))))
+
+================================================================================
+Snowflake variable reference in SQL
+================================================================================
+
+BEGIN
+  LET x := 42;
+  SELECT :x;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (snowflake_variable_reference)))))
+      (keyword_end))))
+
+================================================================================
+Nested scripting blocks
+================================================================================
+
+BEGIN
+  BEGIN
+    SELECT 1;
+  END;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (snowflake_scripting_block
+        (keyword_begin)
+        (statement
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (literal)))))
+        (keyword_end))
+      (keyword_end))))
+
+================================================================================
+Transaction inside scripting block
+================================================================================
+
+BEGIN
+  BEGIN TRANSACTION;
+    INSERT INTO t1 VALUES (1);
+  COMMIT;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (scripting_transaction
+        (keyword_begin)
+        (keyword_transaction)
+        (statement
+          (insert
+            (keyword_insert)
+            (keyword_into)
+            (object_reference
+              (identifier))
+            (keyword_values)
+            (list
+              (literal))))
+        (keyword_commit))
+      (keyword_end))))
+
+================================================================================
+Full block with DECLARE and EXCEPTION
+================================================================================
+
+DECLARE
+  result VARCHAR DEFAULT '';
+  my_exception EXCEPTION (-20001, 'Custom error');
+BEGIN
+  LET result := 'hello';
+  IF (result = '') THEN
+    RAISE my_exception;
+  END IF;
+  RETURN result;
+EXCEPTION
+  WHEN my_exception THEN
+    RETURN 'error occurred';
+  WHEN OTHER THEN
+    RETURN 'unknown error';
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_variable
+          (identifier)
+          (varchar
+            (keyword_varchar))
+          (keyword_default)
+          (literal))
+        (snowflake_declare_exception
+          (identifier)
+          (keyword_exception)
+          (literal)
+          (literal)))
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (if_statement
+        (keyword_if)
+        (binary_expression
+          (field
+            (identifier))
+          (literal))
+        (keyword_then)
+        (raise_statement
+          (keyword_raise)
+          (identifier))
+        (keyword_end)
+        (keyword_if))
+      (return_statement
+        (keyword_return)
+        (field
+          (identifier)))
+      (exception_clause
+        (keyword_exception)
+        (exception_when_clause
+          (keyword_when)
+          (identifier)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal)))
+        (exception_when_clause
+          (keyword_when)
+          (keyword_other)
+          (keyword_then)
+          (return_statement
+            (keyword_return)
+            (literal))))
+      (keyword_end))))
+
+================================================================================
+Nested IF inside WHILE inside FOR
+================================================================================
+
+BEGIN
+  FOR i IN 1 TO 10 DO
+    LET j := 0;
+    WHILE (j < i) DO
+      IF (j = 5) THEN
+        BREAK;
+      END IF;
+      j := j + 1;
+    END WHILE;
+  END FOR;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (for_statement
+        (keyword_for)
+        (identifier)
+        (keyword_in)
+        (literal)
+        (keyword_to)
+        (literal)
+        (keyword_do)
+        (let_statement
+          (keyword_let)
+          (identifier)
+          (literal))
+        (while_do_statement
+          (keyword_while)
+          (binary_expression
+            (field
+              (identifier))
+            (field
+              (identifier)))
+          (keyword_do)
+          (if_statement
+            (keyword_if)
+            (binary_expression
+              (field
+                (identifier))
+              (literal))
+            (keyword_then)
+            (break_statement
+              (keyword_break))
+            (keyword_end)
+            (keyword_if))
+          (assignment_statement
+            (identifier)
+            (binary_expression
+              (field
+                (identifier))
+              (literal)))
+          (keyword_end)
+          (keyword_while))
+        (keyword_end)
+        (keyword_for))
+      (keyword_end))))
+
+================================================================================
+LOOP with nested CASE and BREAK
+================================================================================
+
+BEGIN
+  LET x := 0;
+  LOOP
+    x := x + 1;
+    CASE (x)
+      WHEN 5 THEN
+        CONTINUE;
+      WHEN 10 THEN
+        BREAK;
+      ELSE
+        SELECT x;
+    END CASE;
+  END LOOP;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (loop_statement
+        (keyword_loop)
+        (assignment_statement
+          (identifier)
+          (binary_expression
+            (field
+              (identifier))
+            (literal)))
+        (case_statement
+          (keyword_case)
+          (field
+            (identifier))
+          (case_statement_when_clause
+            (keyword_when)
+            (literal)
+            (keyword_then)
+            (continue_statement
+              (keyword_continue)))
+          (case_statement_when_clause
+            (keyword_when)
+            (literal)
+            (keyword_then)
+            (break_statement
+              (keyword_break)))
+          (case_statement_else_clause
+            (keyword_else)
+            (statement
+              (select
+                (keyword_select)
+                (select_expression
+                  (term
+                    (field
+                      (identifier)))))))
+          (keyword_end)
+          (keyword_case))
+        (keyword_end)
+        (keyword_loop))
+      (keyword_end))))
+
+================================================================================
+Cursor workflow OPEN FETCH CLOSE
+================================================================================
+
+DECLARE
+  c1 CURSOR FOR SELECT id, name FROM employees;
+  v_id INTEGER;
+  v_name VARCHAR;
+BEGIN
+  OPEN c1;
+  FETCH c1 INTO v_id, v_name;
+  CLOSE c1;
+  RETURN v_name;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_cursor
+          (identifier)
+          (keyword_cursor)
+          (keyword_for)
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                (field
+                  (identifier)))
+              (term
+                (field
+                  (identifier)))))
+          (from
+            (keyword_from)
+            (relation
+              (object_reference
+                (identifier)))))
+        (snowflake_declare_variable
+          (identifier)
+          (int
+            (keyword_int)))
+        (snowflake_declare_variable
+          (identifier)
+          (varchar
+            (keyword_varchar))))
+      (keyword_begin)
+      (open_statement
+        (keyword_open)
+        (identifier))
+      (fetch_statement
+        (keyword_fetch)
+        (identifier)
+        (keyword_into)
+        (identifier)
+        (identifier))
+      (close_statement
+        (keyword_close)
+        (identifier))
+      (return_statement
+        (keyword_return)
+        (field
+          (identifier)))
+      (keyword_end))))
+
+================================================================================
+Multiple variable references in SELECT
+================================================================================
+
+BEGIN
+  LET x := 1;
+  LET y := 2;
+  SELECT :x + :y;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (let_statement
+        (keyword_let)
+        (identifier)
+        (literal))
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              (binary_expression
+                (snowflake_variable_reference)
+                (snowflake_variable_reference))))))
+      (keyword_end))))
+
+================================================================================
+DECLARE RESULTSET with ASYNC
+================================================================================
+
+DECLARE
+  rs RESULTSET := ASYNC (SELECT * FROM large_table);
+BEGIN
+  RETURN TABLE(rs);
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_variable
+          (identifier)
+          (keyword_resultset)
+          (invocation
+            (object_reference
+              (identifier))
+            (term
+              (binary_expression
+                (field
+                  (identifier))
+                (field
+                  (identifier)))
+              (identifier)))))
+      (keyword_begin)
+      (return_statement
+        (keyword_return)
+        (invocation
+          (object_reference
+            (identifier))
+          (term
+            (field
+              (identifier)))))
+      (keyword_end))))
+
+================================================================================
+Snowflake Scripting: simple object literal
+================================================================================
+
+SELECT { 'key1': 'value1', 'key2': 'value2' };
+
+---
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (snowflake_object_literal
+            (snowflake_object_literal_pair
+              (literal)
+              (literal))
+            (snowflake_object_literal_pair
+              (literal)
+              (literal))))))))
+
+================================================================================
+Snowflake Scripting: empty object literal
+================================================================================
+
+SELECT { };
+
+---
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (snowflake_object_literal))))))
+
+================================================================================
+Snowflake Scripting: object literal with variable references
+================================================================================
+
+BEGIN
+  SYSTEM$ADD_EVENT('my_event', { 'status': :status_var, 'count': :row_count });
+END;
+
+---
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (bare_call_statement
+        (object_reference
+          (identifier))
+        (term
+          (literal))
+        (term
+          (snowflake_object_literal
+            (snowflake_object_literal_pair
+              (literal)
+              (snowflake_variable_reference))
+            (snowflake_object_literal_pair
+              (literal)
+              (snowflake_variable_reference)))))
+      (keyword_end))))
+
+================================================================================
+Snowflake Scripting: bare function call in scripting block
+================================================================================
+
+BEGIN
+  SYSTEM$LOG_INFO('hello');
+END;
+
+---
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (bare_call_statement
+        (object_reference
+          (identifier))
+        (term
+          (literal)))
+      (keyword_end))))
+
+================================================================================
+Snowflake Scripting: bare function call with concatenation
+================================================================================
+
+BEGIN
+  SYSTEM$LOG_INFO('Processed ' || :row_count || ' rows');
+END;
+
+---
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (bare_call_statement
+        (object_reference
+          (identifier))
+        (term
+          (binary_expression
+            (binary_expression
+              (literal)
+              (op_other)
+              (snowflake_variable_reference))
+            (op_other)
+            (literal))))
+      (keyword_end))))
+
+================================================================================
+Snowflake: SHOW TERSE STREAMS IN SCHEMA
+================================================================================
+
+SHOW TERSE STREAMS IN SCHEMA;
+
+---
+
+(program
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (keyword_terse)
+        (snowflake_show_target)
+        (keyword_in)
+        (keyword_schema)))))
+
+================================================================================
+Snowflake: SHOW TERSE TASKS IN SCHEMA
+================================================================================
+
+SHOW TERSE TASKS IN SCHEMA;
+
+---
+
+(program
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (keyword_terse)
+        (snowflake_show_target)
+        (keyword_in)
+        (keyword_schema)))))
+
+================================================================================
+Snowflake: IDENTIFIER() with variable reference
+================================================================================
+
+DROP STREAM IF EXISTS IDENTIFIER(:stream_name);
+
+---
+
+(program
+  (statement
+    (drop_snowflake_named_object
+      (keyword_drop)
+      (snowflake_drop_object_type)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        (snowflake_identifier_ref
+          (keyword_identifier)
+          (snowflake_variable_reference))))))
+
+================================================================================
+Snowflake: IDENTIFIER() with string literal
+================================================================================
+
+DROP TABLE IF EXISTS IDENTIFIER('my_table');
+
+---
+
+(program
+  (statement
+    (drop_table
+      (keyword_drop)
+      (keyword_table)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        (snowflake_identifier_ref
+          (keyword_identifier)
+          (literal))))))
+
+================================================================================
+Snowflake Scripting: ASYNC statement
+================================================================================
+
+BEGIN
+  ASYNC (DROP STREAM IF EXISTS my_stream);
+END;
+
+---
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (async_statement
+        (keyword_async)
+        (statement
+          (drop_snowflake_named_object
+            (keyword_drop)
+            (snowflake_drop_object_type)
+            (keyword_if)
+            (keyword_exists)
+            (object_reference
+              (identifier)))))
+      (keyword_end))))
+
+================================================================================
+Snowflake Scripting: ASYNC with IDENTIFIER()
+================================================================================
+
+BEGIN
+  ASYNC (DROP TASK IF EXISTS IDENTIFIER(:task_name));
+END;
+
+---
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (async_statement
+        (keyword_async)
+        (statement
+          (drop_snowflake_named_object
+            (keyword_drop)
+            (snowflake_drop_object_type)
+            (keyword_if)
+            (keyword_exists)
+            (object_reference
+              (snowflake_identifier_ref
+                (keyword_identifier)
+                (snowflake_variable_reference))))))
+      (keyword_end))))
+
+================================================================================
+Snowflake Scripting: full afterClean pattern
+================================================================================
+
+EXECUTE IMMEDIATE $$
+BEGIN
+  LET stream_records RESULTSET := (SHOW TERSE STREAMS IN SCHEMA);
+  FOR record IN stream_records DO
+    LET stream_name TEXT := record."name";
+    ASYNC (DROP STREAM IF EXISTS IDENTIFIER(:stream_name));
+  END FOR;
+END;
+$$;
+
+---
+
+(program
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_immediate)
+        (dollar_quote)
+        (snowflake_scripting_block
+          (keyword_begin)
+          (let_statement
+            (keyword_let)
+            (identifier)
+            (keyword_resultset)
+            (subquery
+              (snowflake_show_statement
+                (keyword_show)
+                (keyword_terse)
+                (snowflake_show_target)
+                (keyword_in)
+                (keyword_schema))))
+          (for_statement
+            (keyword_for)
+            (identifier)
+            (keyword_in)
+            (object_reference
+              (identifier))
+            (keyword_do)
+            (let_statement
+              (keyword_let)
+              (identifier)
+              (keyword_text)
+              (field
+                (object_reference
+                  (identifier))
+                (identifier)))
+            (async_statement
+              (keyword_async)
+              (statement
+                (drop_snowflake_named_object
+                  (keyword_drop)
+                  (snowflake_drop_object_type)
+                  (keyword_if)
+                  (keyword_exists)
+                  (object_reference
+                    (snowflake_identifier_ref
+                      (keyword_identifier)
+                      (snowflake_variable_reference))))))
+            (keyword_end)
+            (keyword_for))
+          (keyword_end))
+        (dollar_quote)))))

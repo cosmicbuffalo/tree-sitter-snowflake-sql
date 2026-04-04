@@ -3,12 +3,13 @@
  (cte)
  (column_definitions)
  (case)
+ (when_clause)
  (subquery)
  (insert)
 ] @indent.begin
 
 
-(block
+(snowflake_scripting_block
   (keyword_begin)
 ) @indent.begin
 

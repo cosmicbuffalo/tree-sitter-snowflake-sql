@@ -114,20 +114,22 @@ export default {
     optional(choice($.keyword_cascade, $.keyword_restrict)),
   ),
 
-  drop_function: $ => seq(
+  drop_function: $ => prec.left(seq(
     $.keyword_drop,
     $.keyword_function,
     optional($._if_exists),
     $.object_reference,
+    optional($.function_arguments),
     optional($._drop_behavior),
-  ),
+  )),
 
-  drop_procedure: $ => seq(
+  drop_procedure: $ => prec.left(seq(
     $.keyword_drop,
     $.keyword_procedure,
     optional($._if_exists),
     $.object_reference,
+    optional($.function_arguments),
     optional($._drop_behavior),
-  ),
+  )),
 
 };

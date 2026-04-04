@@ -61,6 +61,12 @@ export default {
     $.rename_column,
     $.set_schema,
     $.change_ownership,
+    // Snowflake: ALTER TABLE t CLUSTER BY (col1, col2)
+    $.cluster_by,
+    // Snowflake: ALTER TABLE t SET prop = value ...
+    seq($.keyword_set, $._snowflake_options),
+    // Snowflake: ALTER TABLE t DROP PRIMARY KEY
+    seq($.keyword_drop, $._primary_key),
   ),
 
   // TODO: optional `keyword_add` is necessary to allow for chained alter statements in t-sql
@@ -106,6 +112,8 @@ export default {
         $.keyword_not,
         $.keyword_null,
       ),
+      // Snowflake: ALTER COLUMN col NOT NULL (bare, without SET/DROP)
+      $._not_null,
       seq(
         optional(
           seq(
@@ -153,15 +161,19 @@ export default {
     ),
   ),
 
-  modify_column: $ => seq(
+  modify_column: $ => prec.left(seq(
     $.keyword_modify,
     optional(
       $.keyword_column,
     ),
     optional($._if_exists),
-    $.column_definition,
+    choice(
+      $.column_definition,
+      // Snowflake: MODIFY COLUMN col COMMENT '...' (no type, just constraint)
+      seq(field('name', $._column), repeat1($._column_constraint)),
+    ),
     optional($.column_position),
-  ),
+  )),
 
   change_column: $ => seq(
     $.keyword_change,

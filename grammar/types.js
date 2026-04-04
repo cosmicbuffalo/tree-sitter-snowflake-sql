@@ -84,6 +84,10 @@ export default {
         // Snowflake vector type
         $.vector,
 
+        // Snowflake scripting types
+        $.keyword_resultset,
+        $.keyword_cursor,
+
         field("custom_type", $.object_reference)
       ),
       optional($.array_size_definition)

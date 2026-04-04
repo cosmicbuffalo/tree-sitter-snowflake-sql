@@ -2,7 +2,7 @@
 Empty transaction
 ================================================================================
 
-BEGIN;
+BEGIN TRANSACTION;
 COMMIT;
 
 --------------------------------------------------------------------------------
@@ -10,13 +10,14 @@ COMMIT;
 (program
   (transaction
     (keyword_begin)
+    (keyword_transaction)
     (keyword_commit)))
 
 ================================================================================
 Transaction begin and commit
 ================================================================================
 
-BEGIN;
+BEGIN TRANSACTION;
 ALTER TABLE my_table
   ADD COLUMN val3 VARCHAR(100) NOT NULL;
 UPDATE my_table SET val3 = 'new';
@@ -27,6 +28,7 @@ COMMIT;
 (program
   (transaction
     (keyword_begin)
+    (keyword_transaction)
     (statement
       (alter_table
         (keyword_alter)
@@ -60,7 +62,7 @@ COMMIT;
 Transaction begin and rollback
 ================================================================================
 
-BEGIN;
+BEGIN TRANSACTION;
 ALTER TABLE my_table
   ADD COLUMN val3 VARCHAR(100) NOT NULL;
 ROLLBACK;
@@ -70,6 +72,7 @@ ROLLBACK;
 (program
   (transaction
     (keyword_begin)
+    (keyword_transaction)
     (statement
       (alter_table
         (keyword_alter)

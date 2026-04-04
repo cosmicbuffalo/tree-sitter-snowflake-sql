@@ -1,4 +1,4 @@
-import { optional_parenthesis } from "../helpers.js";
+import { optional_parenthesis, wrapped_in_parenthesis } from "../helpers.js";
 
 export default {
 
@@ -10,6 +10,7 @@ export default {
     $.keyword_using,
     choice(
       $.subquery,
+      wrapped_in_parenthesis($.values),
       $.object_reference
     ),
     optional($._alias),

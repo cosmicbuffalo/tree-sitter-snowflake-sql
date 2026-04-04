@@ -14,21 +14,36 @@ export default {
     $.put_statement,
     $.get_statement,
     $.snowflake_show_statement,
+    $.alter_session,
+  ),
+
+  // --- ALTER SESSION ---
+  // ALTER SESSION SET param = value | ALTER SESSION UNSET param
+  alter_session: $ => seq(
+    $.keyword_alter, $.keyword_session,
+    choice(
+      seq($.keyword_set, $._snowflake_options),
+      seq($.keyword_unset, $.identifier),
+    ),
   ),
 
   // --- Snowflake property helpers ---
   // A single key=value property (used in CREATE options)
   _snowflake_property: $ => seq(
-    field('name', $.identifier),
+    field('name', choice($.identifier, $.keyword_comment)),
     '=',
     field('value', choice(
       $.literal,
       $.identifier,
+      seq('(', $._snowflake_options, ')'),
     )),
   ),
 
-  // A block of properties wrapped to reduce state explosion
-  _snowflake_options: $ => repeat1($._snowflake_property),
+  // A block of properties, optionally comma-separated
+  _snowflake_options: $ => prec.left(seq(
+    $._snowflake_property,
+    repeat(seq(optional(','), $._snowflake_property)),
+  )),
 
   // --- CREATE rules for simple Snowflake objects ---
   // Consolidated create for STAGE, FILE FORMAT, WAREHOUSE
@@ -65,6 +80,7 @@ export default {
     optional($._if_not_exists),
     $.object_reference,
     $.keyword_on,
+    optional($.keyword_event),
     $.keyword_table,
     $.object_reference,
     optional($._snowflake_options),
@@ -73,7 +89,7 @@ export default {
   // --- CREATE TASK ---
   create_task: $ => prec.left(seq(
     $.keyword_create,
-    optional($._or_replace),
+    optional(choice($._or_replace, $._or_alter)),
     $.keyword_task,
     optional($._if_not_exists),
     $.object_reference,
@@ -87,7 +103,10 @@ export default {
       $._expression,
     )),
     $.keyword_as,
-    $.statement,
+    choice(
+      $.snowflake_scripting_block,
+      $.statement,
+    ),
   )),
 
   // --- CREATE DYNAMIC TABLE ---
@@ -118,9 +137,19 @@ export default {
   // Common alter actions for Snowflake objects
   _snowflake_alter_actions: $ => choice(
     seq($.keyword_set, $._snowflake_options),
+    seq($.keyword_unset, $.identifier),
     $.rename_object,
     $.keyword_suspend,
     $.keyword_resume,
+    $.keyword_refresh,
+    // ALTER TASK ... MODIFY AS body | MODIFY WHEN expr
+    seq($.keyword_modify, choice(
+      seq($.keyword_as, choice($.snowflake_scripting_block, $.statement)),
+      seq($.keyword_when, $._expression),
+    )),
+    // ALTER TASK ... ADD AFTER task | REMOVE AFTER task
+    seq($.keyword_add, $.keyword_after, $.object_reference),
+    seq($.keyword_remove, $.keyword_after, $.object_reference),
   ),
 
   // Consolidated alter for WAREHOUSE, STAGE, PIPE, STREAM, TASK
@@ -219,7 +248,15 @@ export default {
     $.keyword_execute,
     choice(
       seq($.keyword_task, $.object_reference),
-      seq($.keyword_immediate, $.literal),
+      // Dollar-quoted scripting block: EXECUTE IMMEDIATE $$ BEGIN ... END $$
+      seq(
+        $.keyword_immediate,
+        alias($._dollar_quoted_string_start_tag, $.dollar_quote),
+        $.snowflake_scripting_block,
+        optional(';'),
+        alias($._dollar_quoted_string_end_tag, $.dollar_quote),
+      ),
+      seq($.keyword_immediate, $._expression),
     ),
   ),
 
@@ -313,7 +350,9 @@ export default {
   // SHOW <target> which is handled by _show_statement in _dml_read.
   snowflake_show_statement: $ => prec.left(seq(
     $.keyword_show,
+    optional($.keyword_terse),
     $.snowflake_show_target,
+    optional(seq($.keyword_root, $.keyword_only)),
     choice(
       // LIKE 'pattern' [IN ...]
       seq(
