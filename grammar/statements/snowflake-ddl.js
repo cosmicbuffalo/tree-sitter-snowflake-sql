@@ -276,13 +276,16 @@ export default {
     choice(
       seq($.keyword_task, $.object_reference),
       // Dollar-quoted scripting block: EXECUTE IMMEDIATE $$ BEGIN ... END $$
-      seq(
+      // Higher precedence ensures this is preferred over the _expression fallback
+      // which would consume $$...$$ as an opaque literal string
+      prec(1, seq(
         $.keyword_immediate,
         alias($._dollar_quoted_string_start_tag, $.dollar_quote),
         $.snowflake_scripting_block,
         optional(';'),
         alias($._dollar_quoted_string_end_tag, $.dollar_quote),
-      ),
+      )),
+      // Fallback: EXECUTE IMMEDIATE 'string' or EXECUTE IMMEDIATE :var or EXECUTE IMMEDIATE expr
       seq($.keyword_immediate, $._expression),
     ),
   ),

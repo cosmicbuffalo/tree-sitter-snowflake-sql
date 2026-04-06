@@ -1138,8 +1138,8 @@ $a$
       (keyword_replace)
       (keyword_function)
       (object_reference
-        (identifier)
-        (identifier))
+        schema: (identifier)
+        name: (identifier))
       (function_arguments)
       (keyword_returns)
       (keyword_trigger)
@@ -1151,7 +1151,10 @@ $a$
         (dollar_quote)
         (keyword_begin)
         (keyword_return)
-        (literal)
+        (ERROR
+          (UNEXPECTED 'b'))
+        (field
+          name: (identifier))
         (keyword_end)
         (dollar_quote)))))
 
@@ -1178,8 +1181,8 @@ $_$
       (keyword_replace)
       (keyword_function)
       (object_reference
-        (identifier)
-        (identifier))
+        schema: (identifier)
+        name: (identifier))
       (function_arguments)
       (keyword_returns)
       (keyword_trigger)
@@ -1191,7 +1194,13 @@ $_$
         (dollar_quote)
         (keyword_begin)
         (keyword_return)
-        (literal)
+        (ERROR
+          (UNEXPECTED '.')
+          (UNEXPECTED 't'))
+        (field
+          name: (identifier))
+        (ERROR
+          (UNEXPECTED ';'))
         (keyword_end)
         (dollar_quote)))))
 
