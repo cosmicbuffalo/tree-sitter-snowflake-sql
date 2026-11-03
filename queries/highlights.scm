@@ -245,6 +245,8 @@
   (keyword_truncate)
 
   (keyword_language)
+  (keyword_iceberg)
+  (keyword_transient)
   (keyword_runtime_version)
   (keyword_handler)
   (keyword_imports)

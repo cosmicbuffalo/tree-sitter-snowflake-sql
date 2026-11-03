@@ -114,9 +114,13 @@ export default {
   create_dynamic_table: $ => prec.left(seq(
     $.keyword_create,
     optional($._or_replace),
+    optional($.keyword_transient),
     $.keyword_dynamic,
+    optional($.keyword_iceberg),
     $.keyword_table,
+    optional($._if_not_exists),
     $.object_reference,
+    optional($.column_definitions),
     optional($._snowflake_options),
     $.keyword_as,
     $._select_statement,

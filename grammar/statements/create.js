@@ -48,6 +48,7 @@ export default {
           $._temporary,
           $.keyword_unlogged,
           $.keyword_external,
+          $.keyword_iceberg,
         )
       ),
       $.keyword_table,

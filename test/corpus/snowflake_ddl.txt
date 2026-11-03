@@ -1417,3 +1417,190 @@ SHOW TERSE TASKS ROOT ONLY;
     (snowflake_show_target)
     (keyword_root)
     (keyword_only)))
+================================================================================
+CREATE DYNAMIC ICEBERG TABLE with properties and column definitions
+================================================================================
+
+CREATE OR REPLACE DYNAMIC ICEBERG TABLE T1
+  TARGET_LAG = '10 minutes'
+  WAREHOUSE = ${SNOWFLAKE_WAREHOUSE}
+  EXTERNAL_VOLUME = 'vol'
+  CATALOG = 'SNOWFLAKE'
+  BASE_LOCATION = 'a/b'
+  REFRESH_MODE = incremental
+  INITIALIZE = on_schedule
+AS
+SELECT ID, AMOUNT FROM ${DB}.PUBLIC.SRC;
+
+CREATE OR REPLACE DYNAMIC ICEBERG TABLE T2(
+    ID STRING COMMENT 'the id',
+    AMOUNT NUMBER(38, 10) COMMENT 'amount'
+)
+  TARGET_LAG = DOWNSTREAM
+  WAREHOUSE = wh
+AS
+SELECT ID, AMOUNT FROM SRC;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_dynamic_table
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_dynamic)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (identifier)
+      (keyword_as)
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (field
+              name: (identifier)))
+          (term
+            value: (field
+              name: (identifier)))))
+      (from
+        (keyword_from)
+        (relation
+          (object_reference
+            database: (identifier)
+            schema: (identifier)
+            name: (identifier))))))
+  (statement
+    (create_dynamic_table
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_dynamic)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (keyword_string)
+          (keyword_comment)
+          (literal))
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number)
+            precision: (literal)
+            scale: (literal))
+          (keyword_comment)
+          (literal)))
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (identifier)
+      (keyword_as)
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (field
+              name: (identifier)))
+          (term
+            value: (field
+              name: (identifier)))))
+      (from
+        (keyword_from)
+        (relation
+          (object_reference
+            name: (identifier)))))))
+
+================================================================================
+CREATE and ALTER ICEBERG TABLE
+================================================================================
+
+CREATE ICEBERG TABLE IF NOT EXISTS t1 (
+  id STRING,
+  amount NUMBER(38, 10)
+)
+  EXTERNAL_VOLUME = 'vol'
+  CATALOG = 'SNOWFLAKE'
+  BASE_LOCATION = 'a/b';
+
+ALTER ICEBERG TABLE IF EXISTS t1 ADD COLUMN IF NOT EXISTS RECORD_DATE DATE COMMENT 'record date';
+ALTER ICEBERG TABLE t1 SET COMMENT = 'x';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_iceberg)
+      (keyword_table)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (keyword_string))
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number)
+            precision: (literal)
+            scale: (literal))))
+      (table_option
+        name: (identifier))
+      (table_option
+        name: (identifier))
+      (table_option
+        name: (identifier))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_iceberg)
+      (keyword_table)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (add_column
+        (keyword_add)
+        (keyword_column)
+        (keyword_if)
+        (keyword_not)
+        (keyword_exists)
+        (column_definition
+          name: (identifier)
+          type: (keyword_date)
+          (keyword_comment)
+          (literal)))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      name: (keyword_comment)
+      value: (literal))))
+

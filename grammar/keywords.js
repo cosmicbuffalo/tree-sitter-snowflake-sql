@@ -16,6 +16,8 @@ export default {
   keyword_javascript: _ => make_keyword("javascript"),
   keyword_scala: _ => make_keyword("scala"),
   keyword_map: _ => make_keyword("map"),
+  keyword_iceberg: _ => make_keyword("iceberg"),
+  keyword_transient: _ => make_keyword("transient"),
   keyword_select: _ => make_keyword("select"),
   keyword_delete: _ => make_keyword("delete"),
   keyword_insert: _ => make_keyword("insert"),

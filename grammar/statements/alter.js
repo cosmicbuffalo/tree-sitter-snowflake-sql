@@ -23,6 +23,7 @@ export default {
 
   alter_table: $ => seq(
     $.keyword_alter,
+    optional($.keyword_iceberg),
     $.keyword_table,
     optional($._if_exists),
     optional($.keyword_only),
