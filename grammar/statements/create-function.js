@@ -50,13 +50,8 @@ export default {
   _function_option: $ => choice(
     $.function_language,
     $.function_volatility,
-    $.function_leakproof,
     $.function_security,
-    $.function_safety,
     $.function_strictness,
-    $.function_cost,
-    $.function_rows,
-    $.function_support,
     $.procedure_comment,
   ),
 
@@ -260,24 +255,10 @@ export default {
     $.keyword_volatile,
   ),
 
-  function_leakproof: $ => seq(
-    optional($.keyword_not),
-    $.keyword_leakproof,
-  ),
-
   function_security: $ => seq(
     optional($.keyword_external),
     $.keyword_security,
     choice($.keyword_invoker, $.keyword_definer),
-  ),
-
-  function_safety: $ => seq(
-    $.keyword_parallel,
-    choice(
-      $.keyword_safe,
-      $.keyword_unsafe,
-      $.keyword_restricted,
-    ),
   ),
 
   function_strictness: $ => choice(
@@ -294,21 +275,6 @@ export default {
       $.keyword_input,
     ),
     $.keyword_strict,
-  ),
-
-  function_cost: $ => seq(
-    $.keyword_cost,
-    $._natural_number,
-  ),
-
-  function_rows: $ => seq(
-    $.keyword_rows,
-    $._natural_number,
-  ),
-
-  function_support: $ => seq(
-    $.keyword_support,
-    alias($._literal_string, $.literal),
   ),
 
 };

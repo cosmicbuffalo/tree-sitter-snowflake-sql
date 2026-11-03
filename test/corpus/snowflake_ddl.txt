@@ -1901,3 +1901,67 @@ CREATE TABLE t4 (c VARCHAR DEFAULT 'USD' NOT NULL COMMENT 'x');
           (keyword_comment)
           (literal))))))
 
+================================================================================
+CREATE VIEW with COPY GRANTS and COMMENT
+================================================================================
+
+CREATE OR REPLACE VIEW PRICING_SCHEDULES_ORDERED
+COMMENT = 'Sorts the table'
+AS
+SELECT a FROM t;
+
+CREATE OR REPLACE SECURE VIEW v2 (a, b) COPY GRANTS COMMENT = 'x' AS SELECT 1, 2;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_view
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (procedure_comment
+        (keyword_comment)
+        (literal))
+      (keyword_as)
+      (create_query
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (field
+                name: (identifier)))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier)))))))
+  (statement
+    (create_view
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_secure)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (identifier)
+      (identifier)
+      (keyword_copy)
+      (keyword_grants)
+      (procedure_comment
+        (keyword_comment)
+        (literal))
+      (keyword_as)
+      (create_query
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (literal))
+            (term
+              value: (literal))))))))
+

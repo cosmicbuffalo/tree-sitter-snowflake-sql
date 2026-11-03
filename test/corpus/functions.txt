@@ -590,11 +590,7 @@ create or replace function public.fn()
   returns int
   language sql
   immutable
-  parallel safe
-  leakproof
   strict
-  cost 100
-  rows 1
 return 1;
 
 --------------------------------------------------------------------------------
@@ -618,17 +614,8 @@ return 1;
         (identifier))
       (function_volatility
         (keyword_immutable))
-      (function_safety
-        (keyword_parallel)
-        (keyword_safe))
-      (function_leakproof
-        (keyword_leakproof))
       (function_strictness
         (keyword_strict))
-      (function_cost
-        (keyword_cost))
-      (function_rows
-        (keyword_rows))
       (function_body
         (keyword_return)
         (literal)))))
@@ -642,11 +629,7 @@ create or replace function public.fn()
   as $$select 1$$
   language sql
   volatile
-  parallel restricted
-  not leakproof
-  returns null on null input
-  cost 100
-  rows 1;
+  returns null on null input;
 
 --------------------------------------------------------------------------------
 
@@ -679,22 +662,12 @@ create or replace function public.fn()
         (identifier))
       (function_volatility
         (keyword_volatile))
-      (function_safety
-        (keyword_parallel)
-        (keyword_restricted))
-      (function_leakproof
-        (keyword_not)
-        (keyword_leakproof))
       (function_strictness
         (keyword_returns)
         (keyword_null)
         (keyword_on)
         (keyword_null)
-        (keyword_input))
-      (function_cost
-        (keyword_cost))
-      (function_rows
-        (keyword_rows)))))
+        (keyword_input)))))
 
 ================================================================================
 With a string body

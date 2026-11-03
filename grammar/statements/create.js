@@ -241,12 +241,18 @@ export default {
     seq(
       $.keyword_create,
       optional($._or_replace),
+      optional($.keyword_secure),
       optional($._temporary),
       optional($.keyword_recursive),
       $.keyword_view,
       optional($._if_not_exists),
       $.object_reference,
       optional(paren_list($.identifier)),
+      // Snowflake: COPY GRANTS, COMMENT = '...'
+      repeat(choice(
+        seq($.keyword_copy, $.keyword_grants),
+        $.procedure_comment,
+      )),
       $.keyword_as,
       $.create_query,
       optional(

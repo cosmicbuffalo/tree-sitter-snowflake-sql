@@ -87,10 +87,6 @@
   (keyword_current_date)
  (keyword_immutable)
  (keyword_atomic)
- (keyword_parallel)
- (keyword_leakproof)
- (keyword_safe)
- (keyword_cost)
  (keyword_strict)
 ] @attribute
 
@@ -280,10 +276,8 @@
   (keyword_separator)
   (keyword_setof)
   (keyword_stable)
-  (keyword_support)
   (keyword_tblproperties)
   (keyword_trigger)
-  (keyword_unsafe)
   (keyword_admin)
   (keyword_connection)
   (keyword_database)

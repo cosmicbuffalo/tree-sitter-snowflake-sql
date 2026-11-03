@@ -33,7 +33,6 @@ export default {
   _procedure_option: $ => choice(
     $.function_language,
     $.function_security,
-    $.function_safety,
     $.procedure_execute_as,
     $.procedure_comment,
   ),
