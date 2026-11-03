@@ -2813,3 +2813,126 @@ END;
         (identifier))
       (keyword_end))))
 
+================================================================================
+CREATE ALERT with IF EXISTS condition and action
+================================================================================
+
+CREATE OR REPLACE ALERT TASK_FAILURE_ALERT
+WAREHOUSE = 'wh'
+SCHEDULE = '5 MINUTE'
+IF (EXISTS(
+    SELECT *
+    FROM EVENTS
+    WHERE RECORD:"severity_text"::STRING = 'ERROR'
+))
+THEN
+EXECUTE IMMEDIATE $$
+  BEGIN
+    LET RUN_ID STRING := SNOWFLAKE.ALERT.GET_CONDITION_QUERY_UUID();
+    RETURN 1;
+  END;
+$$;
+
+CREATE OR ALTER ALERT HC_ALERT
+WAREHOUSE = 'wh'
+IF (EXISTS(SELECT 1 FROM EVENTS))
+THEN
+CALL NOTIFY();
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (literal)
+      (alert_condition
+        (keyword_if)
+        (exists
+          (keyword_exists)
+          (subquery
+            (select
+              (keyword_select)
+              (select_expression
+                (term
+                  value: (all_fields))))
+            (from
+              (keyword_from)
+              (relation
+                (object_reference
+                  name: (identifier))))
+            (where
+              (keyword_where)
+              predicate: (binary_expression
+                left: (cast
+                  (variant_access
+                    expression: (field
+                      name: (identifier))
+                    path: (identifier))
+                  (keyword_string))
+                right: (literal)))))
+        (keyword_then)
+        (statement
+          (snowflake_statement
+            (execute_statement
+              (keyword_execute)
+              (keyword_immediate)
+              (dollar_quote)
+              (snowflake_scripting_block
+                (keyword_begin)
+                (let_statement
+                  (keyword_let)
+                  name: (identifier)
+                  type: (keyword_string)
+                  value: (invocation
+                    (object_reference
+                      database: (identifier)
+                      schema: (identifier)
+                      name: (identifier))))
+                (return_statement
+                  (keyword_return)
+                  value: (literal))
+                (keyword_end))
+              (dollar_quote)))))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (literal)
+      (alert_condition
+        (keyword_if)
+        (exists
+          (keyword_exists)
+          (subquery
+            (select
+              (keyword_select)
+              (select_expression
+                (term
+                  value: (literal))))
+            (from
+              (keyword_from)
+              (relation
+                (object_reference
+                  name: (identifier))))))
+        (keyword_then)
+        (statement
+          (snowflake_statement
+            (call_statement
+              (keyword_call)
+              (invocation
+                (object_reference
+                  name: (identifier))))))))))
+

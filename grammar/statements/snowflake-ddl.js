@@ -179,12 +179,23 @@ export default {
 
   create_snowflake_object: $ => prec.left(seq(
     $.keyword_create,
-    optional($._or_replace),
+    optional(choice($._or_replace, $._or_alter)),
     $.snowflake_object_type,
     optional($._if_not_exists),
     $.object_reference,
     optional($._snowflake_options),
+    optional($.alert_condition),
   )),
+
+  // CREATE ALERT ... IF (EXISTS (<query>)) THEN <action>
+  alert_condition: $ => seq(
+    $.keyword_if,
+    '(',
+    $.exists,
+    ')',
+    $.keyword_then,
+    $.statement,
+  ),
 
   drop_snowflake_object: $ => seq(
     $.keyword_drop,
