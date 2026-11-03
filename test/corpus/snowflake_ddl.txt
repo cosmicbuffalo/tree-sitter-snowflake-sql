@@ -2045,3 +2045,56 @@ GRANT USAGE ON SCHEMA PUBLIC TO DATABASE ROLE REPORT_READER;
       (keyword_role)
       (identifier))))
 
+================================================================================
+COMMENT ON Snowflake objects
+================================================================================
+
+COMMENT ON STREAM S1 IS
+'Append-only CDC stream';
+COMMENT ON TASK db.s.t1 IS 'x';
+COMMENT ON DYNAMIC TABLE d1 IS 'y';
+COMMENT ON TABLE t IS 'z';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (comment_statement
+      (keyword_comment)
+      (keyword_on)
+      (keyword_stream)
+      (object_reference
+        name: (identifier))
+      (keyword_is)
+      (literal)))
+  (statement
+    (comment_statement
+      (keyword_comment)
+      (keyword_on)
+      (keyword_task)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_is)
+      (literal)))
+  (statement
+    (comment_statement
+      (keyword_comment)
+      (keyword_on)
+      (keyword_dynamic)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_is)
+      (literal)))
+  (statement
+    (comment_statement
+      (keyword_comment)
+      (keyword_on)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_is)
+      (literal))))
+
