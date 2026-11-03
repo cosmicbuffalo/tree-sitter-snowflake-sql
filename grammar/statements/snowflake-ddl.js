@@ -401,7 +401,7 @@ export default {
 
   // Single token matching all SHOW-able Snowflake plural object types
   // Added: ALERTS, TAGS, SHARES, INTEGRATIONS, TABLES
-  snowflake_show_target: _ => /[dD][yY][nN][aA][mM][iI][cC]\s+[tT][aA][bB][lL][eE][sS]|[tT][aA][bB][lL][eE][sS]|[sS][tT][aA][gG][eE][sS]|[pP][iI][pP][eE][sS]|[sS][tT][rR][eE][aA][mM][sS]|[tT][aA][sS][kK][sS]|[wW][aA][rR][eE][hH][oO][uU][sS][eE][sS]|[dD][aA][tT][aA][bB][aA][sS][eE][sS]|[sS][cC][hH][eE][mM][aA][sS]|[vV][iI][eE][wW][sS]|[rR][oO][lL][eE][sS]|[uU][sS][eE][rR][sS]|[gG][rR][aA][nN][tT][sS]|[aA][lL][eE][rR][tT][sS]|[tT][aA][gG][sS]|[sS][hH][aA][rR][eE][sS]|[iI][nN][tT][eE][gG][rR][aA][tT][iI][oO][nN][sS]/,
+  snowflake_show_target: _ => /[dD][yY][nN][aA][mM][iI][cC]\s+[tT][aA][bB][lL][eE][sS]|[pP][rR][oO][cC][eE][dD][uU][rR][eE][sS]|[fF][uU][nN][cC][tT][iI][oO][nN][sS]|[tT][aA][bB][lL][eE][sS]|[sS][tT][aA][gG][eE][sS]|[pP][iI][pP][eE][sS]|[sS][tT][rR][eE][aA][mM][sS]|[tT][aA][sS][kK][sS]|[wW][aA][rR][eE][hH][oO][uU][sS][eE][sS]|[dD][aA][tT][aA][bB][aA][sS][eE][sS]|[sS][cC][hH][eE][mM][aA][sS]|[vV][iI][eE][wW][sS]|[rR][oO][lL][eE][sS]|[uU][sS][eE][rR][sS]|[gG][rR][aA][nN][tT][sS]|[aA][lL][eE][rR][tT][sS]|[tT][aA][gG][sS]|[sS][hH][aA][rR][eE][sS]|[iI][nN][tT][eE][gG][rR][aA][tT][iI][oO][nN][sS]/,
 
   // Snowflake SHOW with LIKE and/or IN — placed in snowflake_statement to avoid
   // state explosion from optional_parenthesis wrapping in _dml_read.

@@ -186,7 +186,7 @@ export default {
   // parenthesized EXECUTE IMMEDIATE / CALL: (EXECUTE IMMEDIATE :sql), (CALL proc(...))
   _scripting_value: $ => choice(
     $._expression,
-    seq('(', choice($.execute_statement, $.call_statement), ')'),
+    seq(optional($.keyword_async), '(', choice($.execute_statement, $.call_statement), ')'),
   ),
 
   // =========================================================================

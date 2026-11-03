@@ -238,9 +238,12 @@ export default {
     optional(
       $.keyword_only,
     ),
-    comma_list(choice($.relation, $.lateral_relation), true),
+    choice($.relation, $.lateral_relation),
     repeat(
       choice(
+        // comma-separated relations, possibly mixed with joins:
+        // FROM a, b JOIN c ON x, LATERAL FLATTEN(..)
+        seq(',', choice($.relation, $.lateral_relation)),
         $.join,
         $.cross_join,
         $.lateral_join,

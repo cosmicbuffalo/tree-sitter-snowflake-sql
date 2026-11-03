@@ -1281,3 +1281,108 @@ $$;
           (keyword_end))
         (dollar_quote)))))
 
+================================================================================
+Comma relation after join, SHOW PROCEDURES, ASYNC value
+================================================================================
+
+SELECT a
+FROM evs AS e
+LEFT JOIN ma ON e.x = ma.y,
+  LATERAL FLATTEN(input => e.add_ons, OUTER => TRUE) AS f
+WHERE a = 1;
+
+SHOW PROCEDURES LIKE 'SYNC_RUNBOOKS' IN SCHEMA DB.PUBLIC;
+
+BEGIN
+  rs2 := ASYNC (EXECUTE IMMEDIATE :sql);
+  rs3 := ASYNC (CALL p());
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))
+        (keyword_as)
+        alias: (identifier))
+      (join
+        (keyword_left)
+        (keyword_join)
+        (relation
+          (object_reference
+            name: (identifier)))
+        (keyword_on)
+        predicate: (binary_expression
+          left: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))
+          right: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))))
+      (lateral_relation
+        (keyword_lateral)
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (named_parameter
+            name: (identifier)
+            value: (field
+              (object_reference
+                name: (identifier))
+              name: (identifier)))
+          parameter: (named_parameter
+            name: (identifier)
+            value: (literal
+              (keyword_true))))
+        (keyword_as)
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (field
+          name: (identifier))
+        right: (literal))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_like)
+        (literal)
+        (keyword_in)
+        (keyword_schema)
+        (object_reference
+          schema: (identifier)
+          name: (identifier)))))
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (assignment_statement
+        name: (identifier)
+        value: (keyword_async)
+        value: (execute_statement
+          (keyword_execute)
+          (keyword_immediate)
+          (snowflake_variable_reference)))
+      (assignment_statement
+        name: (identifier)
+        value: (keyword_async)
+        value: (call_statement
+          (keyword_call)
+          (invocation
+            (object_reference
+              name: (identifier)))))
+      (keyword_end))))
+
