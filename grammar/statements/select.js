@@ -253,7 +253,8 @@ export default {
         $.subquery,
         $.invocation,
         $.object_reference,
-        $.stage_reference,
+        // @stage (FILE_FORMAT => 'f', PATTERN => 'p')
+        seq($.stage_reference, optional($.stage_arguments)),
         wrapped_in_parenthesis($.values),
         $.values,
       ),
@@ -263,7 +264,21 @@ export default {
           optional(alias($._column_list, $.list)),
         ),
       ),
+      optional($.table_sample),
     ),
+  ),
+
+  stage_arguments: $ => paren_list($.named_parameter, true),
+
+  // Snowflake: SAMPLE | TABLESAMPLE [method] (probability | n ROWS) [REPEATABLE | SEED (n)]
+  table_sample: $ => seq(
+    choice($.keyword_sample, $.keyword_tablesample),
+    optional(choice($.keyword_bernoulli, $.keyword_row, $.keyword_system, $.keyword_block)),
+    '(',
+    $.literal,
+    optional($.keyword_rows),
+    ')',
+    optional(seq(choice($.keyword_repeatable, $.keyword_seed), '(', $.literal, ')')),
   ),
 
   // Snowflake: LATERAL FLATTEN(...) or LATERAL subquery in comma-separated FROM
@@ -424,22 +439,20 @@ export default {
   order_target: $ => seq(
     $._expression,
     optional(
-      seq(
-        choice(
-          $.direction,
-          seq(
-            $.keyword_using,
-            choice('<', '>', '<=', '>='),
-          ),
+      choice(
+        $.direction,
+        seq(
+          $.keyword_using,
+          choice('<', '>', '<=', '>='),
         ),
-        optional(
-          seq(
-            $.keyword_nulls,
-            choice(
-              $.keyword_first,
-              $.keyword_last,
-            ),
-          ),
+      ),
+    ),
+    optional(
+      seq(
+        $.keyword_nulls,
+        choice(
+          $.keyword_first,
+          $.keyword_last,
         ),
       ),
     ),

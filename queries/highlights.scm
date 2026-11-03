@@ -241,6 +241,10 @@
   (keyword_truncate)
 
   (keyword_language)
+  (keyword_sample)
+  (keyword_tablesample)
+  (keyword_bernoulli)
+  (keyword_seed)
   (keyword_search)
   (keyword_optimization)
   (keyword_clustering)
