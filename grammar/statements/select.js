@@ -85,6 +85,8 @@ export default {
         $.term,
       ),
     ),
+    // Snowflake allows a trailing comma before FROM
+    optional(','),
   ),
 
   term: $ => seq(

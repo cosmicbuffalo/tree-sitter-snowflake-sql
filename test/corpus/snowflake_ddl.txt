@@ -2556,6 +2556,10 @@ CREATE TABLE z AS WITH a AS (SELECT 1 AS i) SELECT i FROM a;
 SELECT a, FROM t;
 SELECT a, b,
 FROM t;
+SELECT a, FROM s.t;
+SELECT a,
+FROM ${D}.PUBLIC.T;
+SELECT a, FROM db.s.t;
 
 --------------------------------------------------------------------------------
 
@@ -2646,11 +2650,12 @@ FROM t;
       (select_expression
         (term
           value: (field
-            name: (identifier)))
-        (term
-          value: (field
-            name: (identifier))
-          alias: (identifier)))))
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
   (statement
     (select
       (keyword_select)
@@ -2660,9 +2665,51 @@ FROM t;
             name: (identifier)))
         (term
           value: (field
-            name: (identifier)))
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
         (term
           value: (field
-            name: (identifier))
-          alias: (identifier))))))
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          schema: (identifier)
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          database: (identifier)
+          schema: (identifier)
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          database: (identifier)
+          schema: (identifier)
+          name: (identifier))))))
 
