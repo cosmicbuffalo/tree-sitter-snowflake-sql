@@ -23,6 +23,9 @@ export default grammar({
   ],
 
   conflicts: $ => [
+    // ((SELECT 1) + 2): inner (SELECT ..) is a wrapped select or a scalar subquery operand; let GLR decide
+    [$._select_statement],
+    [$._dml_read],
     [$.object_reference, $._qualified_field],
     [$.field, $._qualified_field],
     [$.object_reference],

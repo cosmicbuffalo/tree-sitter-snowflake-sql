@@ -88,15 +88,18 @@ export default {
 
   _dml_read: $ => seq(
     optional(optional_parenthesis($._cte)),
-    optional_parenthesis(
-      choice(
-        $._select_statement,
-        $.set_operation,
-        $._show_statement,
-        prec(-1, $.snowflake_show_statement),
-        // $._unload_statement, // removed: Athena-specific, frees parse table budget
-      ),
+    choice(
+      $._dml_read_body,
+      seq('(', $._dml_read_body, ')'),
     ),
+  ),
+
+  _dml_read_body: $ => choice(
+    $._select_statement,
+    $.set_operation,
+    $._show_statement,
+    prec(-1, $.snowflake_show_statement),
+    // $._unload_statement, // removed: Athena-specific, frees parse table budget
   ),
 
   ...select_rules,

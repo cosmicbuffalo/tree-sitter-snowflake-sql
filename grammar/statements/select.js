@@ -49,7 +49,12 @@ export default {
     ),
   ),
 
-  _select_statement: $ => optional_parenthesis(
+  _select_statement: $ => choice(
+    $._select_body,
+    seq('(', $._select_body, ')'),
+  ),
+
+  _select_body: $ => prec.right(
     seq(
       $.select,
       optional(
