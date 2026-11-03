@@ -1654,3 +1654,59 @@ INSERT OVERWRITE INTO t2 SELECT 1;
           (term
             value: (literal)))))))
 
+================================================================================
+Iceberg PARTITION BY transforms
+================================================================================
+
+CREATE ICEBERG TABLE t1 (
+  id STRING,
+  created_at TIMESTAMP_NTZ(6)
+)
+PARTITION BY (MONTH(created_at), BUCKET(8, id))
+EXTERNAL_VOLUME = 'vol'
+CATALOG = 'SNOWFLAKE'
+BASE_LOCATION = 'a/b';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (keyword_string))
+        (column_definition
+          name: (identifier)
+          type: (timestamp_ntz
+            (keyword_timestamp_ntz)
+            size: (literal))))
+      (table_partition
+        (keyword_partition)
+        (keyword_by)
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (term
+            value: (field
+              name: (identifier))))
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (term
+            value: (literal))
+          parameter: (term
+            value: (field
+              name: (identifier)))))
+      (table_option
+        name: (identifier))
+      (table_option
+        name: (identifier))
+      (table_option
+        name: (identifier)))))
+

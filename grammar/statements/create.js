@@ -188,7 +188,17 @@ export default {
       paren_list($.identifier, true),
   ),
 
-  table_partition: $ => seq(
+  table_partition: $ => choice(
+    // Snowflake Iceberg: PARTITION BY (col, MONTH(col), BUCKET(8, col), ...)
+    seq(
+      $.keyword_partition,
+      $.keyword_by,
+      paren_list($._expression, true),
+    ),
+    $._table_partition_spec,
+  ),
+
+  _table_partition_spec: $ => seq(
     choice(
       // Postgres/MySQL style
       seq(
