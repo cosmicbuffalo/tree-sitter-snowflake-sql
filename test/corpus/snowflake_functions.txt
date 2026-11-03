@@ -323,3 +323,105 @@ ALTER FUNCTION F() UNSET COMMENT;
       (keyword_unset)
       (identifier))))
 
+================================================================================
+Python and SQL stored procedures
+================================================================================
+
+CREATE OR REPLACE PROCEDURE PROCESS_ALERT(alert_run_id STRING, message STRING)
+RETURNS STRING
+LANGUAGE PYTHON
+RUNTIME_VERSION = 3.10
+PACKAGES = ('snowflake-snowpark-python')
+HANDLER = 'run'
+EXECUTE AS CALLER
+AS
+$$
+import logging
+
+def run(session, alert_run_id, message):
+    return 'ok'
+$$;
+
+CREATE OR REPLACE PROCEDURE SQL_PROC()
+RETURNS NUMBER
+LANGUAGE SQL
+EXECUTE AS OWNER
+AS
+$$
+BEGIN
+  RETURN 1;
+END;
+$$;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_procedure
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_procedure)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (identifier)
+          (keyword_string))
+        (function_argument
+          (identifier)
+          (keyword_string)))
+      (procedure_returns
+        (keyword_returns)
+        (keyword_string))
+      (routine_language
+        (keyword_language)
+        (keyword_python))
+      (routine_property
+        name: (keyword_runtime_version)
+        value: (literal))
+      (routine_property
+        name: (keyword_packages)
+        value: (routine_property_list
+          (literal)))
+      (routine_property
+        name: (keyword_handler)
+        value: (literal))
+      (procedure_execute_as
+        (keyword_execute)
+        (keyword_as)
+        (keyword_caller))
+      (routine_body
+        (keyword_as)
+        (literal))))
+  (statement
+    (create_procedure
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_procedure)
+      (object_reference
+        name: (identifier))
+      (function_arguments)
+      (procedure_returns
+        (keyword_returns)
+        (number
+          (keyword_number)))
+      (function_language
+        (keyword_language)
+        (identifier))
+      (procedure_execute_as
+        (keyword_execute)
+        (keyword_as)
+        (keyword_owner))
+      (procedure_body
+        (keyword_as)
+        (dollar_quote)
+        (snowflake_scripting_block
+          (keyword_begin)
+          (return_statement
+            (keyword_return)
+            value: (literal))
+          (keyword_end))
+        (dollar_quote)))))
+

@@ -11,25 +11,31 @@ export default {
     optional($.function_arguments),
     // Snowflake: RETURNS type [NOT NULL]
     optional($.procedure_returns),
-    repeat(
-      choice(
-        $.function_language,
-        $.function_security,
-        $.function_safety,
-        $.procedure_execute_as,
-        $.procedure_comment,
+    repeat($._procedure_option),
+    choice(
+      // SQL / Snowflake Scripting procedure
+      seq(
+        $.procedure_body,
+        repeat($._procedure_option),
+      ),
+      // Handler languages (Python, Java, ...): properties and a string body
+      seq(
+        $.routine_language,
+        repeat(choice($._procedure_option, $.routine_property)),
+        optional(seq(
+          $.routine_body,
+          repeat(choice($._procedure_option, $.routine_property)),
+        )),
       ),
     ),
-    $.procedure_body,
-    repeat(
-      choice(
-        $.function_language,
-        $.function_security,
-        $.function_safety,
-        $.procedure_execute_as,
-        $.procedure_comment,
-      ),
-    ),
+  ),
+
+  _procedure_option: $ => choice(
+    $.function_language,
+    $.function_security,
+    $.function_safety,
+    $.procedure_execute_as,
+    $.procedure_comment,
   ),
 
   // Snowflake: RETURNS type [NOT NULL] | RETURNS TABLE (col type, ...)
