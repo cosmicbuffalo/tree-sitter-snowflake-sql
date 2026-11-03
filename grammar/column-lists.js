@@ -141,6 +141,12 @@ export default {
         $.keyword_unique,
         $.ordered_columns,
       ),
+      seq(
+        $.keyword_foreign,
+        $.keyword_key,
+        $.ordered_columns,
+        $._references_clause,
+      ),
     ),
     optional($._column_comment),
   )),
@@ -167,25 +173,26 @@ export default {
     ),
     optional(field('name', $.identifier)),
     $.ordered_columns,
-    optional(
+    optional($._references_clause),
+  ),
+
+  // REFERENCES t (cols) [ON DELETE|UPDATE action ...]
+  _references_clause: $ => seq(
+    $.keyword_references,
+    $.object_reference,
+    paren_list($.identifier, true),
+    repeat(
       seq(
-        $.keyword_references,
-        $.object_reference,
-        paren_list($.identifier, true),
-        repeat(
+        $.keyword_on,
+        choice($.keyword_delete, $.keyword_update),
+        choice(
+          seq($.keyword_no, $.keyword_action),
+          $.keyword_restrict,
+          $.keyword_cascade,
           seq(
-            $.keyword_on,
-            choice($.keyword_delete, $.keyword_update),
-            choice(
-              seq($.keyword_no, $.keyword_action),
-              $.keyword_restrict,
-              $.keyword_cascade,
-              seq(
-                $.keyword_set,
-                choice($.keyword_null, $.keyword_default),
-                  optional(paren_list($.identifier, true))
-              ),
-            ),
+            $.keyword_set,
+            choice($.keyword_null, $.keyword_default),
+            optional(paren_list($.identifier, true))
           ),
         ),
       ),

@@ -2428,3 +2428,121 @@ SELECT CAST(x AS TIMESTAMPNTZ(6)) FROM t;
         (object_reference
           name: (identifier))))))
 
+================================================================================
+CLONE, HYBRID/TRANSIENT tables, named FOREIGN KEY constraint, LIST
+================================================================================
+
+CREATE TABLE t2 CLONE db.s.t1;
+CREATE OR REPLACE TABLE t3 CLONE t1;
+CREATE HYBRID TABLE IF NOT EXISTS PL (id INT PRIMARY KEY, v VARCHAR);
+CREATE TRANSIENT TABLE tt (id INT);
+CREATE TABLE t4 (
+  id INT,
+  pid INT,
+  CONSTRAINT FK_X FOREIGN KEY (pid) REFERENCES t2 (id)
+)
+COMMENT = 'x';
+LIST @STAGE/a/b;
+list @STAGE/a/b/c_d PATTERN = '.*csv';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_clone)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_clone)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_hybrid)
+      (keyword_table)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int))
+          (keyword_primary)
+          (keyword_key))
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_transient)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int))))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int)))
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int)))
+        (constraints
+          (constraint
+            (keyword_constraint)
+            name: (identifier)
+            (keyword_foreign)
+            (keyword_key)
+            (ordered_columns
+              (column
+                name: (identifier)))
+            (keyword_references)
+            (object_reference
+              name: (identifier))
+            (identifier))))
+      (table_option
+        name: (identifier))))
+  (statement
+    (snowflake_statement
+      (list_statement
+        (keyword_list)
+        (stage_reference))))
+  (statement
+    (snowflake_statement
+      (list_statement
+        (keyword_list)
+        (stage_reference)
+        (keyword_pattern)
+        (literal)))))
+

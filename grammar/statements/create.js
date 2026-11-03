@@ -49,6 +49,8 @@ export default {
           $.keyword_unlogged,
           $.keyword_external,
           $.keyword_iceberg,
+          $.keyword_hybrid,
+          $.keyword_transient,
         )
       ),
       $.keyword_table,
@@ -72,6 +74,8 @@ export default {
             $.create_query,
           ),
         ),
+        // CREATE TABLE ... CLONE source_table
+        seq($.keyword_clone, $.object_reference),
         // CREATE TABLE ... LIKE other_table (Snowflake clone-structure)
         seq(
           $.keyword_like,

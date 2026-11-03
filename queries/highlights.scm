@@ -241,6 +241,10 @@
   (keyword_truncate)
 
   (keyword_language)
+  (keyword_clone)
+  (keyword_hybrid)
+  (keyword_list)
+  (keyword_pattern)
   (keyword_sample)
   (keyword_tablesample)
   (keyword_bernoulli)

@@ -13,6 +13,7 @@ export default {
     $.undrop_statement,
     $.put_statement,
     $.get_statement,
+    $.list_statement,
     $.snowflake_show_statement,
     $.alter_session,
   ),
@@ -333,6 +334,13 @@ export default {
     choice($.stage_reference, $._tsql_parameter),
     $.literal,
     optional($._snowflake_options),
+  )),
+
+  // LIST @stage[/path] [PATTERN = 'regex']
+  list_statement: $ => prec.left(seq(
+    $.keyword_list,
+    $.stage_reference,
+    optional(seq($.keyword_pattern, '=', $.literal)),
   )),
 
   // --- GRANT / REVOKE ---
