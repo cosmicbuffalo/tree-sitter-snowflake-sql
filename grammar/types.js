@@ -64,7 +64,6 @@ export default {
         $.keyword_box3d,
 
         $.keyword_oid,
-        $.keyword_name,
         $.keyword_regclass,
         $.keyword_regnamespace,
         $.keyword_regproc,

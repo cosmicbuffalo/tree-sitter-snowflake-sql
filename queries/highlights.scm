@@ -272,7 +272,6 @@
   (keyword_filter)
   (keyword_function)
   (keyword_input)
-  (keyword_name)
   (keyword_oid)
   (keyword_oids)
   (keyword_precision)

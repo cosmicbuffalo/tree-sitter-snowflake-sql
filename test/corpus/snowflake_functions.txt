@@ -502,3 +502,78 @@ $$;
           (keyword_end))
         (dollar_quote)))))
 
+================================================================================
+Function argument named name; COPY INTO with column list
+================================================================================
+
+CREATE OR REPLACE FUNCTION IS_FEATURE_ACTIVE(name STRING)
+RETURNS BOOLEAN
+AS
+$$
+  name IS NOT NULL
+$$;
+
+COPY INTO TMP_LANDING (A, B, C)
+FROM (SELECT $1, $2, $3 FROM @MY_STAGE)
+FILE_FORMAT = (TYPE = CSV);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_function
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_function)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (identifier)
+          (keyword_string)))
+      (keyword_returns)
+      (keyword_boolean)
+      (function_body
+        (keyword_as)
+        (dollar_quote)
+        (binary_expression
+          left: (field
+            name: (identifier))
+          operator: (is_not
+            (keyword_is)
+            (keyword_not))
+          right: (literal
+            (keyword_null)))
+        (dollar_quote))))
+  (statement
+    (snowflake_copy_into
+      (keyword_copy)
+      (keyword_into)
+      (object_reference
+        name: (identifier))
+      (list
+        (column
+          (identifier))
+        (column
+          (identifier))
+        (column
+          (identifier)))
+      (keyword_from)
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (parameter))
+          (term
+            value: (parameter))
+          (term
+            value: (parameter))))
+      (from
+        (keyword_from)
+        (relation
+          (stage_reference)))
+      name: (identifier)
+      name: (identifier)
+      value: (identifier))))
+

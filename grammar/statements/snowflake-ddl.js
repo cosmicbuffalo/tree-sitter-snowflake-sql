@@ -239,6 +239,8 @@ export default {
   snowflake_copy_into: $ => prec.left(seq(
     $.keyword_copy, $.keyword_into,
     choice($.object_reference, $.stage_reference),
+    // COPY INTO table (col1, col2, ...) FROM ...
+    optional(alias($._column_list, $.list)),
     $.keyword_from,
     choice(
       $.object_reference,

@@ -121,9 +121,9 @@ Casts and arrays
 ================================================================================
 
 select col_has_check(
-  'one'::name,
-  'two'::name,
-  array['three'::name, 'four'::name],
+  'one'::text,
+  'two'::text,
+  array['three'::text, 'four'::text],
   'description'
 );
 
@@ -141,20 +141,20 @@ select col_has_check(
             parameter: (term
               value: (cast
                 (literal)
-                (keyword_name)))
+                (keyword_text)))
             parameter: (term
               value: (cast
                 (literal)
-                (keyword_name)))
+                (keyword_text)))
             parameter: (term
               value: (array
                 (keyword_array)
                 (cast
                   (literal)
-                  (keyword_name))
+                  (keyword_text))
                 (cast
                   (literal)
-                  (keyword_name))))
+                  (keyword_text))))
             parameter: (term
               value: (literal))))))))
 
