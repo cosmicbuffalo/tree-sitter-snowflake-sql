@@ -235,7 +235,7 @@ export default {
     seq(
       field('name', choice($.keyword_engine, $.identifier, $._literal_string)),
       '=',
-      field('value', choice($.identifier, $._literal_string)),
+      field('value', choice($.identifier, $._literal_string, alias($._integer, $.literal))),
     ),
   ),
 

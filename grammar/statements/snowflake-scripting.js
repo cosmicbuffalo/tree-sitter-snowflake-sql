@@ -111,6 +111,7 @@ export default {
     $.raise_statement,
     $.break_statement,
     $.continue_statement,
+    $.await_statement,
     $.open_statement,
     $.fetch_statement,
     $.close_statement,
@@ -326,6 +327,9 @@ export default {
   // =========================================================================
   // BREAK / EXIT [label]
   // =========================================================================
+  // AWAIT ALL | AWAIT resultset_name
+  await_statement: $ => seq($.keyword_await, choice($.keyword_all, $.identifier)),
+
   // NULL; (no-op)
   null_statement: $ => $.keyword_null,
 

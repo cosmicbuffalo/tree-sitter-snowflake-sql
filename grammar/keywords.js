@@ -31,6 +31,7 @@ export default {
   keyword_hybrid: _ => make_keyword("hybrid"),
   keyword_pattern: _ => make_keyword("pattern"),
   keyword_list: _ => make_keyword("list"),
+  keyword_await: _ => make_keyword("await"),
   keyword_select: _ => make_keyword("select"),
   keyword_delete: _ => make_keyword("delete"),
   keyword_insert: _ => make_keyword("insert"),

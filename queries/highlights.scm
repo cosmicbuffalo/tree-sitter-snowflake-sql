@@ -241,6 +241,7 @@
   (keyword_truncate)
 
   (keyword_language)
+  (keyword_await)
   (keyword_clone)
   (keyword_hybrid)
   (keyword_list)

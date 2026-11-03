@@ -2713,3 +2713,103 @@ SELECT a, FROM db.s.t;
           schema: (identifier)
           name: (identifier))))))
 
+================================================================================
+DMF string body, GRANT ON PROCEDURE, numeric table option, AWAIT
+================================================================================
+
+CREATE DATA METRIC FUNCTION CHECK_KINDS (ARG_T table(ARG_C STRING))
+RETURNS NUMBER
+COMMENT = 'Counts rows.'
+AS
+'SELECT COUNT(*) FROM ARG_T WHERE ARG_C NOT IN (\'SALE\', \'CREDIT\')';
+
+GRANT USAGE ON PROCEDURE DB.PUBLIC.SYNC_RUNBOOKS()
+  TO ROLE ADMIN;
+
+CREATE ICEBERG TABLE t (id INT)
+EXTERNAL_VOLUME = 'vol'
+CHANGE_TRACKING = TRUE
+ICEBERG_VERSION = 2;
+
+BEGIN
+  rs1 := ASYNC (EXECUTE IMMEDIATE :sql);
+  AWAIT ALL;
+  AWAIT rs1;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_data_metric_function
+      (keyword_create)
+      (keyword_data)
+      (keyword_metric)
+      (keyword_function)
+      (object_reference
+        name: (identifier))
+      arg_name: (identifier)
+      (keyword_table)
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (keyword_string)))
+      (keyword_returns)
+      (number
+        (keyword_number))
+      (keyword_comment)
+      (literal)
+      (keyword_as)
+      (literal)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (identifier)
+      (keyword_on)
+      (keyword_procedure)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (function_arguments)
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int))))
+      (table_option
+        name: (identifier))
+      (table_option
+        name: (identifier)
+        value: (identifier))
+      (table_option
+        name: (identifier)
+        value: (literal))))
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (assignment_statement
+        name: (identifier)
+        value: (keyword_async)
+        value: (execute_statement
+          (keyword_execute)
+          (keyword_immediate)
+          (snowflake_variable_reference)))
+      (await_statement
+        (keyword_await)
+        (keyword_all))
+      (await_statement
+        (keyword_await)
+        (identifier))
+      (keyword_end))))
+

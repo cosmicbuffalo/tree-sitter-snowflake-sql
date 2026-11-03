@@ -231,10 +231,16 @@ export default {
     $._type,
     optional(seq($.keyword_comment, '=', alias($._literal_string, $.literal))),
     $.keyword_as,
-    alias($._dollar_quoted_string_start_tag, $.dollar_quote),
-    $.statement,
-    optional(';'),
-    alias($._dollar_quoted_string_end_tag, $.dollar_quote),
+    choice(
+      seq(
+        alias($._dollar_quoted_string_start_tag, $.dollar_quote),
+        $.statement,
+        optional(';'),
+        alias($._dollar_quoted_string_end_tag, $.dollar_quote),
+      ),
+      // AS 'SELECT ...' (single-quoted body)
+      alias($._single_quote_string, $.literal),
+    ),
   )),
 
   // --- Snowflake COPY INTO ---
@@ -353,6 +359,7 @@ export default {
     $.keyword_on,
     optional($._grant_object_type),
     $.object_reference,
+    optional($.function_arguments),
     $.keyword_to, $._grant_grantee,
     optional(seq(
       $.keyword_with,
@@ -366,6 +373,7 @@ export default {
     $.keyword_on,
     optional($._grant_object_type),
     $.object_reference,
+    optional($.function_arguments),
     $.keyword_from, $._grant_grantee,
     optional($.keyword_restrict),
     optional($.keyword_cascade),
@@ -386,6 +394,8 @@ export default {
     $.keyword_warehouse,
     $.keyword_stage,
     $.keyword_integration,
+    $.keyword_procedure,
+    $.keyword_function,
   ),
 
   _grant_grantee: $ => choice(
