@@ -1604,3 +1604,53 @@ ALTER ICEBERG TABLE t1 SET COMMENT = 'x';
       name: (keyword_comment)
       value: (literal))))
 
+================================================================================
+INSERT OVERWRITE INTO
+================================================================================
+
+INSERT OVERWRITE INTO PREVIOUS_HIGHWATER_MARK (a, b)
+SELECT x, y FROM src;
+INSERT OVERWRITE INTO t2 SELECT 1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (insert
+      (keyword_insert)
+      (keyword_overwrite)
+      (keyword_into)
+      (object_reference
+        name: (identifier))
+      (list
+        (column
+          (identifier))
+        (column
+          (identifier)))
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (field
+              name: (identifier)))
+          (term
+            value: (field
+              name: (identifier)))))
+      (from
+        (keyword_from)
+        (relation
+          (object_reference
+            name: (identifier))))))
+  (statement
+    (insert
+      (keyword_insert)
+      (keyword_overwrite)
+      (keyword_into)
+      (object_reference
+        name: (identifier))
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (literal)))))))
+

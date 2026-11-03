@@ -24,6 +24,7 @@ export default {
       choice(
         $.keyword_into,
         $.keyword_overwrite, // Spark SQL
+        seq($.keyword_overwrite, $.keyword_into), // Snowflake: INSERT OVERWRITE INTO
       ),
     ),
     $.object_reference,
