@@ -1965,3 +1965,83 @@ CREATE OR REPLACE SECURE VIEW v2 (a, b) COPY GRANTS COMMENT = 'x' AS SELECT 1, 2
             (term
               value: (literal))))))))
 
+================================================================================
+LIMIT :var, DROP/SHOW DYNAMIC TABLE, GRANT TO DATABASE ROLE
+================================================================================
+
+SELECT a FROM t LIMIT :n;
+SELECT a FROM t LIMIT 10 OFFSET :o;
+DROP DYNAMIC TABLE IF EXISTS T1;
+SHOW DYNAMIC TABLES;
+SHOW TASKS IN SCHEMA ROOT ONLY;
+GRANT USAGE ON SCHEMA PUBLIC TO DATABASE ROLE REPORT_READER;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))
+    (limit
+      (keyword_limit)
+      (snowflake_variable_reference)))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))
+    (limit
+      (keyword_limit)
+      (literal)
+      (offset
+        (keyword_offset)
+        (snowflake_variable_reference))))
+  (statement
+    (drop_snowflake_named_object
+      (keyword_drop)
+      (snowflake_drop_object_type)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (keyword_show)
+    (snowflake_show_target))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_in)
+        (keyword_schema)
+        (keyword_root)
+        (keyword_only))))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (identifier)
+      (keyword_on)
+      (keyword_schema)
+      (object_reference
+        name: (identifier))
+      (keyword_to)
+      (keyword_database)
+      (keyword_role)
+      (identifier))))
+

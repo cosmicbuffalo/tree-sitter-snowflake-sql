@@ -447,13 +447,13 @@ export default {
 
   limit: $ => seq(
     $.keyword_limit,
-    $.literal,
+    choice($.literal, $.snowflake_variable_reference),
     optional($.offset),
   ),
 
   offset: $ => seq(
     $.keyword_offset,
-    $.literal,
+    choice($.literal, $.snowflake_variable_reference),
   ),
 
   returning: $ => seq(
