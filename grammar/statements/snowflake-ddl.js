@@ -296,7 +296,7 @@ export default {
         alias($._dollar_quoted_string_end_tag, $.dollar_quote),
       )),
       // Fallback: EXECUTE IMMEDIATE 'string' or EXECUTE IMMEDIATE :var or EXECUTE IMMEDIATE expr
-      seq($.keyword_immediate, $._expression),
+      seq($.keyword_immediate, $._expression, optional(seq($.keyword_using, $.list))),
     ),
   ),
 

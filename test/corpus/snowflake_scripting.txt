@@ -2651,3 +2651,23 @@ $$;
             (keyword_for))
           (keyword_end))
         (dollar_quote)))))
+================================================================================
+EXECUTE IMMEDIATE with USING binds
+================================================================================
+
+EXECUTE IMMEDIATE :check_query USING (CHECK_DATE);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_immediate)
+        (snowflake_variable_reference)
+        (keyword_using)
+        (list
+          (field
+            name: (identifier)))))))
+
