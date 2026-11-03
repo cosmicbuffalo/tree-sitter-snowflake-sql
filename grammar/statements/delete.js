@@ -14,7 +14,7 @@ export default {
       $.keyword_only,
     ),
     $.object_reference,
-    optional($.identifier),
+    optional($._alias),
     // Snowflake: DELETE FROM t1 alias USING t2, t3, (subquery) AS alias WHERE ...
     optional(seq(
       $.keyword_using,
@@ -30,7 +30,6 @@ export default {
 
   delete: $ => seq(
     $.keyword_delete,
-    optional($.index_hint),
   ),
 
 };

@@ -657,3 +657,180 @@ SELECT f(0, -a) FROM t;
         (object_reference
           name: (identifier))))))
 
+================================================================================
+Slash comments, SELECT * REPLACE, DELETE with AS alias and USING
+================================================================================
+
+SELECT 1; //Fee_Count = x / y
+SELECT * REPLACE (CURRENT_TIMESTAMP() AS created_at) FROM t;
+SELECT v.* REPLACE (1 AS a, 2 AS b) FROM t v;
+DELETE FROM MERCHANT_ACCOUNTS AS TGT USING (SELECT id FROM s) AS src WHERE TGT.id = src.id;
+SELECT a FROM t JOIN JOURNAL_ENTRY_BALANCE_MAPPING JEBM ON t.id = JEBM.id;
+SELECT a FROM t, LATERAL FLATTEN(input => t.x, OUTER => TRUE) AS f;
+SELECT a FROM t, LATERAL FLATTEN(t.x) AS fe;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (literal)))))
+  (comment)
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields
+            (keyword_replace)
+            (invocation
+              (object_reference
+                name: (identifier)))
+            (keyword_as)
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields
+            (object_reference
+              name: (identifier))
+            (keyword_replace)
+            (literal)
+            (keyword_as)
+            (identifier)
+            (literal)
+            (keyword_as)
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))
+        alias: (identifier))))
+  (statement
+    (delete
+      (keyword_delete))
+    (from
+      (keyword_from)
+      (object_reference
+        name: (identifier))
+      (keyword_as)
+      alias: (identifier)
+      (keyword_using)
+      (subquery
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (field
+                name: (identifier)))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier)))))
+      (keyword_as)
+      alias: (identifier)
+      (where
+        (keyword_where)
+        predicate: (binary_expression
+          left: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))
+          right: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))
+      (join
+        (keyword_join)
+        (relation
+          (object_reference
+            name: (identifier))
+          alias: (identifier))
+        (keyword_on)
+        predicate: (binary_expression
+          left: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))
+          right: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))
+      (lateral_relation
+        (keyword_lateral)
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (named_parameter
+            name: (identifier)
+            value: (field
+              (object_reference
+                name: (identifier))
+              name: (identifier)))
+          parameter: (named_parameter
+            name: (identifier)
+            value: (literal
+              (keyword_true))))
+        (keyword_as)
+        alias: (identifier))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))
+      (lateral_relation
+        (keyword_lateral)
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (term
+            value: (field
+              (object_reference
+                name: (identifier))
+              name: (identifier))))
+        (keyword_as)
+        alias: (identifier)))))
+

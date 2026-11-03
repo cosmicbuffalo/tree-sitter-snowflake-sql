@@ -36,19 +36,6 @@ export default {
     ),
   ),
 
-  var_declarations: $ => seq($.keyword_declare, repeat1($.var_declaration)),
-  var_declaration: $ => seq(
-    $.identifier,
-    $._type,
-    optional(
-      seq(
-        choice($.keyword_default, '='),
-        $.literal,
-      ),
-    ),
-    optional(','),
-  ),
-
   _ddl_statement: $ => choice(
     $._create_statement,
     $._alter_statement,

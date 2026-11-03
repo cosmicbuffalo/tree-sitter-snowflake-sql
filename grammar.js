@@ -36,8 +36,6 @@ export default grammar({
     [$.object_reference, $.snowflake_declare_cursor],
     // LET var CURSOR FOR name — same ambiguity
     [$.object_reference, $.let_statement],
-    // create_procedure has repeated attribute blocks before and after body
-    [$.create_procedure],
     // SQL UDF body: AS $$ (SELECT ...) $$ is either a parenthesized statement
     // or a scalar subquery expression
     [$.subquery, $.statement],
@@ -98,7 +96,8 @@ export default grammar({
       ),
     ),
 
-    comment: _ => /--.*/,
+    // -- and // line comments (Snowflake accepts both)
+    comment: _ => /(--|\/\/).*/,
     // https://stackoverflow.com/questions/13014947/regex-to-match-a-c-style-multiline-comment
     marginalia: _ => /\/\*[^*]*\*+(?:[^/*][^*]*\*+)*\//,
 

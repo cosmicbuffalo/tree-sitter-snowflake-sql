@@ -14,14 +14,6 @@ export default {
     ),
     optional(
       choice(
-        $.keyword_low_priority,
-        $.keyword_delayed,
-        $.keyword_high_priority,
-      ),
-    ),
-    optional($.keyword_ignore),
-    optional(
-      choice(
         $.keyword_into,
         $.keyword_overwrite, // Spark SQL
         seq($.keyword_overwrite, $.keyword_into), // Snowflake: INSERT OVERWRITE INTO
@@ -35,41 +27,7 @@ export default {
         field('alias', $.identifier)
       ),
     ),
-    // TODO we need a test for `insert...set`
-    choice(
-      $._insert_values,
-      $._set_values,
-    ),
-    optional(
-      choice(
-        $._on_conflict,
-        $._on_duplicate_key_update,
-      ),
-    ),
-  ),
-
-  _on_conflict: $ => seq(
-    $.keyword_on,
-    $.keyword_conflict,
-    seq(
-      $.keyword_do,
-      choice(
-        $.keyword_nothing,
-        seq(
-          $.keyword_update,
-          $._set_values,
-          optional($.where),
-        ),
-      ),
-    ),
-  ),
-
-  _on_duplicate_key_update: $ => seq(
-    $.keyword_on,
-    $.keyword_duplicate,
-    $.keyword_key,
-    $.keyword_update,
-    $.assignment_list,
+    $._insert_values,
   ),
 
   assignment_list: $ => seq(

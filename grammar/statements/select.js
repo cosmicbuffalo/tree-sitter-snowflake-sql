@@ -111,6 +111,14 @@ export default {
       $.keyword_exclude,
       paren_list($.identifier, true),
     )),
+    // Snowflake: SELECT * REPLACE (expr AS col, ...)
+    optional(seq(
+      $.keyword_replace,
+      paren_list(
+        seq($._expression, $.keyword_as, $.identifier),
+        true,
+      ),
+    )),
     optional(seq(
       $.keyword_rename,
       paren_list(
@@ -229,7 +237,6 @@ export default {
       $.keyword_only,
     ),
     comma_list(choice($.relation, $.lateral_relation), true),
-    optional($.index_hint),
     repeat(
       choice(
         $.join,
@@ -284,24 +291,6 @@ export default {
     ),
   )),
 
-  index_hint: $ => seq(
-    choice(
-      $.keyword_force,
-      // $.keyword_use, // removed: conflicts with Snowflake USE DATABASE/SCHEMA/WAREHOUSE/ROLE
-      $.keyword_ignore,
-    ),
-    $.keyword_index,
-    optional(
-      seq(
-        $.keyword_for,
-        $.keyword_join,
-      ),
-    ),
-    wrapped_in_parenthesis(
-      field('index_name', $.identifier),
-    ),
-  ),
-
   join: $ => seq(
     optional($.keyword_natural),
     optional(
@@ -317,7 +306,6 @@ export default {
     ),
     $.keyword_join,
     $.relation,
-    optional($.index_hint),
     optional($.join),
     choice(
       seq(
