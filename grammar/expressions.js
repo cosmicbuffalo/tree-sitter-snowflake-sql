@@ -467,7 +467,9 @@ export default {
   _tsql_parameter: $ => seq('@', $._identifier),
   // support nordic chars and umlaue
   // Snowflake allows $ in identifiers (e.g. SYSTEM$STREAM_HAS_DATA)
-  _identifier: _ => /[A-Za-z_\u00C0-\u017F][0-9A-Za-z_$\u00C0-\u017F]*/,
+  // Also accepts ${NAME} deploy-time placeholders (Flyway / schemachange style)
+  // anywhere in the identifier, e.g. ${DB}.PUBLIC.T or ${ENV}_STAGE.
+  _identifier: _ => /(\$\{[A-Za-z_][0-9A-Za-z_]*\}|[A-Za-z_\u00C0-\u017F])([0-9A-Za-z_$\u00C0-\u017F]|\$\{[A-Za-z_][0-9A-Za-z_]*\})*/,
 
   object_id: $ => seq(
     $.keyword_object_id,

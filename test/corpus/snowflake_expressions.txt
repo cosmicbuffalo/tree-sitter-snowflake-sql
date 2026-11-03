@@ -451,3 +451,70 @@ SELECT t.* EXCLUDE (id) FROM t;
       (relation
         (object_reference
           name: (identifier))))))
+================================================================================
+Deploy-time ${} placeholders inside identifiers
+================================================================================
+
+SELECT a.x
+FROM ${DB}.${SCHEMA}.T1 AS a
+INNER JOIN ${DB}.PUBLIC.T2 b ON a.id = b.id
+LEFT JOIN ${ENV}_stage_t c ON c.id = a.id;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          database: (identifier)
+          schema: (identifier)
+          name: (identifier))
+        (keyword_as)
+        alias: (identifier))
+      (join
+        (keyword_inner)
+        (keyword_join)
+        (relation
+          (object_reference
+            database: (identifier)
+            schema: (identifier)
+            name: (identifier))
+          alias: (identifier))
+        (keyword_on)
+        predicate: (binary_expression
+          left: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))
+          right: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))))
+      (join
+        (keyword_left)
+        (keyword_join)
+        (relation
+          (object_reference
+            name: (identifier))
+          alias: (identifier))
+        (keyword_on)
+        predicate: (binary_expression
+          left: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))
+          right: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))))))
+
