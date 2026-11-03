@@ -1154,8 +1154,9 @@ END;
       (keyword_begin)
       (case_statement
         (keyword_case)
-        (field
-          (identifier))
+        (parenthesized_expression
+          (field
+            (identifier)))
         (case_statement_when_clause
           (keyword_when)
           (literal)
@@ -1250,8 +1251,9 @@ END;
       (keyword_begin)
       (case_statement
         (keyword_case)
-        (field
-          (identifier))
+        (parenthesized_expression
+          (field
+            (identifier)))
         (case_statement_when_clause
           (keyword_when)
           (literal)
@@ -2168,8 +2170,9 @@ END;
             (literal)))
         (case_statement
           (keyword_case)
-          (field
-            (identifier))
+          (parenthesized_expression
+            (field
+              (identifier)))
           (case_statement_when_clause
             (keyword_when)
             (literal)
@@ -2706,4 +2709,163 @@ CALL other_proc(1, 2);
             value: (literal))
           parameter: (term
             value: (literal)))))))
+
+================================================================================
+Scripting: EXECUTE/CALL values, CASE operand, NULL, CALL INTO name
+================================================================================
+
+EXECUTE IMMEDIATE $$
+DECLARE
+  res RESULTSET DEFAULT (SHOW TASKS IN SCHEMA ROOT ONLY);
+  rs2 RESULTSET;
+BEGIN
+  rs1 := (EXECUTE IMMEDIATE :sql);
+  LET r3 RESULTSET := (EXECUTE IMMEDIATE :q USING (a, b));
+  x := (CALL CACHE_RATE(:items, NULL, NULL));
+  CALL RETRY_ERRORS('x') INTO out_var;
+  CASE :EBB_KIND
+    WHEN 'A' THEN
+      RETURN 1;
+    WHEN 'B' THEN
+      RETURN 2;
+    ELSE
+      RETURN 3;
+  END CASE;
+  CASE
+    WHEN x > 1 THEN
+      NULL;
+    ELSE
+      RETURN 0;
+  END CASE;
+  EXCEPTION
+    WHEN OTHER THEN NULL;
+END;
+$$;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_immediate)
+        (dollar_quote)
+        (snowflake_scripting_block
+          (declare_section
+            (keyword_declare)
+            (snowflake_declare_variable
+              name: (identifier)
+              type: (keyword_resultset)
+              (keyword_default)
+              default: (subquery
+                (snowflake_show_statement
+                  (keyword_show)
+                  (snowflake_show_target)
+                  (keyword_in)
+                  (keyword_schema)
+                  (keyword_root)
+                  (keyword_only))))
+            (snowflake_declare_variable
+              name: (identifier)
+              type: (keyword_resultset)))
+          (keyword_begin)
+          (assignment_statement
+            name: (identifier)
+            value: (execute_statement
+              (keyword_execute)
+              (keyword_immediate)
+              (snowflake_variable_reference)))
+          (let_statement
+            (keyword_let)
+            name: (identifier)
+            type: (keyword_resultset)
+            value: (execute_statement
+              (keyword_execute)
+              (keyword_immediate)
+              (snowflake_variable_reference)
+              (keyword_using)
+              (list
+                (field
+                  name: (identifier))
+                (field
+                  name: (identifier)))))
+          (assignment_statement
+            name: (identifier)
+            value: (call_statement
+              (keyword_call)
+              (invocation
+                (object_reference
+                  name: (identifier))
+                parameter: (term
+                  value: (snowflake_variable_reference))
+                parameter: (term
+                  value: (literal
+                    (keyword_null)))
+                parameter: (term
+                  value: (literal
+                    (keyword_null))))))
+          (statement
+            (snowflake_statement
+              (call_statement
+                (keyword_call)
+                (invocation
+                  (object_reference
+                    name: (identifier))
+                  parameter: (term
+                    value: (literal)))
+                (keyword_into)
+                (identifier))))
+          (case_statement
+            (keyword_case)
+            operand: (snowflake_variable_reference)
+            (case_statement_when_clause
+              (keyword_when)
+              condition: (literal)
+              (keyword_then)
+              (return_statement
+                (keyword_return)
+                value: (literal)))
+            (case_statement_when_clause
+              (keyword_when)
+              condition: (literal)
+              (keyword_then)
+              (return_statement
+                (keyword_return)
+                value: (literal)))
+            (case_statement_else_clause
+              (keyword_else)
+              (return_statement
+                (keyword_return)
+                value: (literal)))
+            (keyword_end)
+            (keyword_case))
+          (case_statement
+            (keyword_case)
+            (case_statement_when_clause
+              (keyword_when)
+              condition: (binary_expression
+                left: (field
+                  name: (identifier))
+                right: (literal))
+              (keyword_then)
+              (null_statement
+                (keyword_null)))
+            (case_statement_else_clause
+              (keyword_else)
+              (return_statement
+                (keyword_return)
+                value: (literal)))
+            (keyword_end)
+            (keyword_case))
+          (exception_clause
+            (keyword_exception)
+            (exception_when_clause
+              (keyword_when)
+              exception: (keyword_other)
+              (keyword_then)
+              (null_statement
+                (keyword_null))))
+          (keyword_end))
+        (dollar_quote)))))
 
