@@ -2936,3 +2936,49 @@ CALL NOTIFY();
                 (object_reference
                   name: (identifier))))))))))
 
+================================================================================
+SHOW GRANTS ON object
+================================================================================
+
+SHOW GRANTS ON STAGE DB.PUBLIC.PLAYBOOK_STAGE;
+SHOW GRANTS ON PROCEDURE DB.PUBLIC.SYNC_RUNBOOKS_FROM_STAGE();
+SHOW TASKS LIKE 'x' IN SCHEMA s;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_on)
+        (keyword_stage)
+        (object_reference
+          database: (identifier)
+          schema: (identifier)
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_on)
+        (keyword_procedure)
+        (object_reference
+          database: (identifier)
+          schema: (identifier)
+          name: (identifier))
+        (function_arguments))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_like)
+        (literal)
+        (keyword_in)
+        (keyword_schema)
+        (object_reference
+          name: (identifier))))))
+

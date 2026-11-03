@@ -449,6 +449,13 @@ export default {
         optional(choice($.keyword_database, $.keyword_schema, $.keyword_account)),
         optional($.object_reference),
       ),
+      // SHOW GRANTS ON <object_type> name[(arg types)]
+      seq(
+        $.keyword_on,
+        $._grant_object_type,
+        $.object_reference,
+        optional($.function_arguments),
+      ),
     ),
     optional(seq($.keyword_root, $.keyword_only)),
   )),
