@@ -437,6 +437,7 @@ export default {
     choice(
       $._single_quote_string,
       $._double_quote_string,
+      $._dollar_quoted_string,
       $._postgres_escape_string,
     ),
   ),

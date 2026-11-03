@@ -1151,10 +1151,7 @@ $a$
         (dollar_quote)
         (keyword_begin)
         (keyword_return)
-        (ERROR
-          (UNEXPECTED 'b'))
-        (field
-          name: (identifier))
+        (literal)
         (keyword_end)
         (dollar_quote)))))
 
@@ -1194,13 +1191,7 @@ $_$
         (dollar_quote)
         (keyword_begin)
         (keyword_return)
-        (ERROR
-          (UNEXPECTED '.')
-          (UNEXPECTED 't'))
-        (field
-          name: (identifier))
-        (ERROR
-          (UNEXPECTED ';'))
+        (literal)
         (keyword_end)
         (dollar_quote)))))
 

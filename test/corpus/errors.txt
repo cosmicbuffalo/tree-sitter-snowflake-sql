@@ -143,10 +143,7 @@ $c$;
         (dollar_quote)
         (keyword_begin)
         (keyword_return)
-        (ERROR
-          (UNEXPECTED 'b'))
-        (field
-          name: (identifier))
+        (literal)
         (keyword_end)
         (ERROR
           (UNEXPECTED 'c'))
