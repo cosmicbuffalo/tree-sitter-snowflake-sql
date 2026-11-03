@@ -2671,3 +2671,39 @@ EXECUTE IMMEDIATE :check_query USING (CHECK_DATE);
           (field
             name: (identifier)))))))
 
+================================================================================
+CALL with INTO variable
+================================================================================
+
+CALL my_proc(
+  'x' -- note
+) INTO :RESULT;
+CALL other_proc(1, 2);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (call_statement
+        (keyword_call)
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (term
+            value: (literal))
+          (comment))
+        (keyword_into)
+        (snowflake_variable_reference))))
+  (statement
+    (snowflake_statement
+      (call_statement
+        (keyword_call)
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (term
+            value: (literal))
+          parameter: (term
+            value: (literal)))))))
+

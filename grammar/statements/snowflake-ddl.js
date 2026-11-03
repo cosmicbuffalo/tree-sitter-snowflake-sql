@@ -282,6 +282,8 @@ export default {
   call_statement: $ => seq(
     $.keyword_call,
     $.invocation,
+    // CALL proc(...) INTO :result_var
+    optional(seq($.keyword_into, $.snowflake_variable_reference)),
   ),
 
   // --- EXECUTE TASK / EXECUTE IMMEDIATE ---
