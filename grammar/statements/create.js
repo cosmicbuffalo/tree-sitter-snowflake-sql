@@ -239,7 +239,11 @@ export default {
     ),
   ),
 
-  create_query: $ => $._dml_read,
+  create_query: $ => choice(
+    $._dml_read,
+    // AS ( WITH cte AS (...) SELECT ... )
+    wrapped_in_parenthesis(seq($._cte, choice($._select_statement, $.set_operation))),
+  ),
 
   create_view: $ => prec.right(
     seq(
