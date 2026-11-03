@@ -2098,3 +2098,164 @@ COMMENT ON TABLE t IS 'z';
       (keyword_is)
       (literal))))
 
+================================================================================
+Multi-table INSERT FIRST/ALL
+================================================================================
+
+INSERT FIRST
+  WHEN (ERR IS NULL AND MODEL != 'flat') THEN
+    INTO FEES (A, B) VALUES (X, Y)
+  WHEN (ERR IS NULL AND DUP = TRUE) THEN
+    INTO DUP_FEES (A, B) VALUES (X, Y)
+    INTO AUDIT (A) VALUES (X)
+  ELSE
+    INTO ERRS (A) VALUES (X)
+SELECT * FROM src;
+
+INSERT ALL
+  INTO t1 (a) VALUES (x)
+  INTO t2 (a) VALUES (x)
+SELECT x FROM src;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (multi_table_insert
+      (keyword_insert)
+      (keyword_first)
+      (multi_insert_when
+        (keyword_when)
+        condition: (parenthesized_expression
+          (binary_expression
+            left: (binary_expression
+              left: (field
+                name: (identifier))
+              operator: (keyword_is)
+              right: (literal
+                (keyword_null)))
+            operator: (keyword_and)
+            right: (binary_expression
+              left: (field
+                name: (identifier))
+              right: (literal))))
+        (keyword_then)
+        (multi_insert_into
+          (keyword_into)
+          (object_reference
+            name: (identifier))
+          (list
+            (column
+              (identifier))
+            (column
+              (identifier)))
+          (keyword_values)
+          (list
+            (field
+              name: (identifier))
+            (field
+              name: (identifier)))))
+      (multi_insert_when
+        (keyword_when)
+        condition: (parenthesized_expression
+          (binary_expression
+            left: (binary_expression
+              left: (field
+                name: (identifier))
+              operator: (keyword_is)
+              right: (literal
+                (keyword_null)))
+            operator: (keyword_and)
+            right: (binary_expression
+              left: (field
+                name: (identifier))
+              right: (literal
+                (keyword_true)))))
+        (keyword_then)
+        (multi_insert_into
+          (keyword_into)
+          (object_reference
+            name: (identifier))
+          (list
+            (column
+              (identifier))
+            (column
+              (identifier)))
+          (keyword_values)
+          (list
+            (field
+              name: (identifier))
+            (field
+              name: (identifier))))
+        (multi_insert_into
+          (keyword_into)
+          (object_reference
+            name: (identifier))
+          (list
+            (column
+              (identifier)))
+          (keyword_values)
+          (list
+            (field
+              name: (identifier)))))
+      (multi_insert_else
+        (keyword_else)
+        (multi_insert_into
+          (keyword_into)
+          (object_reference
+            name: (identifier))
+          (list
+            (column
+              (identifier)))
+          (keyword_values)
+          (list
+            (field
+              name: (identifier)))))
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (all_fields))))
+      (from
+        (keyword_from)
+        (relation
+          (object_reference
+            name: (identifier))))))
+  (statement
+    (multi_table_insert
+      (keyword_insert)
+      (keyword_all)
+      (multi_insert_into
+        (keyword_into)
+        (object_reference
+          name: (identifier))
+        (list
+          (column
+            (identifier)))
+        (keyword_values)
+        (list
+          (field
+            name: (identifier))))
+      (multi_insert_into
+        (keyword_into)
+        (object_reference
+          name: (identifier))
+        (list
+          (column
+            (identifier)))
+        (keyword_values)
+        (list
+          (field
+            name: (identifier))))
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (field
+              name: (identifier)))))
+      (from
+        (keyword_from)
+        (relation
+          (object_reference
+            name: (identifier)))))))
+

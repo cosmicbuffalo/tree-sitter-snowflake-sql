@@ -30,6 +30,39 @@ export default {
     $._insert_values,
   ),
 
+  // Snowflake multi-table insert:
+  // INSERT [OVERWRITE] {ALL | FIRST} { WHEN cond THEN into_clause+ }... [ELSE into_clause] query
+  multi_table_insert: $ => seq(
+    $.keyword_insert,
+    optional($.keyword_overwrite),
+    choice($.keyword_all, $.keyword_first),
+    choice(
+      seq(repeat1($.multi_insert_when), optional($.multi_insert_else)),
+      repeat1($.multi_insert_into),
+    ),
+    $._dml_read,
+  ),
+
+  multi_insert_when: $ => seq(
+    $.keyword_when,
+    field('condition', $._expression),
+    $.keyword_then,
+    repeat1($.multi_insert_into),
+  ),
+
+  multi_insert_else: $ => seq(
+    $.keyword_else,
+    repeat1($.multi_insert_into),
+  ),
+
+  // INTO table [(columns)] [VALUES (exprs)]
+  multi_insert_into: $ => seq(
+    $.keyword_into,
+    $.object_reference,
+    optional(alias($._column_list, $.list)),
+    optional(prec.dynamic(1, seq($.keyword_values, $.list))),
+  ),
+
   assignment_list: $ => seq(
     $.assignment,
     repeat(seq(',', $.assignment)),

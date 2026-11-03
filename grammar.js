@@ -39,6 +39,8 @@ export default grammar({
     // SQL UDF body: AS $$ (SELECT ...) $$ is either a parenthesized statement
     // or a scalar subquery expression
     [$.subquery, $.statement],
+    // INSERT ALL INTO t VALUES (..): VALUES belongs to the INTO clause, not a following bare VALUES query
+    [$.multi_insert_into],
     // -1: signed literal vs unary sign applied to a literal
     [$._integer],
     [$._decimal_number],

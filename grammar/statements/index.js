@@ -70,6 +70,7 @@ export default {
       choice(
         $._delete_statement,
         $._insert_statement,
+        $.multi_table_insert,
         $._update_statement,
         $._truncate_statement,
         // $._copy_statement, // removed: Postgres-specific COPY FROM, Snowflake uses snowflake_copy_into
