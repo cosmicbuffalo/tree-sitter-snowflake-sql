@@ -1071,3 +1071,108 @@ SELECT a FROM t ORDER BY a DESC NULLS FIRST, b NULLS LAST;
         (keyword_nulls)
         (keyword_last)))))
 
+================================================================================
+JOIN LATERAL without ON; list-valued COPY options
+================================================================================
+
+SELECT a
+FROM s TTRS
+JOIN d T
+  ON TTRS.ID = T.PUBLIC_ID
+JOIN LATERAL FLATTEN(input => T.BALANCE_IDS) AS F
+JOIN m JEBM
+  ON JEBM.B = F.VALUE
+WHERE a = 1;
+
+COPY INTO t FROM @st
+FILE_FORMAT = (TYPE = CSV, NULL_IF = ('NULL', 'null', '#'), SKIP_HEADER = 1);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            name: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))
+        alias: (identifier))
+      (join
+        (keyword_join)
+        (relation
+          (object_reference
+            name: (identifier))
+          alias: (identifier))
+        (keyword_on)
+        predicate: (binary_expression
+          left: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))
+          right: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))))
+      (lateral_join
+        (keyword_join)
+        (keyword_lateral)
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (named_parameter
+            name: (identifier)
+            value: (field
+              (object_reference
+                name: (identifier))
+              name: (identifier))))
+        (keyword_as)
+        alias: (identifier))
+      (join
+        (keyword_join)
+        (relation
+          (object_reference
+            name: (identifier))
+          alias: (identifier))
+        (keyword_on)
+        predicate: (binary_expression
+          left: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))
+          right: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (field
+          name: (identifier))
+        right: (literal))))
+  (statement
+    (snowflake_copy_into
+      (keyword_copy)
+      (keyword_into)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (stage_reference)
+      name: (identifier)
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (list)
+      value: (list)
+      value: (list
+        (literal)
+        (literal))
+      value: (list)
+      name: (identifier)
+      value: (literal))))
+

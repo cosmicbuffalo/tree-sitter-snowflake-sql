@@ -38,6 +38,8 @@ export default {
       $.identifier,
       $.snowflake_variable_reference,
       seq('(', $._snowflake_options, ')'),
+      // NULL_IF = ('NULL', 'null')
+      alias(paren_list($.literal, true), $.list),
     )),
   ),
 

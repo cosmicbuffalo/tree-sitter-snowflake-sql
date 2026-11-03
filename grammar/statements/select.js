@@ -381,12 +381,15 @@ export default {
         field('alias', $.identifier),
       ),
     ),
-    $.keyword_on,
-    choice(
-      $._expression,
-      $.keyword_true,
-      $.keyword_false,
-    ),
+    // Snowflake: JOIN LATERAL FLATTEN(..) takes no ON clause
+    optional(seq(
+      $.keyword_on,
+      choice(
+        $._expression,
+        $.keyword_true,
+        $.keyword_false,
+      ),
+    )),
   ),
 
   lateral_cross_join: $ => seq(
