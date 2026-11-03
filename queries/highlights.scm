@@ -241,6 +241,9 @@
   (keyword_truncate)
 
   (keyword_language)
+  (keyword_search)
+  (keyword_optimization)
+  (keyword_clustering)
   (keyword_iceberg)
   (keyword_transient)
   (keyword_runtime_version)

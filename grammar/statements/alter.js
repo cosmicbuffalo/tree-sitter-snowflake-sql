@@ -1,4 +1,4 @@
-import { paren_list } from "../helpers.js";
+import { comma_list, paren_list } from "../helpers.js";
 
 export default {
 
@@ -77,6 +77,13 @@ export default {
     seq($.keyword_set, $._snowflake_options),
     // Snowflake: ALTER TABLE t DROP PRIMARY KEY
     seq($.keyword_drop, $._primary_key),
+    // Snowflake: ALTER TABLE t DROP CLUSTERING KEY
+    seq($.keyword_drop, $.keyword_clustering, $.keyword_key),
+    // Snowflake: ALTER TABLE t ADD SEARCH OPTIMIZATION [ON method(cols), ...]
+    prec.right(seq($.keyword_add, $.keyword_search, $.keyword_optimization,
+      optional(seq($.keyword_on, comma_list($.invocation, true))))),
+    // Snowflake: ALTER TABLE t RENAME CONSTRAINT a TO b
+    seq($.keyword_rename, $.keyword_constraint, $.identifier, $.keyword_to, $.identifier),
     // Snowflake: ALTER TABLE t ADD DATA METRIC FUNCTION func ON (col1, col2)
     seq($.keyword_add, $.keyword_data, $.keyword_metric, $.keyword_function, $.object_reference,
       $.keyword_on, paren_list($.identifier, true)),
@@ -100,6 +107,7 @@ export default {
   // Requires COLUMN keyword to disambiguate from other specs
   _bare_add_column: $ => seq(
     $.keyword_column,
+    optional($._if_not_exists),
     $.column_definition,
     optional($.column_position),
   ),
@@ -153,6 +161,8 @@ export default {
     ),
     // Snowflake: ALTER COLUMN col NOT NULL (bare, without SET/DROP)
     $._not_null,
+    // Snowflake: ALTER COLUMN col COMMENT 'text'
+    seq($.keyword_comment, alias($._literal_string, $.literal)),
     seq(
       optional(
         seq(

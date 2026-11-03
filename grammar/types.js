@@ -49,6 +49,7 @@ export default {
 
         $.keyword_date,
         $.keyword_datetime,
+        $.datetime_type,
         $.keyword_datetime2,
         $.datetimeoffset,
         $.keyword_smalldatetime,
@@ -185,6 +186,8 @@ export default {
     parametric_type($, $.keyword_number, ['precision']),
     parametric_type($, $.keyword_number, ['precision', 'scale']),
   ),
+  // DATETIME(precision) (alias of TIMESTAMP_NTZ)
+  datetime_type: $ => seq($.keyword_datetime, wrapped_in_parenthesis(alias($._natural_number, $.literal))),
   timestamp_ltz: $ => parametric_type($, $.keyword_timestamp_ltz),
   timestamp_ntz: $ => parametric_type($, $.keyword_timestamp_ntz),
   timestamp_tz: $ => parametric_type($, $.keyword_timestamp_tz),

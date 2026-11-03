@@ -2259,3 +2259,172 @@ SELECT x FROM src;
           (object_reference
             name: (identifier)))))))
 
+================================================================================
+ALTER TABLE: search optimization, clustering key, rename constraint, column comment, multi-column add
+================================================================================
+
+ALTER TABLE t ADD SEARCH OPTIMIZATION ON EQUALITY(ID, MID), SUBSTRING(NOTE);
+ALTER TABLE t ADD SEARCH OPTIMIZATION;
+ALTER TABLE t DROP CLUSTERING KEY;
+ALTER TABLE t RENAME CONSTRAINT a TO b;
+ALTER TABLE t ALTER COLUMN KIND COMMENT 'Return type';
+ALTER TABLE t ADD COLUMN IF NOT EXISTS u DATETIME(6) COMMENT 'ts';
+ALTER ICEBERG TABLE t ADD COLUMN IF NOT EXISTS
+  A NUMBER(1, 0) COMMENT 'a',
+  COLUMN IF NOT EXISTS B NUMBER(1, 0) COMMENT 'b';
+ALTER TABLE t DROP COLUMN IF EXISTS c;;
+SELECT CAST(x AS TIMESTAMPNTZ(6)) FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_add)
+      (keyword_search)
+      (keyword_optimization)
+      (keyword_on)
+      (invocation
+        (object_reference
+          name: (identifier))
+        parameter: (term
+          value: (field
+            name: (identifier)))
+        parameter: (term
+          value: (field
+            name: (identifier))))
+      (invocation
+        (object_reference
+          name: (identifier))
+        parameter: (term
+          value: (field
+            name: (identifier))))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_add)
+      (keyword_search)
+      (keyword_optimization)))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_drop)
+      (keyword_clustering)
+      (keyword_key)))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_rename)
+      (keyword_constraint)
+      (identifier)
+      (keyword_to)
+      (identifier)))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (alter_column
+        (keyword_alter)
+        (keyword_column)
+        name: (identifier)
+        (keyword_comment)
+        (literal))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (add_column
+        (keyword_add)
+        (keyword_column)
+        (keyword_if)
+        (keyword_not)
+        (keyword_exists)
+        (column_definition
+          name: (identifier)
+          type: (datetime_type
+            (keyword_datetime)
+            (literal))
+          (keyword_comment)
+          (literal)))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (add_column
+        (keyword_add)
+        (keyword_column)
+        (keyword_if)
+        (keyword_not)
+        (keyword_exists)
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number)
+            precision: (literal)
+            scale: (literal))
+          (keyword_comment)
+          (literal)))
+      (add_column
+        (keyword_column)
+        (keyword_if)
+        (keyword_not)
+        (keyword_exists)
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number)
+            precision: (literal)
+            scale: (literal))
+          (keyword_comment)
+          (literal)))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (drop_column
+        (keyword_drop)
+        (keyword_column)
+        (keyword_if)
+        (keyword_exists)
+        name: (identifier))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (cast
+            name: (keyword_cast)
+            parameter: (field
+              name: (identifier))
+            (keyword_as)
+            (timestamp_ntz
+              (keyword_timestamp_ntz)
+              size: (literal))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+

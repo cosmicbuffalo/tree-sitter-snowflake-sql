@@ -89,7 +89,7 @@ export default grammar({
             $.rollback_statement,
             $.begin_transaction_statement,
           ),
-          ';',
+          repeat1(';'),
         ),
       ),
       // optionally, a single statement without a terminating ;
