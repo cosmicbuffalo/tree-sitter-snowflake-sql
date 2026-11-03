@@ -1,0 +1,269 @@
+================================================================================
+Python UDF with handler properties and dollar-quoted body
+================================================================================
+
+CREATE OR REPLACE FUNCTION post_to_slack(channel VARCHAR, message VARCHAR)
+  RETURNS VARIANT
+  LANGUAGE PYTHON
+  RUNTIME_VERSION = 3.10
+  HANDLER = 'main'
+  EXTERNAL_ACCESS_INTEGRATIONS = ("SLACK_API")
+  PACKAGES = ('requests')
+  SECRETS = ('cred' = SLACK_TOKEN)
+AS
+$$
+import requests
+def main(channel, message):
+    return 1
+$$;
+
+CREATE OR REPLACE FUNCTION IS_HOLIDAY(c STRING, d DATE)
+RETURNS BOOLEAN
+LANGUAGE JAVA
+RUNTIME_VERSION = '17'
+IMPORTS = ('@STAGE/app.jar')
+HANDLER = 'com.x.Y.z';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_function
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_function)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (identifier)
+          (varchar
+            (keyword_varchar)))
+        (function_argument
+          (identifier)
+          (varchar
+            (keyword_varchar))))
+      (keyword_returns)
+      (keyword_variant)
+      (routine_language
+        (keyword_language)
+        (keyword_python))
+      (routine_property
+        name: (keyword_runtime_version)
+        value: (literal))
+      (routine_property
+        name: (keyword_handler)
+        value: (literal))
+      (routine_property
+        name: (keyword_external_access_integrations)
+        value: (routine_property_list
+          (literal)))
+      (routine_property
+        name: (keyword_packages)
+        value: (routine_property_list
+          (literal)))
+      (routine_property
+        name: (keyword_secrets)
+        value: (routine_property_list
+          (routine_secret
+            (literal)
+            (object_reference
+              name: (identifier)))))
+      (routine_body
+        (keyword_as)
+        (literal))))
+  (statement
+    (create_function
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_function)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (identifier)
+          (keyword_string))
+        (function_argument
+          (identifier)
+          (keyword_date)))
+      (keyword_returns)
+      (keyword_boolean)
+      (routine_language
+        (keyword_language)
+        (keyword_java))
+      (routine_property
+        name: (keyword_runtime_version)
+        value: (literal))
+      (routine_property
+        name: (keyword_imports)
+        value: (routine_property_list
+          (literal)))
+      (routine_property
+        name: (keyword_handler)
+        value: (literal)))))
+
+================================================================================
+SQL UDFs with dollar-quoted expression or query bodies
+================================================================================
+
+CREATE OR REPLACE FUNCTION GET_REFUNDED_AMOUNT(p VARCHAR, amount NUMBER)
+RETURNS NUMBER
+AS
+$$
+  CASE
+    WHEN UPPER(p) = 'FULL' THEN amount
+    ELSE 0
+  END
+$$;
+
+CREATE OR REPLACE FUNCTION F2(a NUMBER)
+RETURNS NUMBER
+LANGUAGE SQL
+AS
+$$
+  SELECT MAX(x) FROM t WHERE y = a
+$$;
+
+CREATE OR REPLACE FUNCTION F3(a NUMBER)
+RETURNS TABLE (x NUMBER)
+AS
+$$
+  SELECT x FROM t WHERE y = a
+$$;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_function
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_function)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (identifier)
+          (varchar
+            (keyword_varchar)))
+        (function_argument
+          (identifier)
+          (number
+            (keyword_number))))
+      (keyword_returns)
+      (number
+        (keyword_number))
+      (function_body
+        (keyword_as)
+        (dollar_quote)
+        (case
+          (keyword_case)
+          (keyword_when)
+          (binary_expression
+            left: (invocation
+              (object_reference
+                name: (identifier))
+              parameter: (term
+                value: (field
+                  name: (identifier))))
+            right: (literal))
+          (keyword_then)
+          (field
+            name: (identifier))
+          (keyword_else)
+          (literal)
+          (keyword_end))
+        (dollar_quote))))
+  (statement
+    (create_function
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_function)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (identifier)
+          (number
+            (keyword_number))))
+      (keyword_returns)
+      (number
+        (keyword_number))
+      (function_language
+        (keyword_language)
+        (identifier))
+      (function_body
+        (keyword_as)
+        (dollar_quote)
+        (statement
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                value: (invocation
+                  (object_reference
+                    name: (identifier))
+                  parameter: (term
+                    value: (field
+                      name: (identifier)))))))
+          (from
+            (keyword_from)
+            (relation
+              (object_reference
+                name: (identifier))))
+          (where
+            (keyword_where)
+            predicate: (binary_expression
+              left: (field
+                name: (identifier))
+              right: (field
+                name: (identifier)))))
+        (dollar_quote))))
+  (statement
+    (create_function
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_function)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (identifier)
+          (number
+            (keyword_number))))
+      (keyword_returns)
+      (keyword_table)
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number))))
+      (function_body
+        (keyword_as)
+        (dollar_quote)
+        (statement
+          (select
+            (keyword_select)
+            (select_expression
+              (term
+                value: (field
+                  name: (identifier)))))
+          (from
+            (keyword_from)
+            (relation
+              (object_reference
+                name: (identifier))))
+          (where
+            (keyword_where)
+            predicate: (binary_expression
+              left: (field
+                name: (identifier))
+              right: (field
+                name: (identifier)))))
+        (dollar_quote)))))
+

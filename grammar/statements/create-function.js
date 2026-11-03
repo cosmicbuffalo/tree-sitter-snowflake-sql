@@ -10,9 +10,13 @@ export default {
   create_function: $ => prec.left(seq(
     $.keyword_create,
     optional($._or_replace),
+    optional($.keyword_secure),
     $.keyword_function,
+    optional($._if_not_exists),
     $.object_reference,
     $.function_arguments,
+    // Snowflake: COPY GRANTS
+    optional(seq($.keyword_copy, $.keyword_grants)),
     $.keyword_returns,
     choice(
       $._type,
@@ -21,38 +25,92 @@ export default {
       $.keyword_trigger,
     ),
     optional($._not_null),
-    repeat(
-      choice(
-        $.function_language,
-        $.function_volatility,
-        $.function_leakproof,
-        $.function_security,
-        $.function_safety,
-        $.function_strictness,
-        $.function_cost,
-        $.function_rows,
-        $.function_support,
-        $.procedure_comment,
+    repeat($._function_option),
+    choice(
+      // SQL-style function: optional options, then the body.
+      seq(
+        // ensure that there's only one function body -- other specifiers are
+        // less variable but the body can have all manner of conflicting stuff
+        $.function_body,
+        repeat($._function_option),
       ),
-    ),
-    // ensure that there's only one function body -- other specifiers are less
-    // variable but the body can have all manner of conflicting stuff
-    $.function_body,
-    repeat(
-      choice(
-        $.function_language,
-        $.function_volatility,
-        $.function_leakproof,
-        $.function_security,
-        $.function_safety,
-        $.function_strictness,
-        $.function_cost,
-        $.function_rows,
-        $.function_support,
-        $.procedure_comment,
+      // Snowflake handler languages (Python, Java, ...): properties such as
+      // RUNTIME_VERSION / HANDLER / IMPORTS, and an optional opaque string body.
+      seq(
+        $.routine_language,
+        repeat(choice($._function_option, $.routine_property)),
+        optional(seq(
+          $.routine_body,
+          repeat(choice($._function_option, $.routine_property)),
+        )),
       ),
     ),
   )),
+
+  _function_option: $ => choice(
+    $.function_language,
+    $.function_volatility,
+    $.function_leakproof,
+    $.function_security,
+    $.function_safety,
+    $.function_strictness,
+    $.function_cost,
+    $.function_rows,
+    $.function_support,
+    $.procedure_comment,
+  ),
+
+  // LANGUAGE for handler-based routines whose body is source code in another
+  // language (as opposed to SQL, whose body is parsed as SQL).
+  routine_language: $ => seq(
+    $.keyword_language,
+    choice(
+      $.keyword_python,
+      $.keyword_java,
+      $.keyword_javascript,
+      $.keyword_scala,
+    ),
+  ),
+
+  // NAME = value properties of handler-based routines.
+  routine_property: $ => seq(
+    field('name', choice(
+      $.keyword_runtime_version,
+      $.keyword_handler,
+      $.keyword_imports,
+      $.keyword_packages,
+      $.keyword_target_path,
+      $.keyword_external_access_integrations,
+      $.keyword_secrets,
+    )),
+    '=',
+    field('value', choice(
+      $.literal,
+      $.routine_property_list,
+    )),
+  ),
+
+  routine_property_list: $ => paren_list(
+    choice(
+      alias($._literal_string, $.literal),
+      $.routine_secret,
+      $.identifier,
+    ),
+    true,
+  ),
+
+  // SECRETS = ('name' = secret_object)
+  routine_secret: $ => seq(
+    alias($._literal_string, $.literal),
+    '=',
+    $.object_reference,
+  ),
+
+  // Source code body of a handler-based routine: AS '<code>' or AS $$<code>$$
+  routine_body: $ => seq(
+    $.keyword_as,
+    alias($._literal_string, $.literal),
+  ),
 
   _argmode: $ => choice(
     $.keyword_in,
@@ -175,6 +233,13 @@ export default {
       alias($._dollar_quoted_string_start_tag, $.dollar_quote),
       $._function_body_statement,
       optional(';'),
+      alias($._dollar_quoted_string_end_tag, $.dollar_quote),
+    ),
+    // Snowflake SQL UDF: AS $$ <scalar expression> $$
+    seq(
+      $.keyword_as,
+      alias($._dollar_quoted_string_start_tag, $.dollar_quote),
+      $._expression,
       alias($._dollar_quoted_string_end_tag, $.dollar_quote),
     ),
     $._tsql_function_body_statement,

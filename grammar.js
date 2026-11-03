@@ -38,6 +38,9 @@ export default grammar({
     [$.object_reference, $.let_statement],
     // create_procedure has repeated attribute blocks before and after body
     [$.create_procedure],
+    // SQL UDF body: AS $$ (SELECT ...) $$ is either a parenthesized statement
+    // or a scalar subquery expression
+    [$.subquery, $.statement],
     // BEGIN; could start a scripting block or a standalone begin_transaction_statement
     [$.begin_transaction_statement, $.snowflake_scripting_block],
     // BEGIN TRANSACTION; could be standalone or start a full transaction block

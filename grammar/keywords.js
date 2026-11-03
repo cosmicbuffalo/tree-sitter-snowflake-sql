@@ -2,6 +2,19 @@ import { make_keyword } from "./helpers.js";
 
 export default {
 
+  keyword_runtime_version: _ => make_keyword("runtime_version"),
+  keyword_handler: _ => make_keyword("handler"),
+  keyword_imports: _ => make_keyword("imports"),
+  keyword_packages: _ => make_keyword("packages"),
+  keyword_target_path: _ => make_keyword("target_path"),
+  keyword_external_access_integrations: _ => make_keyword("external_access_integrations"),
+  keyword_secrets: _ => make_keyword("secrets"),
+  keyword_secure: _ => make_keyword("secure"),
+  keyword_grants: _ => make_keyword("grants"),
+  keyword_python: _ => make_keyword("python"),
+  keyword_java: _ => make_keyword("java"),
+  keyword_javascript: _ => make_keyword("javascript"),
+  keyword_scala: _ => make_keyword("scala"),
   keyword_select: _ => make_keyword("select"),
   keyword_delete: _ => make_keyword("delete"),
   keyword_insert: _ => make_keyword("insert"),
