@@ -577,3 +577,168 @@ FILE_FORMAT = (TYPE = CSV);
       name: (identifier)
       value: (identifier))))
 
+================================================================================
+ARRAY and ARRAY(type) in routine signatures
+================================================================================
+
+DROP PROCEDURE IF EXISTS RESET_ALL_STREAMS(ARRAY(VARCHAR));
+DROP PROCEDURE IF EXISTS TRUNCATE_ALL(ARRAY(VARCHAR), NUMBER);
+CREATE OR REPLACE PROCEDURE P(tables ARRAY(VARCHAR), n NUMBER)
+RETURNS NUMBER
+LANGUAGE SQL
+AS
+$$
+BEGIN
+  RETURN 1;
+END;
+$$;
+CREATE TABLE t (a INT ARRAY, b VARCHAR);
+DROP PROCEDURE IF EXISTS P1(DATE, DATE, NUMBER);
+DROP PROCEDURE IF EXISTS P2(ARRAY, STRING);
+DROP PROCEDURE IF EXISTS P3(ARRAY);
+DROP PROCEDURE IF EXISTS P4(ARRAY(VARCHAR));
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_procedure
+      (keyword_drop)
+      (keyword_procedure)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (structured_array_type
+            (keyword_array)
+            element: (varchar
+              (keyword_varchar)))))))
+  (statement
+    (drop_procedure
+      (keyword_drop)
+      (keyword_procedure)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (structured_array_type
+            (keyword_array)
+            element: (varchar
+              (keyword_varchar))))
+        (function_argument
+          (number
+            (keyword_number))))))
+  (statement
+    (create_procedure
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_procedure)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (identifier)
+          (structured_array_type
+            (keyword_array)
+            element: (varchar
+              (keyword_varchar))))
+        (function_argument
+          (identifier)
+          (number
+            (keyword_number))))
+      (procedure_returns
+        (keyword_returns)
+        (number
+          (keyword_number)))
+      (function_language
+        (keyword_language)
+        (identifier))
+      (procedure_body
+        (keyword_as)
+        (dollar_quote)
+        (snowflake_scripting_block
+          (keyword_begin)
+          (return_statement
+            (keyword_return)
+            value: (literal))
+          (keyword_end))
+        (dollar_quote))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int))
+          type: (array_size_definition
+            (keyword_array)))
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))))))
+  (statement
+    (drop_procedure
+      (keyword_drop)
+      (keyword_procedure)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (keyword_date))
+        (function_argument
+          (keyword_date))
+        (function_argument
+          (number
+            (keyword_number))))))
+  (statement
+    (drop_procedure
+      (keyword_drop)
+      (keyword_procedure)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (structured_array_type
+            (keyword_array)))
+        (function_argument
+          (keyword_string)))))
+  (statement
+    (drop_procedure
+      (keyword_drop)
+      (keyword_procedure)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (structured_array_type
+            (keyword_array))))))
+  (statement
+    (drop_procedure
+      (keyword_drop)
+      (keyword_procedure)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (structured_array_type
+            (keyword_array)
+            element: (varchar
+              (keyword_varchar))))))))
+
