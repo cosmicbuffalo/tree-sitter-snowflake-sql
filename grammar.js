@@ -41,6 +41,9 @@ export default grammar({
     // SQL UDF body: AS $$ (SELECT ...) $$ is either a parenthesized statement
     // or a scalar subquery expression
     [$.subquery, $.statement],
+    // -1: signed literal vs unary sign applied to a literal
+    [$._integer],
+    [$._decimal_number],
     // BEGIN; could start a scripting block or a standalone begin_transaction_statement
     [$.begin_transaction_statement, $.snowflake_scripting_block],
     // BEGIN TRANSACTION; could be standalone or start a full transaction block
@@ -56,6 +59,7 @@ export default grammar({
       'binary_is',
       'unary_not',
       'binary_exp',
+      'unary_sign',
       'binary_times',
       'binary_plus',
       'unary_other',

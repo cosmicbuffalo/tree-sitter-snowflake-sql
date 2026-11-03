@@ -378,6 +378,14 @@ export default {
         field('operand', $._expression)
       ))
     ),
+    // Arithmetic sign: -col, +col (binds tighter than * and /). Signed numeric
+    // literals (-1) are already literals, so prefer that reading when both parse.
+    ...['-', '+'].map(operator =>
+      prec.dynamic(-1, prec.left('unary_sign', seq(
+        field('operator', operator),
+        field('operand', $._expression)
+      )))
+    ),
   ),
 
   // Postgres syntax for intervals
@@ -442,15 +450,15 @@ export default {
     ),
   ),
   _natural_number: _ => /\d+/,
-  _integer: $ => seq(
+  _integer: $ => prec.dynamic(1, seq(
     optional(choice("-", "+")),
     /(0[xX][0-9A-Fa-f]+(_[0-9A-Fa-f]+)*)|(0[oO][0-7]+(_[0-7]+)*)|(0[bB][01]+(_[01]+)*)|(\d+(_\d+)*(e[+-]?\d+(_\d+)*)?)/
-  ),
-  _decimal_number: $ => seq(
+  )),
+  _decimal_number: $ => prec.dynamic(1, seq(
     optional(
       choice("-", "+")),
     /((\d+(_\d+)*)?[.]\d+(_\d+)*(e[+-]?\d+(_\d+)*)?)|(\d+(_\d+)*[.](e[+-]?\d+(_\d+)*)?)/
-  ),
+  )),
   _bit_string: $ => seq(/[bBxX]'([^']|'')*'/, repeat(/'([^']|'')*'/)),
   // The identifier should be followed by a string (no parenthesis allowed)
   _string_casting: $ => seq($.identifier, $._single_quote_string),

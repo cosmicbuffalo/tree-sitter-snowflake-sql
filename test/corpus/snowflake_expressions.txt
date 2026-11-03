@@ -518,3 +518,142 @@ LEFT JOIN ${ENV}_stage_t c ON c.id = a.id;
               name: (identifier))
             name: (identifier)))))))
 
+================================================================================
+Unary minus and plus on columns and expressions
+================================================================================
+
+SELECT IFF(a IS NULL, 0, -a) FROM t;
+SELECT IFF(a IS NULL, IFF(b IS NULL, 0, -b), 1) FROM t;
+SELECT IFF(x IS NULL, 0, b - a) FROM t;
+SELECT -a FROM t;
+SELECT f(0, -a) FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (binary_expression
+                left: (field
+                  name: (identifier))
+                operator: (keyword_is)
+                right: (literal
+                  (keyword_null))))
+            parameter: (term
+              value: (literal))
+            parameter: (term
+              value: (unary_expression
+                operand: (field
+                  name: (identifier))))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (binary_expression
+                left: (field
+                  name: (identifier))
+                operator: (keyword_is)
+                right: (literal
+                  (keyword_null))))
+            parameter: (term
+              value: (invocation
+                (object_reference
+                  name: (identifier))
+                parameter: (term
+                  value: (binary_expression
+                    left: (field
+                      name: (identifier))
+                    operator: (keyword_is)
+                    right: (literal
+                      (keyword_null))))
+                parameter: (term
+                  value: (literal))
+                parameter: (term
+                  value: (unary_expression
+                    operand: (field
+                      name: (identifier))))))
+            parameter: (term
+              value: (literal))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (binary_expression
+                left: (field
+                  name: (identifier))
+                operator: (keyword_is)
+                right: (literal
+                  (keyword_null))))
+            parameter: (term
+              value: (literal))
+            parameter: (term
+              value: (binary_expression
+                left: (field
+                  name: (identifier))
+                right: (field
+                  name: (identifier))))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (unary_expression
+            operand: (field
+              name: (identifier))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (literal))
+            parameter: (term
+              value: (unary_expression
+                operand: (field
+                  name: (identifier))))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
