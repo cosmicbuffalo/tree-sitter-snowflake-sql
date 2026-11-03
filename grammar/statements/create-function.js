@@ -122,7 +122,8 @@ export default {
     optional(
       seq(
         choice($.keyword_default, '='),
-        $.literal,
+        // literal or expression such as CURRENT_DATE, CURRENT_DATE() - 1
+        $._expression,
       ),
     ),
   ),

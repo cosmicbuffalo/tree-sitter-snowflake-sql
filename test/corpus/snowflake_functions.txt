@@ -425,3 +425,80 @@ $$;
           (keyword_end))
         (dollar_quote)))))
 
+================================================================================
+Routine argument defaults as expressions
+================================================================================
+
+CREATE OR REPLACE PROCEDURE P(
+  D DATE DEFAULT CURRENT_DATE,
+  E DATE DEFAULT CURRENT_DATE() - 1,
+  R VARCHAR DEFAULT 'EU',
+  N NUMBER DEFAULT NULL
+)
+RETURNS NUMBER
+LANGUAGE SQL
+AS
+$$
+BEGIN
+  RETURN 1;
+END;
+$$;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_procedure
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_procedure)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (identifier)
+          (keyword_date)
+          (keyword_default)
+          (field
+            name: (identifier)))
+        (function_argument
+          (identifier)
+          (keyword_date)
+          (keyword_default)
+          (binary_expression
+            left: (invocation
+              (object_reference
+                name: (identifier)))
+            right: (literal)))
+        (function_argument
+          (identifier)
+          (varchar
+            (keyword_varchar))
+          (keyword_default)
+          (literal))
+        (function_argument
+          (identifier)
+          (number
+            (keyword_number))
+          (keyword_default)
+          (literal
+            (keyword_null))))
+      (procedure_returns
+        (keyword_returns)
+        (number
+          (keyword_number)))
+      (function_language
+        (keyword_language)
+        (identifier))
+      (procedure_body
+        (keyword_as)
+        (dollar_quote)
+        (snowflake_scripting_block
+          (keyword_begin)
+          (return_statement
+            (keyword_return)
+            value: (literal))
+          (keyword_end))
+        (dollar_quote)))))
+
