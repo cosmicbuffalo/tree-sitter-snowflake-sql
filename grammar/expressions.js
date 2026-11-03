@@ -240,6 +240,8 @@ export default {
       field('expression', $._expression),
       ':',
       field('path', $.identifier),
+      // dotted continuation: v:a.b.c
+      repeat(prec.dynamic(1, seq('.', field('path', $.identifier)))),
     ),
   ),
 

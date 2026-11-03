@@ -834,3 +834,84 @@ SELECT a FROM t, LATERAL FLATTEN(t.x) AS fe;
         (keyword_as)
         alias: (identifier)))))
 
+================================================================================
+Variant access with dotted paths
+================================================================================
+
+SELECT t.x:y.z FROM t;
+SELECT t.x:y.z::STRING FROM t;
+SELECT x:y:z FROM t;
+SELECT x:"a b".c.d FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (variant_access
+            expression: (field
+              (object_reference
+                name: (identifier))
+              name: (identifier))
+            path: (identifier)
+            path: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (cast
+            (variant_access
+              expression: (field
+                (object_reference
+                  name: (identifier))
+                name: (identifier))
+              path: (identifier)
+              path: (identifier))
+            (keyword_string)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (variant_access
+            expression: (variant_access
+              expression: (field
+                name: (identifier))
+              path: (identifier))
+            path: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (variant_access
+            expression: (field
+              name: (identifier))
+            path: (identifier)
+            path: (identifier)
+            path: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
