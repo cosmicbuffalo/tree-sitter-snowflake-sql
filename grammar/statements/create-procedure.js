@@ -78,7 +78,7 @@ export default {
   procedure_comment: $ => seq(
     $.keyword_comment,
     '=',
-    alias($._single_quote_string, $.literal),
+    alias($._literal_string, $.literal),
   ),
 
   procedure_body: $ => choice(

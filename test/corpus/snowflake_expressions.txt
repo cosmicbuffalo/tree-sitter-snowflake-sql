@@ -1176,3 +1176,108 @@ FILE_FORMAT = (TYPE = CSV, NULL_IF = ('NULL', 'null', '#'), SKIP_HEADER = 1);
       name: (identifier)
       value: (literal))))
 
+================================================================================
+Positional column t.$1; dollar-quoted procedure COMMENT
+================================================================================
+
+SELECT COUNT(*)
+FROM @FUNDING_S3_STAGE (pattern=>:s3_pattern) t
+WHERE
+  t.$1 = 'AMOUNT';
+
+SELECT t.$1, t.$2, $3 FROM @stage t;
+
+CREATE OR REPLACE PROCEDURE P()
+RETURNS NUMBER
+LANGUAGE SQL
+COMMENT = $$
+Offload records
+$$
+AS
+$$
+BEGIN
+  RETURN 1;
+END;
+$$;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (all_fields))))))
+    (from
+      (keyword_from)
+      (relation
+        (stage_reference)
+        (stage_arguments
+          (named_parameter
+            name: (identifier)
+            value: (snowflake_variable_reference)))
+        alias: (identifier)))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (field
+          (object_reference
+            name: (identifier))
+          name: (identifier))
+        right: (literal))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))
+        (term
+          value: (field
+            (object_reference
+              name: (identifier))
+            name: (identifier)))
+        (term
+          value: (parameter))))
+    (from
+      (keyword_from)
+      (relation
+        (stage_reference)
+        alias: (identifier))))
+  (statement
+    (create_procedure
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_procedure)
+      (object_reference
+        name: (identifier))
+      (function_arguments)
+      (procedure_returns
+        (keyword_returns)
+        (number
+          (keyword_number)))
+      (function_language
+        (keyword_language)
+        (identifier))
+      (procedure_comment
+        (keyword_comment)
+        (literal))
+      (procedure_body
+        (keyword_as)
+        (dollar_quote)
+        (snowflake_scripting_block
+          (keyword_begin)
+          (return_statement
+            (keyword_return)
+            value: (literal))
+          (keyword_end))
+        (dollar_quote)))))
+

@@ -54,15 +54,25 @@ export default {
 
     field: $ => field('name', $.identifier),
 
-    _qualified_field: $ => seq(
-      optional(
-        seq(
-          optional_parenthesis($.object_reference),
-          '.',
+    _qualified_field: $ => choice(
+      seq(
+        optional(
+          seq(
+            optional_parenthesis($.object_reference),
+            '.',
+          ),
         ),
+        field('name', $.identifier),
       ),
-      field('name', $.identifier),
+      // Snowflake staged-file column reference: t.$1
+      seq(
+        optional_parenthesis($.object_reference),
+        '.',
+        field('name', alias($._positional_column, $.identifier)),
+      ),
     ),
+
+    _positional_column: _ => /\$[0-9]+/,
 
   parameter: $ => /\?|(\$[0-9]+)/,
 
