@@ -157,9 +157,9 @@ export default {
     seq($.keyword_remove, $.keyword_after, $.object_reference),
   ),
 
-  // Consolidated alter for WAREHOUSE, STAGE, PIPE, STREAM, TASK
+  // Consolidated alter for WAREHOUSE, STAGE, PIPE, STREAM, TASK, DYNAMIC [ICEBERG] TABLE
   // Uses regex token to avoid 5 separate rules in _alter_statement
-  snowflake_alter_object_type: _ => /[wW][aA][rR][eE][hH][oO][uU][sS][eE]|[sS][tT][aA][gG][eE]|[pP][iI][pP][eE]|[sS][tT][rR][eE][aA][mM]|[tT][aA][sS][kK]/,
+  snowflake_alter_object_type: _ => /[wW][aA][rR][eE][hH][oO][uU][sS][eE]|[sS][tT][aA][gG][eE]|[pP][iI][pP][eE]|[sS][tT][rR][eE][aA][mM]|[tT][aA][sS][kK]|[dD][yY][nN][aA][mM][iI][cC]\s+([iI][cC][eE][bB][eE][rR][gG]\s+)?[tT][aA][bB][lL][eE]/,
 
   alter_snowflake_named_object: $ => prec.left(seq(
     $.keyword_alter,

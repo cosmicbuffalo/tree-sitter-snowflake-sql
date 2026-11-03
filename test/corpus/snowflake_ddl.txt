@@ -1710,3 +1710,54 @@ BASE_LOCATION = 'a/b';
       (table_option
         name: (identifier)))))
 
+================================================================================
+ALTER DYNAMIC TABLE
+================================================================================
+
+ALTER DYNAMIC TABLE IF EXISTS FEE_RECON RENAME TO FEE_RECON_ORIG;
+ALTER DYNAMIC TABLE ${DB}.${SCHEMA}.FEE_RECON SET WAREHOUSE = my_wh;
+ALTER DYNAMIC ICEBERG TABLE t1 REFRESH;
+ALTER DYNAMIC TABLE t1 SUSPEND;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (rename_object
+        (keyword_rename)
+        (keyword_to)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_set)
+      name: (identifier)
+      value: (identifier)))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_refresh)))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_suspend))))
+
