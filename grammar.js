@@ -39,6 +39,8 @@ export default grammar({
     // SQL UDF body: AS $$ (SELECT ...) $$ is either a parenthesized statement
     // or a scalar subquery expression
     [$.subquery, $.statement],
+    // BEGIN TRANSACTION; inside a block: standalone, or the start of a paired scripting_transaction
+    [$.begin_transaction_statement, $.scripting_transaction],
     // v:a.b — dotted variant path vs a[x:y.z] slice bound that is a qualified name
     [$.variant_access, $.object_reference],
     // INSERT ALL INTO t VALUES (..): VALUES belongs to the INTO clause, not a following bare VALUES query

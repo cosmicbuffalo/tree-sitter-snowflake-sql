@@ -2869,3 +2869,125 @@ $$;
           (keyword_end))
         (dollar_quote)))))
 
+================================================================================
+Standalone BEGIN TRANSACTION in a block; paired transaction
+================================================================================
+
+DECLARE
+  del_count INT;
+BEGIN
+  BEGIN TRANSACTION;
+  DELETE FROM t WHERE id IN ('a', 'b');
+  del_count := SQLROWCOUNT;
+  IF (:del_count != 20) THEN
+    ROLLBACK;
+    RETURN 'ABORTED';
+  END IF;
+  CALL F('c8', 'v', '2025-10-01'::TIMESTAMP_NTZ, 20);
+  RETURN 'Success: deleted ' || :del_count
+    || ' stuck records.';
+END;
+BEGIN
+  BEGIN TRANSACTION;
+  DELETE FROM t WHERE id = 1;
+  COMMIT;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (declare_section
+        (keyword_declare)
+        (snowflake_declare_variable
+          name: (identifier)
+          type: (int
+            (keyword_int))))
+      (keyword_begin)
+      (begin_transaction_statement
+        (keyword_begin)
+        (keyword_transaction))
+      (statement
+        (delete
+          (keyword_delete))
+        (from
+          (keyword_from)
+          (object_reference
+            name: (identifier))
+          (where
+            (keyword_where)
+            predicate: (binary_expression
+              left: (field
+                name: (identifier))
+              operator: (keyword_in)
+              right: (list
+                (literal)
+                (literal))))))
+      (assignment_statement
+        name: (identifier)
+        value: (field
+          name: (identifier)))
+      (if_statement
+        (keyword_if)
+        condition: (binary_expression
+          left: (snowflake_variable_reference)
+          right: (literal))
+        (keyword_then)
+        (rollback_statement
+          (keyword_rollback))
+        (return_statement
+          (keyword_return)
+          value: (literal))
+        (keyword_end)
+        (keyword_if))
+      (statement
+        (snowflake_statement
+          (call_statement
+            (keyword_call)
+            (invocation
+              (object_reference
+                name: (identifier))
+              parameter: (term
+                value: (literal))
+              parameter: (term
+                value: (literal))
+              parameter: (term
+                value: (cast
+                  (literal)
+                  (timestamp_ntz
+                    (keyword_timestamp_ntz))))
+              parameter: (term
+                value: (literal))))))
+      (return_statement
+        (keyword_return)
+        value: (binary_expression
+          left: (binary_expression
+            left: (literal)
+            operator: (op_other)
+            right: (snowflake_variable_reference))
+          operator: (op_other)
+          right: (literal)))
+      (keyword_end)))
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (scripting_transaction
+        (keyword_begin)
+        (keyword_transaction)
+        (statement
+          (delete
+            (keyword_delete))
+          (from
+            (keyword_from)
+            (object_reference
+              name: (identifier))
+            (where
+              (keyword_where)
+              predicate: (binary_expression
+                left: (field
+                  name: (identifier))
+                right: (literal)))))
+        (keyword_commit))
+      (keyword_end))))
+

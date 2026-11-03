@@ -116,6 +116,7 @@ export default {
     $.close_statement,
     $.snowflake_scripting_block,
     $.scripting_transaction,
+    $.begin_transaction_statement,
     $.commit_statement,
     $.rollback_statement,
     $.async_statement,
