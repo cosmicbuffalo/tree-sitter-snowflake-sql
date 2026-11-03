@@ -1761,3 +1761,143 @@ ALTER DYNAMIC TABLE t1 SUSPEND;
         name: (identifier))
       (keyword_suspend))))
 
+================================================================================
+Column DEFAULT literal followed by NOT NULL and COMMENT
+================================================================================
+
+ALTER TABLE t ADD COLUMN IF NOT EXISTS c1 VARCHAR DEFAULT 'USD' NOT NULL COMMENT 'x';
+ALTER TABLE t ADD COLUMN c2 VARCHAR NOT NULL COMMENT 'x';
+ALTER TABLE t ADD COLUMN c3 VARCHAR DEFAULT 'USD' COMMENT 'x';
+CREATE TABLE t2 (c VARCHAR DEFAULT 'USD' NOT NULL COMMENT 'x');
+CREATE TABLE t2 (c VARCHAR DEFAULT 'USD' NOT NULL);
+CREATE TABLE t3 (c NUMBER DEFAULT 0 NOT NULL, d INT);
+CREATE TABLE t4 (c VARCHAR DEFAULT 'USD' NOT NULL COMMENT 'x');
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (add_column
+        (keyword_add)
+        (keyword_column)
+        (keyword_if)
+        (keyword_not)
+        (keyword_exists)
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))
+          (keyword_default)
+          (literal)
+          (keyword_not)
+          (keyword_null)
+          (keyword_comment)
+          (literal)))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (add_column
+        (keyword_add)
+        (keyword_column)
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))
+          (keyword_not)
+          (keyword_null)
+          (keyword_comment)
+          (literal)))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (add_column
+        (keyword_add)
+        (keyword_column)
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))
+          (keyword_default)
+          (literal)
+          (keyword_comment)
+          (literal)))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))
+          (keyword_default)
+          (literal)
+          (keyword_not)
+          (keyword_null)
+          (keyword_comment)
+          (literal)))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))
+          (keyword_default)
+          (literal)
+          (keyword_not)
+          (keyword_null)))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number))
+          (keyword_default)
+          (literal)
+          (keyword_not)
+          (keyword_null))
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int))))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))
+          (keyword_default)
+          (literal)
+          (keyword_not)
+          (keyword_null)
+          (keyword_comment)
+          (literal))))))
+

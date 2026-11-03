@@ -91,7 +91,12 @@ export default {
 
   _default_expression: $ => seq(
     $.keyword_default,
-    optional_parenthesis($._inner_default_expression),
+    choice(
+      // Prefer ending the default at a plain literal so that a following
+      // NOT NULL starts the next constraint instead of a NOT LIKE/NOT IN operator.
+      prec(10, $.literal),
+      optional_parenthesis($._inner_default_expression),
+    ),
   ),
   _inner_default_expression: $ => choice(
       $.literal,
