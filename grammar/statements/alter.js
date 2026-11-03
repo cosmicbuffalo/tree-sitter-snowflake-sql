@@ -17,6 +17,7 @@ export default {
       // Snowflake
       $.alter_snowflake_named_object,
       $.alter_snowflake_object,
+      $.alter_routine,
     ),
   ),
 

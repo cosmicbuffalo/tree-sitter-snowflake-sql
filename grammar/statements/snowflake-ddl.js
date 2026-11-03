@@ -194,6 +194,16 @@ export default {
     $._snowflake_alter_actions,
   )),
 
+  // ALTER PROCEDURE|FUNCTION [IF EXISTS] name(arg_type, ...) SET|UNSET|RENAME ...
+  alter_routine: $ => prec.left(seq(
+    $.keyword_alter,
+    choice($.keyword_procedure, $.keyword_function),
+    optional($._if_exists),
+    $.object_reference,
+    $.function_arguments,
+    $._snowflake_alter_actions,
+  )),
+
   // --- CREATE DATA METRIC FUNCTION ---
   // CREATE [OR REPLACE] DATA METRIC FUNCTION [IF NOT EXISTS] name(ARG_T TABLE(col type, ...))
   // RETURNS NUMBER [COMMENT = 'text'] AS $$ body $$

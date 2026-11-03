@@ -267,3 +267,59 @@ $$;
                 name: (identifier)))))
         (dollar_quote)))))
 
+================================================================================
+ALTER PROCEDURE and FUNCTION with argument types
+================================================================================
+
+ALTER PROCEDURE CHECK_TRIGGER_STATUS_SLA(TIMESTAMP_NTZ) SET TRACE_LEVEL = ALWAYS;
+ALTER PROCEDURE IF EXISTS db.sch.P(VARCHAR, NUMBER) SET LOG_LEVEL = 'INFO', COMMENT = 'x';
+ALTER FUNCTION F() UNSET COMMENT;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_routine
+      (keyword_alter)
+      (keyword_procedure)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (timestamp_ntz
+            (keyword_timestamp_ntz))))
+      (keyword_set)
+      name: (identifier)
+      value: (identifier)))
+  (statement
+    (alter_routine
+      (keyword_alter)
+      (keyword_procedure)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (varchar
+            (keyword_varchar)))
+        (function_argument
+          (number
+            (keyword_number))))
+      (keyword_set)
+      name: (identifier)
+      value: (literal)
+      name: (keyword_comment)
+      value: (literal)))
+  (statement
+    (alter_routine
+      (keyword_alter)
+      (keyword_function)
+      (object_reference
+        name: (identifier))
+      (function_arguments)
+      (keyword_unset)
+      (identifier))))
+
