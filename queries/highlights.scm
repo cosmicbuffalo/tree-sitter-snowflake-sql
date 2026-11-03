@@ -452,6 +452,7 @@
   (keyword_box3d)
   (keyword_interval)
   (keyword_variant)
+  (keyword_map)
   (keyword_object)
   (keyword_number)
   (keyword_vector)

@@ -73,6 +73,9 @@ export default {
         $.keyword_variant,
         $.keyword_object,
 
+        // Snowflake structured type MAP(k, v)
+        $.map_type,
+
         // Snowflake numeric
         $.number,
 
@@ -92,6 +95,16 @@ export default {
       ),
       optional($.array_size_definition)
     ),
+  ),
+
+  // MAP(key_type, value_type)
+  map_type: $ => seq(
+    $.keyword_map,
+    '(',
+    field('key', $._type),
+    ',',
+    field('value', $._type),
+    ')',
   ),
 
   array_size_definition: $ => prec.left(

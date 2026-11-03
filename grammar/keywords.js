@@ -15,6 +15,7 @@ export default {
   keyword_java: _ => make_keyword("java"),
   keyword_javascript: _ => make_keyword("javascript"),
   keyword_scala: _ => make_keyword("scala"),
+  keyword_map: _ => make_keyword("map"),
   keyword_select: _ => make_keyword("select"),
   keyword_delete: _ => make_keyword("delete"),
   keyword_insert: _ => make_keyword("insert"),
