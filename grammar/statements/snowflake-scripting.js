@@ -188,6 +188,8 @@ export default {
   _scripting_value: $ => choice(
     $._expression,
     seq(optional($.keyword_async), '(', choice($.execute_statement, $.call_statement), ')'),
+    // LET rs RESULTSET := ASYNC (SELECT ...)
+    seq($.keyword_async, $.subquery),
   ),
 
   // =========================================================================

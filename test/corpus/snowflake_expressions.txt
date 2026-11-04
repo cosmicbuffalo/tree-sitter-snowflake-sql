@@ -451,6 +451,7 @@ SELECT t.* EXCLUDE (id) FROM t;
       (relation
         (object_reference
           name: (identifier))))))
+
 ================================================================================
 Deploy-time ${} placeholders inside identifiers
 ================================================================================
@@ -1167,12 +1168,10 @@ FILE_FORMAT = (TYPE = CSV, NULL_IF = ('NULL', 'null', '#'), SKIP_HEADER = 1);
       name: (identifier)
       value: (identifier)
       name: (identifier)
-      value: (list)
-      value: (list)
       value: (list
         (literal)
+        (literal)
         (literal))
-      value: (list)
       name: (identifier)
       value: (literal))))
 
@@ -1385,4 +1384,3 @@ END;
             (object_reference
               name: (identifier)))))
       (keyword_end))))
-

@@ -1,0 +1,473 @@
+================================================================================
+Generic CREATE for administrative object types
+================================================================================
+
+CREATE OR REPLACE RESOURCE MONITOR rm1 WITH CREDIT_QUOTA = 100 NOTIFY_USERS = (alice, "Bob Q") FREQUENCY = MONTHLY;
+CREATE NETWORK RULE nr1 TYPE = IPV4 MODE = INGRESS VALUE_LIST = ('10.0.0.1', '10.0.0.2');
+CREATE OR ALTER SECRET s1 TYPE = GENERIC_STRING SECRET_STRING = 'x' COMMENT = 'k';
+CREATE CATALOG INTEGRATION ci1 CATALOG_SOURCE = POLARIS REST_CONFIG = (CATALOG_URI = 'https://x.example/api' CATALOG_NAME = 'c');
+CREATE POSTGRES INSTANCE pg1 COMPUTE_FAMILY = 'STANDARD_S' STORAGE_SIZE_GB = 50;
+CREATE ONLINE FEATURE TABLE oft1 TARGET_LAG = '30 seconds' WAREHOUSE = wh1 FROM src_dt;
+CREATE INTERACTIVE TABLE it1 TARGET_LAG = '10 minutes' AS SELECT a FROM t;
+CREATE SNOWFLAKE.CORE.BUDGET b1();
+CREATE SNOWFLAKE.DATA_PRIVACY.CUSTOM_CLASSIFIER cc1();
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_with)
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (list
+        (identifier)
+        (literal))
+      name: (identifier)
+      value: (identifier)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (list
+        (literal)
+        (literal))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (literal)
+      name: (keyword_comment)
+      value: (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (identifier)
+      (keyword_from)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (literal)
+      (keyword_as)
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (field
+                name: (identifier)))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier)))))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (class_instance_arguments)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (class_instance_arguments))))
+
+================================================================================
+Generic ALTER actions: SET, UNSET, tags, ADD lists, class instances
+================================================================================
+
+ALTER SHARE sh1 ADD ACCOUNTS = org1.acct1, org1.acct2;
+ALTER AGENT ag1 SET COMMENT = 'prod' PROFILE = 'p';
+ALTER AGENT ag1 UNSET TAG cost_center, dept;
+ALTER SNAPSHOT POLICY sp1 SET SCHEDULE = '120 MINUTE';
+ALTER BACKUP POLICY bp1 RENAME TO bp2;
+ALTER STREAMLIT app1 UNSET SECRETS, EXTERNAL_ACCESS_INTEGRATIONS;
+ALTER ARTIFACT REPOSITORY r1 SET TAG env = 'prod', owner = 'me';
+ALTER SNOWFLAKE.CORE.BUDGET b1 SET TAG dept = 'finance';
+ALTER NETWORK POLICY np1 SET ALLOWED_IP_LIST = ('1.2.3.4');
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (generic_action
+        (keyword_add)
+        name: (identifier)
+        value: (object_reference
+          (identifier)
+          (identifier))
+        value: (object_reference
+          (identifier)
+          (identifier)))))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      name: (keyword_comment)
+      value: (literal)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_unset)
+      (tag_names
+        (keyword_tag)
+        (object_reference
+          name: (identifier))
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (rename_object
+        (keyword_rename)
+        (keyword_to)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_unset)
+      (identifier)
+      (identifier)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      (tag_assignments
+        (keyword_tag)
+        (tag_assignment
+          name: (object_reference
+            name: (identifier))
+          value: (literal))
+        (tag_assignment
+          name: (object_reference
+            name: (identifier))
+          value: (literal)))))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      (tag_assignments
+        (keyword_tag)
+        (tag_assignment
+          name: (object_reference
+            name: (identifier))
+          value: (literal)))))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      name: (identifier)
+      value: (list
+        (literal)))))
+
+================================================================================
+Generic DROP, DESCRIBE and UNDROP
+================================================================================
+
+DROP SECRET IF EXISTS s1;
+DROP CATALOG INTEGRATION ci1;
+DROP ICEBERG TABLE db1.sch1.ice1;
+DROP SNOWFLAKE.ML.CLASSIFICATION m1;
+DESC SECRET s1;
+DESCRIBE NETWORK RULE nr1;
+DESC USER u1;
+DESC INTEGRATION i1;
+UNDROP ICEBERG TABLE ice1;
+UNDROP SECRET s1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_snowflake_object
+      (keyword_drop)
+      (snowflake_object_type)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (drop_snowflake_object
+      (keyword_drop)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (drop_snowflake_object
+      (keyword_drop)
+      (snowflake_object_type)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))))
+  (statement
+    (drop_snowflake_object
+      (keyword_drop)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (snowflake_statement
+      (describe_statement
+        (keyword_describe)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (describe_statement
+        (keyword_describe)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (describe_statement
+        (keyword_describe)
+        (keyword_user)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (describe_statement
+        (keyword_describe)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (undrop_statement
+        (keyword_undrop)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (undrop_statement
+        (keyword_undrop)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+SHOW with LIKE, IN, STARTS WITH, LIMIT, ON/TO/OF
+================================================================================
+
+SHOW SECRETS;
+SHOW TERSE AGENTS LIKE '%x%' IN SCHEMA db1.sch1;
+SHOW COMPUTE POOLS LIKE '%p%' STARTS WITH 'a' LIMIT 2 FROM 'b';
+SHOW GRANTS TO ROLE r1;
+SHOW GRANTS OF ROLE r1;
+SHOW GRANTS ON TABLE t1;
+SHOW COLUMNS IN TABLE t1;
+SHOW PARAMETERS LIKE 'x' IN SESSION;
+SHOW SNOWFLAKE.CORE.BUDGET INSTANCES IN SCHEMA db1.sch1;
+SHOW SERVICES IN COMPUTE POOL cp1;
+SHOW IMAGES IN IMAGE REPOSITORY ir1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (keyword_show)
+    (snowflake_show_target))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (keyword_terse)
+        (snowflake_show_target)
+        (keyword_like)
+        (literal)
+        (keyword_in)
+        (keyword_schema)
+        (object_reference
+          schema: (identifier)
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_like)
+        (literal)
+        (keyword_starts)
+        (keyword_with)
+        (literal)
+        (keyword_limit)
+        (literal)
+        (keyword_from)
+        (literal))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_to)
+        (keyword_role)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_of)
+        (keyword_role)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_on)
+        (keyword_table)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_in)
+        (keyword_table)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_like)
+        (literal)
+        (keyword_in)
+        (keyword_session))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_instances)
+        (keyword_in)
+        (keyword_schema)
+        (object_reference
+          schema: (identifier)
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_in)
+        (snowflake_scope_type)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_in)
+        (snowflake_scope_type)
+        (object_reference
+          name: (identifier))))))
+

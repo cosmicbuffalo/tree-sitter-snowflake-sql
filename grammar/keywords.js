@@ -277,7 +277,7 @@ export default {
   keyword_grant: _ => make_keyword("grant"),
   keyword_revoke: _ => make_keyword("revoke"),
   keyword_privileges: _ => make_keyword("privileges"),
-  keyword_describe: _ => make_keyword("describe"),
+  keyword_describe: _ => /[dD][eE][sS][cC]([rR][iI][bB][eE])?/,
   keyword_call: _ => make_keyword("call"),
   keyword_undrop: _ => make_keyword("undrop"),
   keyword_put: _ => make_keyword("put"),
@@ -378,5 +378,8 @@ export default {
   // NTH_VALUE(..) FROM FIRST|LAST: single tokens so they cannot be confused with the SELECT FROM clause
   keyword_from_first: _ => /[fF][rR][oO][mM]\s+[fF][iI][rR][sS][tT]/,
   keyword_from_last: _ => /[fF][rR][oO][mM]\s+[lL][aA][sS][tT]/,
+  keyword_starts: _ => make_keyword("starts"),
+  keyword_of: _ => make_keyword("of"),
+  keyword_instances: _ => make_keyword("instances"),
 
 }

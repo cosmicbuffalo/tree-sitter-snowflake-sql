@@ -277,6 +277,7 @@
   (keyword_privileges)
   (snowflake_object_type)
   (snowflake_show_target)
+  (snowflake_scope_type)
   (snowflake_alter_object_type)
   (snowflake_drop_object_type)
   (snowflake_create_object_type)
@@ -456,5 +457,8 @@
  (keyword_respect)
  (keyword_period)
  (keyword_position)
+ (keyword_starts)
+ (keyword_of)
+ (keyword_instances)
 ] @keyword
 ;; AUTO-KEYWORDS-END
