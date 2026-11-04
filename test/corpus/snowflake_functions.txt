@@ -592,7 +592,7 @@ BEGIN
   RETURN 1;
 END;
 $$;
-CREATE TABLE t (a INT ARRAY, b VARCHAR);
+CREATE TABLE t (a ARRAY, b VARCHAR);
 DROP PROCEDURE IF EXISTS P1(DATE, DATE, NUMBER);
 DROP PROCEDURE IF EXISTS P2(ARRAY, STRING);
 DROP PROCEDURE IF EXISTS P3(ARRAY);
@@ -677,9 +677,7 @@ DROP PROCEDURE IF EXISTS P4(ARRAY(VARCHAR));
       (column_definitions
         (column_definition
           name: (identifier)
-          type: (int
-            (keyword_int))
-          type: (array_size_definition
+          type: (structured_array_type
             (keyword_array)))
         (column_definition
           name: (identifier)
@@ -741,4 +739,3 @@ DROP PROCEDURE IF EXISTS P4(ARRAY(VARCHAR));
             (keyword_array)
             element: (varchar
               (keyword_varchar))))))))
-

@@ -106,7 +106,7 @@ export default {
 
   function_argument: $ => seq(
     optional($.identifier),
-    choice($._type, $.structured_array_type),
+    $._type,
     optional(
       seq(
         $.keyword_default,
@@ -115,16 +115,6 @@ export default {
       ),
     ),
   ),
-
-    // Snowflake ARRAY or structured ARRAY(element_type), as in DROP PROCEDURE p(ARRAY(VARCHAR))
-    structured_array_type: $ => seq(
-      $.keyword_array,
-      optional(seq(
-        '(',
-        field('element', $._type),
-        ')',
-      )),
-    ),
 
     function_arguments: $ => paren_list(
       $.function_argument,

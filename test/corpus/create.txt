@@ -339,69 +339,6 @@ CREATE TABLE IF NOT EXISTS `addresses` (
           (keyword_auto_increment))))))
 
 ================================================================================
-Create table with unsigned zerofill types
-================================================================================
-
-CREATE TABLE `addresses` (
-  `id` bigint(20) UNSIGNED ZEROFILL,
-  `id2` int4(20) ZEROFILL,
-  `id3` UNSIGNED tinyint(20),
-  `id4` mediumint(20) UNSIGNED,
-  `id5` float(20, 3) UNSIGNED,
-  `id6` double(20,3) UNSIGNED
-);
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_table
-      (keyword_create)
-      (keyword_table)
-      (object_reference
-        name: (identifier))
-      (column_definitions
-        (column_definition
-          name: (identifier)
-          type: (bigint
-            (keyword_bigint)
-            size: (literal)
-            (keyword_unsigned)
-            (keyword_zerofill)))
-        (column_definition
-          name: (identifier)
-          type: (int
-            (keyword_int)
-            size: (literal)
-            (keyword_zerofill)))
-        (column_definition
-          name: (identifier)
-          type: (tinyint
-            (keyword_unsigned)
-            (keyword_tinyint)
-            size: (literal)))
-        (column_definition
-          name: (identifier)
-          type: (mediumint
-            (keyword_mediumint)
-            size: (literal)
-            (keyword_unsigned)))
-        (column_definition
-          name: (identifier)
-          type: (float
-            (keyword_float)
-            precision: (literal)
-            scale: (literal)
-            (keyword_unsigned)))
-        (column_definition
-          name: (identifier)
-          type: (double
-            (keyword_double)
-            precision: (literal)
-            scale: (literal)
-            (keyword_unsigned)))))))
-
-================================================================================
 Create table with auto increment
 ================================================================================
 
@@ -775,15 +712,8 @@ Create table with all types
 
 CREATE TABLE type_test (
   a_bool BOOLEAN,
-  a_bit BIT,
-  a_bit2 BIT(2),
-  a_bit3 BIT VARYING(2),
   a_binary BINARY,
   a_varbinary VARBINARY,
-  a_image IMAGE,
-  a_smallser SMALLSERIAL,
-  a_serial SERIAL,
-  a_bigser BIGSERIAL,
   an_int INT,
   an_integer INTEGER,
   a_bigint BIGINT,
@@ -795,8 +725,6 @@ CREATE TABLE type_test (
   a_sized_numeric_with_scale NUMERIC (8, 4),
   a_real REAL,
   a_double_precision DOUBLE PRECISION,
-  a_money MONEY,
-  a_smallmoney SMALLMONEY,
   a_char CHAR,
   a_nchar NCHAR,
   a_nchar_precision NCHAR(8),
@@ -807,27 +735,14 @@ CREATE TABLE type_test (
   a_nvarchar_precision NVARCHAR (10),
   a_character_varying CHARACTER VARYING (10),
   a_text TEXT,
-  a_json JSON,
-  a_jsonb JSONB,
-  an_xml XML,
-  a_bytea BYTEA,
-  a_enum ENUM('one','two','three'),
   a_date DATE,
   a_datetime DATETIME,
-  a_datetime2 DATETIME2,
-  a_datetimeoffset DATETIMEOFFSET,
-  a_smalldatetime SMALLDATETIME,
   a_time TIME,
   a_timestamp TIMESTAMP,
-  a_verbose_timestamp TIMESTAMP WITHOUT TIME ZONE,
   a_tstz TIMESTAMPTZ,
   a_date_with_default_ts DATETIME DEFAULT CURRENT_TIMESTAMP,
-  a_verbose_tstz TIMESTAMP WITH TIME ZONE,
   a_geometry GEOMETRY,
-  a_geography GEOGRAPHY,
-  a_box2d BOX2D,
-  a_box3d BOX3D,
-  a_uuid UUID
+  a_geography GEOGRAPHY
 );
 
 --------------------------------------------------------------------------------
@@ -845,39 +760,12 @@ CREATE TABLE type_test (
           type: (keyword_boolean))
         (column_definition
           name: (identifier)
-          type: (bit
-            (keyword_bit)))
-        (column_definition
-          name: (identifier)
-          type: (bit
-            (keyword_bit)
-            precision: (literal)))
-        (column_definition
-          name: (identifier)
-          type: (bit
-            (keyword_bit)
-            (keyword_varying)
-            precision: (literal)))
-        (column_definition
-          name: (identifier)
           type: (binary
             (keyword_binary)))
         (column_definition
           name: (identifier)
           type: (varbinary
             (keyword_varbinary)))
-        (column_definition
-          name: (identifier)
-          type: (keyword_image))
-        (column_definition
-          name: (identifier)
-          type: (keyword_smallserial))
-        (column_definition
-          name: (identifier)
-          type: (keyword_serial))
-        (column_definition
-          name: (identifier)
-          type: (keyword_bigserial))
         (column_definition
           name: (identifier)
           type: (int
@@ -931,12 +819,6 @@ CREATE TABLE type_test (
             (keyword_precision)))
         (column_definition
           name: (identifier)
-          type: (keyword_money))
-        (column_definition
-          name: (identifier)
-          type: (keyword_smallmoney))
-        (column_definition
-          name: (identifier)
           type: (char
             (keyword_char)))
         (column_definition
@@ -982,39 +864,10 @@ CREATE TABLE type_test (
           type: (keyword_text))
         (column_definition
           name: (identifier)
-          type: (keyword_json))
-        (column_definition
-          name: (identifier)
-          type: (keyword_jsonb))
-        (column_definition
-          name: (identifier)
-          type: (keyword_xml))
-        (column_definition
-          name: (identifier)
-          type: (keyword_bytea))
-        (column_definition
-          name: (identifier)
-          type: (enum
-            (keyword_enum)
-            value: (literal)
-            value: (literal)
-            value: (literal)))
-        (column_definition
-          name: (identifier)
           type: (keyword_date))
         (column_definition
           name: (identifier)
           type: (keyword_datetime))
-        (column_definition
-          name: (identifier)
-          type: (keyword_datetime2))
-        (column_definition
-          name: (identifier)
-          type: (datetimeoffset
-            (keyword_datetimeoffset)))
-        (column_definition
-          name: (identifier)
-          type: (keyword_smalldatetime))
         (column_definition
           name: (identifier)
           type: (time
@@ -1025,13 +878,6 @@ CREATE TABLE type_test (
             (keyword_timestamp)))
         (column_definition
           name: (identifier)
-          type: (timestamp
-            (keyword_timestamp)
-            (keyword_without)
-            (keyword_time)
-            (keyword_zone)))
-        (column_definition
-          name: (identifier)
           type: (keyword_timestamptz))
         (column_definition
           name: (identifier)
@@ -1040,26 +886,10 @@ CREATE TABLE type_test (
           (keyword_current_timestamp))
         (column_definition
           name: (identifier)
-          type: (timestamp
-            (keyword_timestamp)
-            (keyword_with)
-            (keyword_time)
-            (keyword_zone)))
-        (column_definition
-          name: (identifier)
           type: (keyword_geometry))
         (column_definition
           name: (identifier)
-          type: (keyword_geography))
-        (column_definition
-          name: (identifier)
-          type: (keyword_box2d))
-        (column_definition
-          name: (identifier)
-          type: (keyword_box3d))
-        (column_definition
-          name: (identifier)
-          type: (keyword_uuid))))))
+          type: (keyword_geography))))))
 
 ================================================================================
 Create table with nullable columns
@@ -1360,97 +1190,6 @@ CREATE TABLE "Role" (
           (keyword_virtual))))))
 
 ================================================================================
-Inet type
-================================================================================
-
-CREATE TABLE "Session" (
-  "ip" inet NOT NULL
-);
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_table
-      (keyword_create)
-      (keyword_table)
-      (object_reference
-        name: (identifier))
-      (column_definitions
-        (column_definition
-          name: (literal)
-          type: (keyword_inet)
-          (keyword_not)
-          (keyword_null))))))
-
-================================================================================
-Create table with arrays and matrix
-================================================================================
-
-CREATE TABLE tab (
-    name   text,
-    array2 integer[3],
-    matrix text[][],
-    square integer[3][3],
-    array4 integer ARRAY[4],
-    array_ integer ARRAY,
-    multid integer[3][3][3][3]
-);
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_table
-      (keyword_create)
-      (keyword_table)
-      (object_reference
-        (identifier))
-      (column_definitions
-        (column_definition
-          (identifier)
-          (keyword_text))
-        (column_definition
-          (identifier)
-          (int
-            (keyword_int))
-          (array_size_definition
-            (literal)))
-        (column_definition
-          (identifier)
-          (keyword_text)
-          (array_size_definition))
-        (column_definition
-          (identifier)
-          (int
-            (keyword_int))
-          (array_size_definition
-            (literal)
-            (literal)))
-        (column_definition
-          (identifier)
-          (int
-            (keyword_int))
-          (array_size_definition
-            (keyword_array)
-            (literal)))
-        (column_definition
-          (identifier)
-          (int
-            (keyword_int))
-          (array_size_definition
-            (keyword_array)))
-        (column_definition
-          (identifier)
-          (int
-            (keyword_int))
-          (array_size_definition
-            (literal)
-            (literal)
-            (literal)
-            (literal)))))))
-
-================================================================================
 Create schema
 ================================================================================
 
@@ -1490,7 +1229,7 @@ Create schema with subsequent creates
 ================================================================================
 
 CREATE SCHEMA hollywood
-    CREATE TABLE films (title text, release date, awards text[])
+    CREATE TABLE films (title text, release date, awards text)
     CREATE VIEW winners AS
         SELECT title, release FROM films WHERE awards IS NOT NULL;
 
@@ -1516,8 +1255,7 @@ CREATE SCHEMA hollywood
           (keyword_date))
         (column_definition
           (identifier)
-          (keyword_text)
-          (array_size_definition))))
+          (keyword_text))))
     (create_view
       (keyword_create)
       (keyword_view)

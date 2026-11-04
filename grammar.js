@@ -30,8 +30,6 @@ export default grammar({
     [$.field, $._qualified_field],
     [$.object_reference],
     [$.between_expression, $.binary_expression],
-    [$.time],
-    [$.timestamp],
     [$._qualified_field, $.variant_access],
     // FOR x IN cursor_name — cursor_name could be identifier or start of object_reference
     [$.object_reference, $.for_statement],
@@ -42,8 +40,6 @@ export default grammar({
     // SQL UDF body: AS $$ (SELECT ...) $$ is either a parenthesized statement
     // or a scalar subquery expression
     [$.subquery, $.statement],
-    // arg ARRAY(T): argument name + structured array type vs custom type name + ARRAY suffix
-    [$.object_reference, $.function_argument],
     // BEGIN TRANSACTION; inside a block: standalone, or the start of a paired scripting_transaction
     [$.begin_transaction_statement, $.scripting_transaction],
     // v:a.b — dotted variant path vs a[x:y.z] slice bound that is a qualified name
