@@ -419,5 +419,9 @@ export default {
   keyword_tables: _ => make_keyword("tables"),
   keyword_insufficient: _ => make_keyword("insufficient"),
   keyword_retention: _ => make_keyword("retention"),
+  keyword_files: _ => make_keyword("files"),
+  keyword_rm: _ => make_keyword("rm"),
+  keyword_ls: _ => make_keyword("ls"),
+  keyword_specification: _ => make_keyword("specification"),
 
 }

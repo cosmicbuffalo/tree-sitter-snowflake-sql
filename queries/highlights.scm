@@ -50,8 +50,10 @@
  (keyword_false)
 ] @boolean
 
-; Snowflake: stage references (@~, @%table, @stage/path)
+; Snowflake: stage references (@~, @%table, @stage/path), file:// and cloud storage URLs
 (stage_reference) @string.special
+(file_url) @string.special
+(external_location) @string.special
 
 ; Snowflake: variant path access (col:key, col:key.nested)
 (variant_access) @variable.member
@@ -498,5 +500,9 @@
  (keyword_tables)
  (keyword_insufficient)
  (keyword_retention)
+ (keyword_files)
+ (keyword_rm)
+ (keyword_ls)
+ (keyword_specification)
 ] @keyword
 ;; AUTO-KEYWORDS-END

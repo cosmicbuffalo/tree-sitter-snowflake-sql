@@ -1,5 +1,5 @@
 import { comma_list, paren_list, wrapped_in_parenthesis } from "../helpers.js";
-import { OBJECT_TYPES, SHOW_TARGETS, SCOPE_TYPES, words_regex } from "../object-types.js";
+import { OBJECT_TYPES, SHOW_TARGETS, SCOPE_TYPES, EXECUTE_TYPES, EXECUTE_NAMELESS_TYPES, words_regex } from "../object-types.js";
 
 // Which object types have a dedicated token/rule for each verb (they are excluded from the generic token)
 const without = (list, drop) => list.filter(t => !drop.includes(t));
@@ -27,6 +27,8 @@ export default {
     $.put_statement,
     $.get_statement,
     $.list_statement,
+    $.remove_statement,
+    $.copy_files_statement,
     $.snowflake_show_statement,
     $.alter_session,
   ),
@@ -61,7 +63,10 @@ export default {
     alias($._property_list, $.list),
   ),
 
-  _property_list: $ => paren_list($._property_value),
+  _property_list: $ => paren_list(choice($._property_value, $.aliased_value)),
+
+  // IMPORTS = ('@stage/dir/' AS 'state')
+  aliased_value: $ => seq($._property_value, $.keyword_as, $._property_value),
 
   _dotted_reference: $ => seq($.identifier, '.', $.identifier, optional(seq('.', $.identifier))),
 
@@ -365,17 +370,27 @@ export default {
   // --- Snowflake COPY INTO ---
   snowflake_copy_into: $ => prec.left(seq(
     $.keyword_copy, $.keyword_into,
-    choice($.object_reference, $.stage_reference),
+    $._copy_location,
     // COPY INTO table (col1, col2, ...) FROM ...
     optional(alias($._column_list, $.list)),
-    $.keyword_from,
-    choice(
-      $.object_reference,
-      $.stage_reference,
-      seq('(', $._select_statement, ')'),
-    ),
+    optional(seq(
+      $.keyword_from,
+      choice(
+        $._copy_location,
+        seq('(', $._select_statement, ')'),
+      ),
+    )),
+    // unload: PARTITION BY expr
+    optional($.partition_by),
     optional($._snowflake_options),
   )),
+
+  _copy_location: $ => choice(
+    $.object_reference,
+    $.stage_reference,
+    $.external_location,
+    alias($._single_quote_string, $.literal),
+  ),
 
   // --- DESCRIBE statement ---
   // DESCRIBE [object_type] object_name
@@ -423,7 +438,23 @@ export default {
   execute_statement: $ => seq(
     $.keyword_execute,
     choice(
-      seq($.keyword_task, $.object_reference),
+      seq($.keyword_task, $.object_reference, repeat($.generic_clause)),
+      // EXECUTE IMMEDIATE FROM @stage/file.sql [USING (name => value, ..)]
+      seq(
+        $.keyword_immediate, $.keyword_from, choice($.stage_reference, $.literal, $.object_reference),
+        optional(seq($.keyword_using, paren_list($.named_parameter, true))),
+      ),
+      // EXECUTE DBT PROJECT p ARGS = '..' | EXECUTE DCM PROJECT p PLAN FROM '@stage/dir' | EXECUTE JOB SERVICE IN COMPUTE POOL ..
+      prec.left(seq(
+        alias($._execute_object_type, $.snowflake_object_type),
+        $.object_reference,
+        optional(paren_list($._expression)),
+        repeat($._execute_clause),
+      )),
+      prec.left(seq(
+        alias($._execute_nameless_type, $.snowflake_object_type),
+        repeat1($._execute_clause),
+      )),
       // Dollar-quoted scripting block: EXECUTE IMMEDIATE $$ BEGIN ... END $$
       // Higher precedence ensures this is preferred over the _expression fallback
       // which would consume $$...$$ as an opaque literal string
@@ -447,6 +478,31 @@ export default {
     ),
   ),
 
+  _execute_object_type: _ => token(prec(1, words_regex(EXECUTE_TYPES))),
+  _execute_nameless_type: _ => token(prec(1, words_regex(EXECUTE_NAMELESS_TYPES))),
+
+  _execute_clause: $ => choice(
+    $._snowflake_property,
+    $.generic_clause,
+    // IN COMPUTE POOL p
+    seq($.keyword_in, optional($.snowflake_scope_type), $.object_reference),
+    // FROM <source> | FROM SPECIFICATION $$..$$ | FROM (query)
+    seq($.keyword_from, optional($.keyword_specification), choice($.literal, $.stage_reference, $.object_reference, wrapped_in_parenthesis($._select_statement))),
+    // WITH SPECIFICATION $$..$$
+    seq($.keyword_with, $.keyword_specification, $.literal),
+    // USING CONFIGURATION DEV (k => v)  /  USING CONFIG = ..
+    seq($.keyword_using, $._snowflake_property),
+    seq($.keyword_using, $.identifier, optional($.identifier), optional(paren_list($.named_parameter))),
+    // DEPLOY AS "name"
+    seq($.keyword_as, $.identifier),
+  ),
+
+  // A run of plain words with an optional trailing literal or value list: PLAN DELTA, RETRY LAST, AWAIT, COMMIT
+  generic_clause: $ => prec.left(seq(
+    repeat1($.identifier),
+    optional(choice(alias($._plain_literal, $.literal), alias($._property_list, $.list))),
+  )),
+
   // --- UNDROP ---
   // UNDROP TABLE|SCHEMA|DATABASE name
   undrop_statement: $ => seq(
@@ -460,11 +516,17 @@ export default {
     $.object_reference,
   ),
 
-  // --- PUT / GET ---
+  // --- PUT / GET / LIST / REMOVE ---
+  // file://path/to/file (local path for PUT / GET)
+  file_url: _ => /[fF][iI][lL][eE]:\/\/[^\s;'"]+/,
+
+  // s3://bucket/path, gcs://.., azure://.. given without quotes
+  external_location: _ => /([sS]3([gG][oO][vV])?|[gG][cC][sS]|[aA][zZ][uU][rR][eE]):\/\/[^\s;,)'"]+/,
+
   // PUT file_path @stage [options]
   put_statement: $ => prec.left(seq(
     $.keyword_put,
-    $.literal,
+    choice($.literal, $.file_url),
     $.stage_reference,
     optional($._snowflake_options),
   )),
@@ -473,15 +535,30 @@ export default {
   get_statement: $ => prec.left(seq(
     $.keyword_get,
     $.stage_reference,
-    $.literal,
+    choice($.literal, $.file_url),
     optional($._snowflake_options),
   )),
 
-  // LIST @stage[/path] [PATTERN = 'regex']
+  // LIST | LS @stage[/path] [PATTERN = 'regex']
   list_statement: $ => prec.left(seq(
-    $.keyword_list,
+    choice($.keyword_list, $.keyword_ls),
     $.stage_reference,
     optional(seq($.keyword_pattern, '=', $.literal)),
+  )),
+
+  // REMOVE | RM @stage[/path] [PATTERN = 'regex']
+  remove_statement: $ => prec.left(seq(
+    choice($.keyword_remove, $.keyword_rm),
+    $.stage_reference,
+    optional(seq($.keyword_pattern, '=', $.literal)),
+  )),
+
+  // COPY FILES INTO @target FROM @source [FILES = (..) | PATTERN = '..'] [DETAILED_OUTPUT = TRUE]
+  copy_files_statement: $ => prec.left(seq(
+    $.keyword_copy, $.keyword_files,
+    $.keyword_into, $.stage_reference,
+    $.keyword_from, $.stage_reference,
+    optional($._snowflake_options),
   )),
 
   // --- GRANT / REVOKE ---

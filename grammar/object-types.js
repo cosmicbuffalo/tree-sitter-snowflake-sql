@@ -30,6 +30,13 @@ export const OBJECT_TYPES = [
   "SEQUENCE", "MATERIALIZED VIEW", "DYNAMIC TABLE", "DYNAMIC ICEBERG TABLE", "ICEBERG TABLE", "HYBRID TABLE",
 ];
 
+// Object types accepted by EXECUTE <type> name ...
+export const EXECUTE_TYPES = [
+  "DBT PROJECT", "DCM PROJECT", "CODE BUNDLE", "NOTEBOOK PROJECT", "NOTEBOOK", "ALERT", "TASK GRAPH",
+];
+// ... which take no name
+export const EXECUTE_NAMELESS_TYPES = ["INFERENCE JOB SERVICE", "JOB SERVICE"];
+
 // Plural / listing targets for SHOW (the first words after SHOW [TERSE]).
 export const SHOW_TARGETS = [
   "ACCOUNTS", "AGENTS", "AGGREGATION POLICIES", "ALERTS", "APPLICATION PACKAGES", "APPLICATION ROLES",

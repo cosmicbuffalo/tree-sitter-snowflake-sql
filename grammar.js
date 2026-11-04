@@ -28,6 +28,8 @@ export default grammar({
     [$.timestamp],
     // a JOIN b JOIN c ON x ON y (nested) vs flat joins with optional ON
     [$.join],
+    // EXECUTE .. USING CONFIGURATION name vs a following bare-word clause
+    [$._execute_clause],
     // ALTER TABLE t SET TAG a = 1, b = 2 : tag list continuation vs next alter specification
     [$.tag_assignments],
     [$.tag_names],

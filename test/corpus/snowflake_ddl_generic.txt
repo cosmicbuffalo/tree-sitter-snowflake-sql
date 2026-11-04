@@ -1750,3 +1750,380 @@ CREATE DATABASE d3 AS REPLICA OF org1.acct1.d1;
         schema: (identifier)
         name: (identifier)))))
 
+================================================================================
+COPY INTO table and location, COPY FILES
+================================================================================
+
+COPY INTO tgt FILE_FORMAT = (TYPE = CSV);
+COPY INTO tgt (a, b) FROM s3://bucket/data/files STORAGE_INTEGRATION = si1 FILE_FORMAT = (FORMAT_NAME = ff1) PATTERN = '.*[.]csv' PURGE = TRUE;
+COPY INTO tgt FROM 'azure://acct.blob.core.windows.net/c/p' CREDENTIALS = (AZURE_SAS_TOKEN = 'x') ON_ERROR = CONTINUE;
+COPY INTO 's3://bucket/unload/' FROM tgt STORAGE_INTEGRATION = si1 FILE_FORMAT = (TYPE = PARQUET);
+COPY INTO @st/out/ FROM (SELECT a FROM tgt) PARTITION BY ('d=' || TO_VARCHAR(dt)) HEADER = TRUE;
+COPY FILES INTO @dst FROM @src PATTERN = '.*sales.*[.]csv' DETAILED_OUTPUT = TRUE;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_copy_into
+      (keyword_copy)
+      (keyword_into)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      name: (identifier)
+      value: (identifier)))
+  (statement
+    (snowflake_copy_into
+      (keyword_copy)
+      (keyword_into)
+      (object_reference
+        name: (identifier))
+      (list
+        (column
+          (identifier))
+        (column
+          (identifier)))
+      (keyword_from)
+      (external_location)
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (literal
+        (keyword_true))))
+  (statement
+    (snowflake_copy_into
+      (keyword_copy)
+      (keyword_into)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (literal)
+      name: (identifier)
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (identifier)))
+  (statement
+    (snowflake_copy_into
+      (keyword_copy)
+      (keyword_into)
+      (literal)
+      (keyword_from)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      name: (identifier)
+      value: (identifier)))
+  (statement
+    (snowflake_copy_into
+      (keyword_copy)
+      (keyword_into)
+      (stage_reference)
+      (keyword_from)
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (field
+              name: (identifier)))))
+      (from
+        (keyword_from)
+        (relation
+          (object_reference
+            name: (identifier))))
+      (partition_by
+        (keyword_partition)
+        (keyword_by)
+        (parenthesized_expression
+          (binary_expression
+            left: (literal)
+            operator: (op_other)
+            right: (invocation
+              (object_reference
+                name: (identifier))
+              parameter: (term
+                value: (field
+                  name: (identifier)))))))
+      name: (identifier)
+      value: (literal
+        (keyword_true))))
+  (statement
+    (snowflake_statement
+      (copy_files_statement
+        (keyword_copy)
+        (keyword_files)
+        (keyword_into)
+        (stage_reference)
+        (keyword_from)
+        (stage_reference)
+        name: (identifier)
+        value: (literal)
+        name: (identifier)
+        value: (literal
+          (keyword_true))))))
+
+================================================================================
+PUT, GET, LS and REMOVE with file URLs
+================================================================================
+
+PUT file:///tmp/data/**.csv @my_stage AUTO_COMPRESS = FALSE;
+PUT file://C:\temp\data\f.csv @~;
+GET @st/path file:///tmp/dl/;
+LS @st/path PATTERN = '.*gz';
+REMOVE @st/path1/sub;
+RM @~ PATTERN = '.*jun.*';
+REMOVE @%tbl1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (put_statement
+        (keyword_put)
+        (file_url)
+        (stage_reference)
+        name: (identifier)
+        value: (literal
+          (keyword_false)))))
+  (statement
+    (snowflake_statement
+      (put_statement
+        (keyword_put)
+        (file_url)
+        (stage_reference))))
+  (statement
+    (snowflake_statement
+      (get_statement
+        (keyword_get)
+        (stage_reference)
+        (file_url))))
+  (statement
+    (snowflake_statement
+      (list_statement
+        (keyword_ls)
+        (stage_reference)
+        (keyword_pattern)
+        (literal))))
+  (statement
+    (snowflake_statement
+      (remove_statement
+        (keyword_remove)
+        (stage_reference))))
+  (statement
+    (snowflake_statement
+      (remove_statement
+        (keyword_rm)
+        (stage_reference)
+        (keyword_pattern)
+        (literal))))
+  (statement
+    (snowflake_statement
+      (remove_statement
+        (keyword_remove)
+        (stage_reference)))))
+
+================================================================================
+EXECUTE for projects, bundles, services, notebooks, tasks and scripts
+================================================================================
+
+EXECUTE DBT PROJECT d1.s1.p1 ARGS = 'run --target dev' IMPORTS = ('@st/dir/' AS 'state');
+EXECUTE DCM PROJECT p1 PLAN DELTA USING CONFIGURATION DEV (wh => 'M') FROM '@d1.s1.st/p1';
+EXECUTE DCM PROJECT p1 DEPLOY AS "upd" USING CONFIGURATION PROD FROM '@d1.s1.st/p1';
+EXECUTE CODE BUNDLE b1 ENTRYPOINT = 'main.py' ARGUMENTS = ('--a', 'b');
+EXECUTE JOB SERVICE IN COMPUTE POOL cp1 NAME = js1 REPLICAS = 3 FROM SPECIFICATION $$ spec: {} $$;
+EXECUTE INFERENCE JOB SERVICE IN COMPUTE POOL cp1 WITH SPECIFICATION $$ x: 1 $$ FROM (SELECT id FROM reviews) MODEL = d1.s1.m1;
+EXECUTE NOTEBOOK d1.s1.nb1('a', 'b');
+EXECUTE NOTEBOOK PROJECT d1.s1.np1 MAIN_FILE = 'n.ipynb' COMPUTE_POOL = 'cp';
+EXECUTE ALERT al1;
+EXECUTE TASK t1 AWAIT;
+EXECUTE TASK GRAPH g1 RETRY LAST;
+EXECUTE IMMEDIATE FROM @st/scripts/setup.sql USING (env => 'dev', n => 0);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (snowflake_object_type)
+        (object_reference
+          database: (identifier)
+          schema: (identifier)
+          name: (identifier))
+        name: (identifier)
+        value: (literal)
+        name: (identifier)
+        value: (list
+          (aliased_value
+            (literal)
+            (keyword_as)
+            (literal))))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier))
+        (generic_clause
+          (identifier))
+        (generic_clause
+          (identifier))
+        (keyword_using)
+        (identifier)
+        (identifier)
+        (named_parameter
+          name: (identifier)
+          value: (literal))
+        (keyword_from)
+        (literal))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier))
+        (generic_clause
+          (identifier))
+        (keyword_as)
+        (identifier)
+        (keyword_using)
+        (identifier)
+        (identifier)
+        (keyword_from)
+        (literal))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier))
+        name: (identifier)
+        value: (literal)
+        name: (identifier)
+        value: (list
+          (literal)
+          (literal)))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (snowflake_object_type)
+        (keyword_in)
+        (snowflake_scope_type)
+        (object_reference
+          name: (identifier))
+        name: (identifier)
+        value: (identifier)
+        name: (identifier)
+        value: (literal)
+        (keyword_from)
+        (keyword_specification)
+        (literal))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (snowflake_object_type)
+        (keyword_in)
+        (snowflake_scope_type)
+        (object_reference
+          name: (identifier))
+        (keyword_with)
+        (keyword_specification)
+        (literal)
+        (keyword_from)
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (field
+                name: (identifier)))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier))))
+        name: (identifier)
+        value: (object_reference
+          (identifier)
+          (identifier)
+          (identifier)))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (snowflake_object_type)
+        (object_reference
+          database: (identifier)
+          schema: (identifier)
+          name: (identifier))
+        (literal)
+        (literal))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (snowflake_object_type)
+        (object_reference
+          database: (identifier)
+          schema: (identifier)
+          name: (identifier))
+        name: (identifier)
+        value: (literal)
+        name: (identifier)
+        value: (literal))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_task)
+        (object_reference
+          name: (identifier))
+        (generic_clause
+          (identifier)))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier))
+        (generic_clause
+          (identifier))
+        (generic_clause
+          (identifier)))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_immediate)
+        (keyword_from)
+        (stage_reference)
+        (keyword_using)
+        (named_parameter
+          name: (identifier)
+          value: (literal))
+        (named_parameter
+          name: (identifier)
+          value: (literal))))))
+
