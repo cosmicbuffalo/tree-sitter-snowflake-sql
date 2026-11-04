@@ -204,6 +204,8 @@
   (keyword_clone)
   (keyword_hybrid)
   (keyword_policy)
+  (keyword_index)
+  (keyword_include)
   (keyword_masking)
   (keyword_access)
   (keyword_list)

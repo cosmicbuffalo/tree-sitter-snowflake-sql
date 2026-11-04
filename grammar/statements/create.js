@@ -14,6 +14,7 @@ export default {
       $.create_database,
       $.create_role,
       $.create_policy,
+      $.create_index,
       $.create_sequence,
       // Snowflake
       $.create_snowflake_named_object,
@@ -168,6 +169,19 @@ export default {
     optional(seq($.keyword_clone, $.object_reference)),
     optional($._snowflake_options),
   )),
+
+  // Snowflake hybrid tables: CREATE [OR REPLACE] INDEX [IF NOT EXISTS] name ON table (cols) [INCLUDE (cols)]
+  create_index: $ => seq(
+    $.keyword_create,
+    optional($._or_replace),
+    $.keyword_index,
+    optional($._if_not_exists),
+    $.object_reference,
+    $.keyword_on,
+    $.object_reference,
+    $.ordered_columns,
+    optional(seq($.keyword_include, $.ordered_columns)),
+  ),
 
   // Snowflake: CREATE [OR REPLACE] { MASKING | ROW ACCESS } POLICY [IF NOT EXISTS] name
   //            AS (arg type, ..) RETURNS type -> expr [COMMENT = '..'] [EXEMPT_OTHER_POLICIES = bool]

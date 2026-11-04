@@ -174,8 +174,8 @@ export default {
 
   // --- Generic Snowflake object types (ALERT, TAG, SHARE, etc.) ---
   // Uses a single regex token for the object type keyword to avoid state explosion
-  // Matches: ALERT, TAG, SHARE, EXTERNAL TABLE, NETWORK POLICY, RESOURCE MONITOR, INTEGRATION
-  snowflake_object_type: _ => /[aA][lL][eE][rR][tT]|[tT][aA][gG]|[sS][hH][aA][rR][eE]|[eE][xX][tT][eE][rR][nN][aA][lL]\s+[tT][aA][bB][lL][eE]|[nN][eE][tT][wW][oO][rR][kK]\s+[pP][oO][lL][iI][cC][yY]|[rR][eE][sS][oO][uU][rR][cC][eE]\s+[mM][oO][nN][iI][tT][oO][rR]|[iI][nN][tT][eE][gG][rR][aA][tT][iI][oO][nN]/,
+  // Matches: ALERT, TAG, SHARE, EXTERNAL TABLE, EVENT TABLE, NETWORK POLICY, RESOURCE MONITOR, INTEGRATION
+  snowflake_object_type: _ => /[aA][lL][eE][rR][tT]|[tT][aA][gG]|[sS][hH][aA][rR][eE]|[eE][xX][tT][eE][rR][nN][aA][lL]\s+[tT][aA][bB][lL][eE]|[eE][vV][eE][nN][tT]\s+[tT][aA][bB][lL][eE]|[nN][eE][tT][wW][oO][rR][kK]\s+[pP][oO][lL][iI][cC][yY]|[rR][eE][sS][oO][uU][rR][cC][eE]\s+[mM][oO][nN][iI][tT][oO][rR]|[iI][nN][tT][eE][gG][rR][aA][tT][iI][oO][nN]/,
 
   create_snowflake_object: $ => prec.left(seq(
     $.keyword_create,

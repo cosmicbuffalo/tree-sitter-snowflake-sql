@@ -9,6 +9,7 @@ export default {
       $.drop_schema,
       $.drop_database,
       $.drop_role,
+      $.drop_index,
       $.drop_function,
       $.drop_procedure,
       // Snowflake
@@ -57,6 +58,14 @@ export default {
     ),
     optional($._if_exists),
     $.identifier,
+  ),
+
+  // Snowflake hybrid tables: DROP INDEX [IF EXISTS] table.index
+  drop_index: $ => seq(
+    $.keyword_drop,
+    $.keyword_index,
+    optional($._if_exists),
+    $.object_reference,
   ),
 
   drop_function: $ => prec.left(seq(

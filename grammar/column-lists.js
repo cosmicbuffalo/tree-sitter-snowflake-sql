@@ -91,6 +91,8 @@ export default {
       $.unary_expression,
       $.array,
       $.invocation,
+      // seq.NEXTVAL
+      alias($._qualified_field, $.field),
       prec.left(seq($.keyword_current_timestamp, optional(seq('(', optional($._expression), ')')), optional(seq('::', $._type)))),
       prec.left(seq($.keyword_current_date, optional(seq('(', optional($._expression), ')')), optional(seq('::', $._type)))),
       alias($.implicit_cast, $.cast),
@@ -104,10 +106,23 @@ export default {
     ),
   ),
 
-  constraint: $ => choice(
-    $._constraint_literal,
-    $._key_constraint,
-    $._primary_key_constraint,
+  // Snowflake out-of-line constraint, optionally followed by COMMENT '..'
+  constraint: $ => seq(
+    choice(
+      $._constraint_literal,
+      $._key_constraint,
+      $._primary_key_constraint,
+      $.index_definition,
+    ),
+    optional($._column_comment),
+  ),
+
+  // Snowflake hybrid tables: INDEX name (cols) [INCLUDE (cols)]
+  index_definition: $ => seq(
+    $.keyword_index,
+    $.identifier,
+    $.ordered_columns,
+    optional(seq($.keyword_include, $.ordered_columns)),
   ),
 
   _constraint_literal: $ => prec.left(seq(
@@ -129,7 +144,6 @@ export default {
         $._references_clause,
       ),
     ),
-    optional($._column_comment),
   )),
 
   _primary_key_constraint: $ => seq(

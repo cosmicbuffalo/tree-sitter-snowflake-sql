@@ -3327,3 +3327,191 @@ CREATE TABLE IF NOT EXISTS ID_LIST (
             (keyword_timestamp_ntz)
             size: (literal)))))))
 
+================================================================================
+Hybrid table DEFAULT seq.NEXTVAL, constraint COMMENT, EVENT TABLE
+================================================================================
+
+CREATE HYBRID TABLE IF NOT EXISTS JOB_ITEMS_STAGING (
+  JOB_ITEM_ID NUMBER DEFAULT SEQ_JOB_ITEM_ID.NEXTVAL PRIMARY KEY COMMENT 'Unique identifier for the job item.',
+  JOB_ID NUMBER NOT NULL COMMENT 'The parent job.',
+  EVENT_TYPE VARCHAR(100) NOT NULL,
+  REPORT_REF VARCHAR(255) NULL,
+  UNIQUE (EVENT_TYPE, REPORT_REF) COMMENT 'Enforce one active config per event/report pair.'
+);
+
+CREATE EVENT TABLE IF NOT EXISTS PUBLIC.NATIVE_EVENTS
+COMMENT = 'Database-scoped native event table.';
+
+DROP EVENT TABLE IF EXISTS PUBLIC.NATIVE_EVENTS;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_hybrid)
+      (keyword_table)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number))
+          (keyword_default)
+          (field
+            (object_reference
+              name: (identifier))
+            name: (identifier))
+          (keyword_primary)
+          (keyword_key)
+          (keyword_comment)
+          (literal))
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number))
+          (keyword_not)
+          (keyword_null)
+          (keyword_comment)
+          (literal))
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar)
+            size: (literal))
+          (keyword_not)
+          (keyword_null))
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar)
+            size: (literal))
+          (keyword_null))
+        (constraints
+          (constraint
+            (keyword_unique)
+            (ordered_columns
+              (column
+                name: (identifier))
+              (column
+                name: (identifier)))
+            (keyword_comment)
+            (literal))))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      name: (keyword_comment)
+      value: (literal)))
+  (statement
+    (drop_snowflake_object
+      (keyword_drop)
+      (snowflake_object_type)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        schema: (identifier)
+        name: (identifier)))))
+
+================================================================================
+Hybrid table INDEX, CREATE INDEX, DROP INDEX
+================================================================================
+
+CREATE HYBRID TABLE OUTPUT_FILES (
+  OUTPUT_FILE_ID NUMBER PRIMARY KEY,
+  JOB_ID NUMBER NOT NULL,
+  STATUS VARCHAR,
+  INDEX IDX_OUTPUT_FILES_JOB (JOB_ID),
+  INDEX IDX_OUTPUT_FILES_STATUS (STATUS) INCLUDE (JOB_ID)
+);
+
+CREATE INDEX IF NOT EXISTS IDX_EXTRA ON OUTPUT_FILES (STATUS) INCLUDE (JOB_ID);
+
+DROP INDEX IF EXISTS OUTPUT_FILES.IDX_EXTRA;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_hybrid)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number))
+          (keyword_primary)
+          (keyword_key))
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number))
+          (keyword_not)
+          (keyword_null))
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar)))
+        (constraints
+          (constraint
+            (index_definition
+              (keyword_index)
+              (identifier)
+              (ordered_columns
+                (column
+                  name: (identifier)))))
+          (constraint
+            (index_definition
+              (keyword_index)
+              (identifier)
+              (ordered_columns
+                (column
+                  name: (identifier)))
+              (keyword_include)
+              (ordered_columns
+                (column
+                  name: (identifier)))))))))
+  (statement
+    (create_index
+      (keyword_create)
+      (keyword_index)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (keyword_on)
+      (object_reference
+        name: (identifier))
+      (ordered_columns
+        (column
+          name: (identifier)))
+      (keyword_include)
+      (ordered_columns
+        (column
+          name: (identifier)))))
+  (statement
+    (drop_index
+      (keyword_drop)
+      (keyword_index)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        schema: (identifier)
+        name: (identifier)))))
+
