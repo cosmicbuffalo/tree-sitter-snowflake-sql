@@ -487,9 +487,11 @@ export default {
   _tsql_parameter: $ => seq('@', $._identifier),
   // support nordic chars and umlaue
   // Snowflake allows $ in identifiers (e.g. SYSTEM$STREAM_HAS_DATA)
-  // Also accepts ${NAME} deploy-time placeholders (Flyway / schemachange style)
-  // anywhere in the identifier, e.g. ${DB}.PUBLIC.T or ${ENV}_STAGE.
-  _identifier: _ => /(\$\{[A-Za-z_][0-9A-Za-z_]*\}|[A-Za-z_\u00C0-\u017F])([0-9A-Za-z_$\u00C0-\u017F]|\$\{[A-Za-z_][0-9A-Za-z_]*\})*/,
+  // Also accepts deploy-time placeholders anywhere in the identifier:
+  //   ${NAME}    Flyway / schemachange style, e.g. ${DB}.PUBLIC.T or ${ENV}_STAGE
+  //   {{ name }} simple Jinja variable substitution, e.g. {{health_check_name}}_FAILURE
+  // Only bare variables; Jinja blocks/filters ({% %}, {{ x | f }}) are out of scope.
+  _identifier: _ => /(\$\{[A-Za-z_][0-9A-Za-z_]*\}|\{\{ *[A-Za-z_][0-9A-Za-z_]* *\}\}|[A-Za-z_\u00C0-\u017F])([0-9A-Za-z_$\u00C0-\u017F]|\$\{[A-Za-z_][0-9A-Za-z_]*\}|\{\{ *[A-Za-z_][0-9A-Za-z_]* *\}\})*/,
 
   object_id: $ => seq(
     $.keyword_object_id,

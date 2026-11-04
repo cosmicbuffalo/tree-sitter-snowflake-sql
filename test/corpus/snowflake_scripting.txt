@@ -3049,3 +3049,52 @@ END;
           name: (identifier)))
       (keyword_end))))
 
+================================================================================
+Jinja {{name}} placeholders inside scripting identifiers
+================================================================================
+
+BEGIN
+  LET {{health_check_name}}_count NUMBER := 0;
+  SELECT COUNT(*) INTO :c FROM {{ db_name }}.PUBLIC.{{health_check_name}}_RESULTS;
+  RETURN {{health_check_name}}_count;
+END;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block
+    (snowflake_scripting_block
+      (keyword_begin)
+      (let_statement
+        (keyword_let)
+        name: (identifier)
+        type: (number
+          (keyword_number))
+        value: (literal))
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (invocation
+                (object_reference
+                  name: (identifier))
+                parameter: (term
+                  value: (all_fields))))))
+        (keyword_into)
+        (select_expression
+          (term
+            value: (snowflake_variable_reference)))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              database: (identifier)
+              schema: (identifier)
+              name: (identifier)))))
+      (return_statement
+        (keyword_return)
+        value: (field
+          name: (identifier)))
+      (keyword_end))))
+

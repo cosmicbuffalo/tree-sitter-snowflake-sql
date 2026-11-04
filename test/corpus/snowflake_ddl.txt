@@ -2982,3 +2982,38 @@ SHOW TASKS LIKE 'x' IN SCHEMA s;
         (object_reference
           name: (identifier))))))
 
+================================================================================
+Jinja {{name}} placeholders in task names and CALL targets
+================================================================================
+
+CREATE TASK IF NOT EXISTS {{health_check_name}}
+  WAREHOUSE = ${SNOWFLAKE_WAREHOUSE}
+  SCHEDULE = '60 MINUTE'
+AS
+  CALL {{ health_check_name }}();
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_task
+      (keyword_create)
+      (keyword_task)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (literal)
+      (keyword_as)
+      (statement
+        (snowflake_statement
+          (call_statement
+            (keyword_call)
+            (invocation
+              (object_reference
+                name: (identifier)))))))))
+
