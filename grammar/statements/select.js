@@ -18,17 +18,8 @@ export default {
     $.identifier,
     optional(paren_list(field("argument", $.identifier))),
     $.keyword_as,
-    optional(
-      seq(
-        optional($.keyword_not),
-        $.keyword_materialized,
-      ),
-    ),
     wrapped_in_parenthesis(
-      alias(
-        choice($._dml_read, $._dml_write),
-        $.statement,
-      ),
+      alias($._dml_read, $.statement),
     ),
   ),
 
@@ -181,7 +172,6 @@ export default {
       choice(
           $.keyword_range,
           $.keyword_rows,
-          $.keyword_groups,
       ),
 
       choice(
@@ -198,14 +188,6 @@ export default {
           seq(
               $.frame_definition,
           )
-      ),
-      optional(
-          choice(
-              $._exclude_current_row,
-              $._exclude_group,
-              $._exclude_ties,
-              $._exclude_no_others,
-          ),
       ),
   ),
 
@@ -240,9 +222,6 @@ export default {
 
   from: $ => seq(
     $.keyword_from,
-    optional(
-      $.keyword_only,
-    ),
     choice($.relation, $.lateral_relation),
     repeat(
       choice(
@@ -349,19 +328,6 @@ export default {
       $.keyword_cross,
       $.keyword_join,
       $.relation,
-      optional(
-        seq(
-          $.keyword_with,
-          $.keyword_ordinality,
-          optional(
-            seq(
-              $.keyword_as,
-              field("alias", $.identifier),
-              paren_list($.identifier),
-            )
-          )
-        )
-      )
     )
   ),
 
@@ -451,15 +417,7 @@ export default {
 
   order_target: $ => seq(
     $._expression,
-    optional(
-      choice(
-        $.direction,
-        seq(
-          $.keyword_using,
-          choice('<', '>', '<=', '>='),
-        ),
-      ),
-    ),
+    optional($.direction),
     optional(
       seq(
         $.keyword_nulls,

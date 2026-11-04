@@ -20,11 +20,7 @@ export default {
   block: $ => $.snowflake_scripting_block,
 
   statement: $ => seq(
-    optional(seq(
-      $.keyword_explain,
-      optional($.keyword_analyze),
-      optional($.keyword_verbose),
-    )),
+    optional($.keyword_explain),
     choice(
       $._ddl_statement,
       $._dml_write,
