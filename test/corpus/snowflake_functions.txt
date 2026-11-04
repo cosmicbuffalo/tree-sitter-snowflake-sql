@@ -321,7 +321,8 @@ ALTER FUNCTION F() UNSET COMMENT;
         name: (identifier))
       (function_arguments)
       (keyword_unset)
-      (identifier))))
+      (generic_clause
+        (identifier)))))
 
 ================================================================================
 Python and SQL stored procedures

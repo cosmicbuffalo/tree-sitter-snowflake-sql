@@ -227,7 +227,7 @@ export default {
   //            [CLONE source] [properties]
   create_schema: $ => prec.left(seq(
     $.keyword_create,
-    optional($._or_replace),
+    optional(choice($._or_replace, $._or_alter)),
     optional($.keyword_transient),
     $.keyword_schema,
     optional($._if_not_exists),
@@ -239,7 +239,7 @@ export default {
 
   create_database: $ => prec.left(seq(
     $.keyword_create,
-    optional($._or_replace),
+    optional(choice($._or_replace, $._or_alter)),
     optional($.keyword_transient),
     $.keyword_database,
     optional($._if_not_exists),

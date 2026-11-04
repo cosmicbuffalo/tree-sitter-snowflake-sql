@@ -12,6 +12,7 @@ export default {
       // Snowflake
       $.alter_snowflake_named_object,
       $.alter_snowflake_object,
+      $.alter_snowflake_global,
       $.alter_routine,
     ),
   ),
@@ -285,11 +286,7 @@ export default {
     $._alter_container_action,
   ),
 
-  _alter_container_action: $ => choice(
-    $.rename_object,
-    seq($.keyword_set, $._snowflake_options),
-    seq($.keyword_unset, $.identifier),
-  ),
+  _alter_container_action: $ => $._snowflake_alter_actions,
 
   _drop_behavior: $ => choice(
     $.keyword_cascade,

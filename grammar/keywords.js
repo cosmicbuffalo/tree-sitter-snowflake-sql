@@ -424,5 +424,6 @@ export default {
   keyword_ls: _ => make_keyword("ls"),
   keyword_specification: _ => make_keyword("specification"),
   keyword_force: _ => make_keyword("force"),
+  keyword_body: _ => make_keyword("body"),
 
 }

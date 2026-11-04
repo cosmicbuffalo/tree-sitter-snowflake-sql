@@ -505,5 +505,6 @@
  (keyword_ls)
  (keyword_specification)
  (keyword_force)
+ (keyword_body)
 ] @keyword
 ;; AUTO-KEYWORDS-END

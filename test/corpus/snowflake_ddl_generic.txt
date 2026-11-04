@@ -157,13 +157,14 @@ ALTER NETWORK POLICY np1 SET ALLOWED_IP_LIST = ('1.2.3.4');
         name: (identifier))
       (generic_action
         (keyword_add)
-        name: (identifier)
-        value: (object_reference
+        (generic_clause
           (identifier)
-          (identifier))
-        value: (object_reference
-          (identifier)
-          (identifier)))))
+          (object_reference
+            (identifier)
+            (identifier))
+          (object_reference
+            (identifier)
+            (identifier))))))
   (statement
     (alter_snowflake_object
       (keyword_alter)
@@ -1976,8 +1977,7 @@ EXECUTE IMMEDIATE FROM @st/scripts/setup.sql USING (env => 'dev', n => 0);
         (object_reference
           name: (identifier))
         (generic_clause
-          (identifier))
-        (generic_clause
+          (identifier)
           (identifier))
         (keyword_using)
         (identifier)
@@ -2109,8 +2109,7 @@ EXECUTE IMMEDIATE FROM @st/scripts/setup.sql USING (env => 'dev', n => 0);
         (object_reference
           name: (identifier))
         (generic_clause
-          (identifier))
-        (generic_clause
+          (identifier)
           (identifier)))))
   (statement
     (snowflake_statement
@@ -2710,3 +2709,294 @@ ALTER TABLE t1 ALTER COLUMN c1 SET TAG t1 = 'a';
               name: (identifier))
             value: (literal)))))))
 
+================================================================================
+Generic CREATE with modifiers, WITH phrases and policy bodies
+================================================================================
+
+CREATE TEMPORARY AGENT ag1 COMMENT = 'x';
+CREATE OR REPLACE SECURE AGENT ag2 FROM SPECIFICATION $$ a: 1 $$;
+CREATE EXTERNAL AGENT ea1 WITH VERSION "v1";
+CREATE CONNECTION c1 AS REPLICA OF org1.acct1.c0;
+CREATE AGGREGATION POLICY ap1 AS () RETURNS AGGREGATION_CONSTRAINT -> AGGREGATION_CONSTRAINT(MIN_GROUP_SIZE => 2);
+CREATE BACKUP SET bs1 FOR TABLE t1 WITH BACKUP POLICY bp1;
+CREATE OR ALTER SCHEMA s9;
+CREATE OR ALTER DATABASE db9;
+CREATE OR ALTER STAGE st9 URL = 's3://b/p/';
+CREATE SERVICE svc1 IN COMPUTE POOL cp1 FROM SPECIFICATION $$ spec: {} $$ MIN_INSTANCES = 1;
+CREATE POSTGRES INSTANCE pg2 FORK pg1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_temporary)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (keyword_comment)
+      value: (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_secure)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (keyword_specification)
+      (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_with)
+      (generic_clause
+        (identifier)
+        (literal))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_as)
+      (keyword_replica)
+      (keyword_of)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_as)
+      (function_arguments)
+      (keyword_returns)
+      custom_type: (object_reference
+        name: (identifier))
+      (invocation
+        (object_reference
+          name: (identifier))
+        parameter: (named_parameter
+          name: (identifier)
+          value: (literal)))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (generic_clause
+        (keyword_for)
+        (keyword_table)
+        (identifier))
+      (keyword_with)
+      (generic_clause
+        (identifier)
+        (keyword_policy)
+        (identifier))))
+  (statement
+    (create_schema
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (keyword_schema)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (create_database
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (keyword_database)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (create_snowflake_named_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (snowflake_create_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_in)
+      (snowflake_scope_type)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (keyword_specification)
+      (literal)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (generic_clause
+        (identifier)
+        (identifier)))))
+
+================================================================================
+Generic CREATE with modifiers, WITH phrases and policy bodies
+================================================================================
+
+CREATE TEMPORARY AGENT ag1 COMMENT = 'x';
+CREATE OR REPLACE SECURE AGENT ag2 FROM SPECIFICATION $$ a: 1 $$;
+CREATE EXTERNAL AGENT ea1 WITH VERSION "v1";
+CREATE CONNECTION c1 AS REPLICA OF org1.acct1.c0;
+CREATE AGGREGATION POLICY ap1 AS () RETURNS AGGREGATION_CONSTRAINT -> AGGREGATION_CONSTRAINT(MIN_GROUP_SIZE => 2);
+CREATE BACKUP SET bs1 FOR TABLE t1 WITH BACKUP POLICY bp1;
+CREATE OR ALTER SCHEMA s9;
+CREATE OR ALTER DATABASE db9;
+CREATE OR ALTER STAGE st9 URL = 's3://b/p/';
+CREATE SERVICE svc1 IN COMPUTE POOL cp1 FROM SPECIFICATION $$ spec: {} $$ MIN_INSTANCES = 1;
+CREATE POSTGRES INSTANCE pg2 FORK pg1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_temporary)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (keyword_comment)
+      value: (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_secure)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (keyword_specification)
+      (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_with)
+      (generic_clause
+        (identifier)
+        (literal))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_as)
+      (keyword_replica)
+      (keyword_of)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_as)
+      (function_arguments)
+      (keyword_returns)
+      custom_type: (object_reference
+        name: (identifier))
+      (invocation
+        (object_reference
+          name: (identifier))
+        parameter: (named_parameter
+          name: (identifier)
+          value: (literal)))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (generic_clause
+        (keyword_for)
+        (keyword_table)
+        (identifier))
+      (keyword_with)
+      (generic_clause
+        (identifier)
+        (keyword_policy)
+        (identifier))))
+  (statement
+    (create_schema
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (keyword_schema)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (create_database
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (keyword_database)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (create_snowflake_named_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (snowflake_create_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_in)
+      (snowflake_scope_type)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (keyword_specification)
+      (literal)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (generic_clause
+        (identifier)
+        (identifier)))))
