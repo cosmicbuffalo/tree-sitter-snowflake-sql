@@ -13,6 +13,7 @@ export default {
       $.create_procedure,
       $.create_database,
       $.create_role,
+      $.create_policy,
       $.create_sequence,
       // Snowflake
       $.create_snowflake_named_object,
@@ -165,6 +166,24 @@ export default {
     optional($._if_not_exists),
     $.object_reference,
     optional(seq($.keyword_clone, $.object_reference)),
+    optional($._snowflake_options),
+  )),
+
+  // Snowflake: CREATE [OR REPLACE] { MASKING | ROW ACCESS } POLICY [IF NOT EXISTS] name
+  //            AS (arg type, ..) RETURNS type -> expr [COMMENT = '..'] [EXEMPT_OTHER_POLICIES = bool]
+  create_policy: $ => prec.left(seq(
+    $.keyword_create,
+    optional($._or_replace),
+    choice($.keyword_masking, seq($.keyword_row, $.keyword_access)),
+    $.keyword_policy,
+    optional($._if_not_exists),
+    $.object_reference,
+    $.keyword_as,
+    $.function_arguments,
+    $.keyword_returns,
+    $._type,
+    '->',
+    $._expression,
     optional($._snowflake_options),
   )),
 

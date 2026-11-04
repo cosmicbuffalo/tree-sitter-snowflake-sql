@@ -58,6 +58,14 @@ export default {
     $._primary_key,
     seq($.keyword_autoincrement, optional(choice($.keyword_order, seq($.keyword_no, $.keyword_order)))),
     $._column_comment,
+    // Snowflake: [WITH] MASKING POLICY name [USING (col, ..)]
+    seq(
+      optional($.keyword_with),
+      $.keyword_masking,
+      $.keyword_policy,
+      $.object_reference,
+      optional(seq($.keyword_using, paren_list($.identifier, true))),
+    ),
     seq(
       optional(seq($.keyword_generated, $.keyword_always)),
       $.keyword_as,

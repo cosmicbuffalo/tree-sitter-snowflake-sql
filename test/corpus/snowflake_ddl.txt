@@ -3209,3 +3209,121 @@ $$;
                 (keyword_end)))))
         (dollar_quote)))))
 
+================================================================================
+CREATE MASKING / ROW ACCESS POLICY and column MASKING POLICY
+================================================================================
+
+CREATE OR REPLACE MASKING POLICY IF NOT EXISTS ID_MASK AS (VAL VARCHAR) RETURNS VARCHAR ->
+CASE
+  WHEN IS_ROLE_IN_SESSION('ADMIN') THEN VAL
+  ELSE '***MASKED***'
+END
+COMMENT = 'mask ids';
+
+CREATE ROW ACCESS POLICY rap AS (acct VARCHAR) RETURNS BOOLEAN -> acct = CURRENT_ACCOUNT();
+
+CREATE TABLE IF NOT EXISTS ID_LIST (
+  ID VARCHAR(16777216) WITH MASKING POLICY ID_MASK,
+  OTHER VARCHAR MASKING POLICY ID_MASK USING (OTHER, ID),
+  CREATED_AT TIMESTAMP_NTZ(9)
+);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_policy
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_masking)
+      (keyword_policy)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (keyword_as)
+      (function_arguments
+        (function_argument
+          (identifier)
+          (varchar
+            (keyword_varchar))))
+      (keyword_returns)
+      (varchar
+        (keyword_varchar))
+      (case
+        (keyword_case)
+        (keyword_when)
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (term
+            value: (literal)))
+        (keyword_then)
+        (field
+          name: (identifier))
+        (keyword_else)
+        (literal)
+        (keyword_end))
+      name: (keyword_comment)
+      value: (literal)))
+  (statement
+    (create_policy
+      (keyword_create)
+      (keyword_row)
+      (keyword_access)
+      (keyword_policy)
+      (object_reference
+        name: (identifier))
+      (keyword_as)
+      (function_arguments
+        (function_argument
+          (identifier)
+          (varchar
+            (keyword_varchar))))
+      (keyword_returns)
+      (keyword_boolean)
+      (binary_expression
+        left: (field
+          name: (identifier))
+        right: (invocation
+          (object_reference
+            name: (identifier))))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar)
+            size: (literal))
+          (keyword_with)
+          (keyword_masking)
+          (keyword_policy)
+          (object_reference
+            name: (identifier)))
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))
+          (keyword_masking)
+          (keyword_policy)
+          (object_reference
+            name: (identifier))
+          (keyword_using)
+          (identifier)
+          (identifier))
+        (column_definition
+          name: (identifier)
+          type: (timestamp_ntz
+            (keyword_timestamp_ntz)
+            size: (literal)))))))
+
