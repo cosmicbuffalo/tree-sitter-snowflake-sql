@@ -28,6 +28,9 @@ export default grammar({
     [$.timestamp],
     // a JOIN b JOIN c ON x ON y (nested) vs flat joins with optional ON
     [$.join],
+    // ALTER TABLE t SET TAG a = 1, b = 2 : tag list continuation vs next alter specification
+    [$.tag_assignments],
+    [$.tag_names],
     // POSITION(a IN b): operands are plain expressions that cannot begin an IN list
     [$._position_haystack, $._expression],
     // lambda parameter name vs a field expression (x -> ..., (a, b) -> ...)

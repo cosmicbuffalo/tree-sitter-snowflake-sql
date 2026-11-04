@@ -35,10 +35,11 @@ export default {
   create_table: $ => prec.left(
     seq(
       $.keyword_create,
-      optional($._or_replace),
+      optional(choice($._or_replace, $._or_alter)),
       optional(
         choice(
-          $._temporary,
+          seq(optional(choice($.keyword_local, $.keyword_global)), $._temporary),
+          $.keyword_volatile,
           $.keyword_external,
           $.keyword_iceberg,
           $.keyword_hybrid,
@@ -66,22 +67,97 @@ export default {
             $.create_query,
           ),
         ),
-        // CREATE TABLE ... CLONE source_table
-        seq($.keyword_clone, $.object_reference),
+        // CREATE TABLE t (a, b) AS SELECT ...
+        seq(
+          alias($._column_list, $.list),
+          repeat($._table_settings),
+          $.keyword_as,
+          $.create_query,
+        ),
+        // CREATE TABLE ... CLONE source_table [AT | BEFORE (..)]
+        $.clone_clause,
         // CREATE TABLE ... LIKE other_table (Snowflake clone-structure)
         seq(
           $.keyword_like,
           $.object_reference,
           repeat($._table_settings),
         ),
+        // CREATE TABLE t USING TEMPLATE (SELECT ...)
+        seq(
+          repeat($._table_settings),
+          $.keyword_using,
+          $.keyword_template,
+          wrapped_in_parenthesis($._select_statement),
+        ),
+        // CREATE TABLE t FROM BACKUP SET s IDENTIFIER 'id'
+        seq(
+          $.keyword_from,
+          $.keyword_backup,
+          $.keyword_set,
+          $.object_reference,
+          $.keyword_identifier,
+          $.literal,
+        ),
       ),
     ),
+  ),
+
+  // CLONE source [AT | BEFORE (..)] [IGNORE TABLES WITH INSUFFICIENT DATA RETENTION] [IGNORE HYBRID TABLES]
+  clone_clause: $ => prec.left(seq(
+    $.keyword_clone,
+    $.object_reference,
+    optional($.at_before),
+    repeat($.ignore_clause),
+  )),
+
+  ignore_clause: $ => choice(
+    seq($.keyword_ignore, $.keyword_hybrid, $.keyword_tables),
+    seq($.keyword_ignore, $.keyword_tables, $.keyword_with, $.keyword_insufficient, $.keyword_data, $.keyword_retention),
   ),
 
   _table_settings: $ => choice(
     $.table_partition,
     $.cluster_by,
     $.table_option,
+    $.copy_clause,
+    $.with_tag_clause,
+    $.policy_clause,
+    $.contact_clause,
+  ),
+
+  // COPY GRANTS | COPY TAGS | COPY = (COMMENTS, TAGS, GRANTS)
+  copy_clause: $ => seq(
+    $.keyword_copy,
+    choice(
+      $.keyword_grants,
+      $.keyword_tags,
+      seq('=', paren_list($.identifier, true)),
+    ),
+  ),
+
+  // [WITH] ROW ACCESS | AGGREGATION | JOIN | STORAGE LIFECYCLE POLICY name [ON (cols)] [ENTITY KEY (cols)] [ALLOWED JOIN KEYS (cols)]
+  policy_clause: $ => prec.left(seq(
+    optional($.keyword_with),
+    choice(
+      seq($.keyword_row, $.keyword_access),
+      $.keyword_aggregation,
+      $.keyword_join,
+      seq($.keyword_storage, $.keyword_lifecycle),
+    ),
+    $.keyword_policy,
+    $.object_reference,
+    optional(seq($.keyword_on, paren_list($.identifier, true))),
+    optional(seq($.keyword_entity, $.keyword_key, paren_list($.identifier, true))),
+    optional(seq($.keyword_allowed, $.keyword_join, $.keyword_keys, paren_list($.identifier, true))),
+  )),
+
+  // WITH CONTACT (purpose = contact_name, ..)
+  contact_clause: $ => seq(
+    $.keyword_with,
+    $.keyword_contact,
+    '(',
+    $._snowflake_options,
+    ')',
   ),
 
   // Snowflake: CLUSTER BY (col1, col2, expr)
@@ -125,7 +201,7 @@ export default {
   create_view: $ => prec.right(
     seq(
       $.keyword_create,
-      optional($._or_replace),
+      optional(choice($._or_replace, $._or_alter)),
       optional($.keyword_secure),
       optional($._temporary),
       optional($.keyword_recursive),
@@ -136,9 +212,8 @@ export default {
       optional($.view_columns),
       // Snowflake: COPY GRANTS, COMMENT = '...', CLUSTER BY (..) (materialized views)
       repeat(choice(
-        seq($.keyword_copy, $.keyword_grants),
         $.procedure_comment,
-        $.cluster_by,
+        $._table_settings,
       )),
       $.keyword_as,
       $.create_query,
@@ -157,7 +232,8 @@ export default {
     $.keyword_schema,
     optional($._if_not_exists),
     $.object_reference,
-    optional(seq($.keyword_clone, $.object_reference)),
+    optional($.clone_clause),
+    optional(seq(optional($.keyword_with), $.keyword_managed, $.keyword_access)),
     optional($._snowflake_options),
   )),
 
@@ -168,9 +244,17 @@ export default {
     $.keyword_database,
     optional($._if_not_exists),
     $.object_reference,
-    optional(seq($.keyword_clone, $.object_reference)),
+    optional($.clone_clause),
+    optional($._database_source),
     optional($._snowflake_options),
   )),
+
+  // CREATE DATABASE d FROM SHARE provider.share | FROM LISTING 'name' | AS REPLICA OF org.acct.db
+  _database_source: $ => choice(
+    seq($.keyword_from, $.keyword_share, $.object_reference),
+    seq($.keyword_from, $.keyword_listing, $.literal),
+    seq($.keyword_as, $.keyword_replica, $.keyword_of, $.object_reference),
+  ),
 
   // Snowflake hybrid tables: CREATE [OR REPLACE] INDEX [IF NOT EXISTS] name ON table (cols) [INCLUDE (cols)]
   create_index: $ => seq(

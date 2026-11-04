@@ -59,6 +59,31 @@ export default {
     // Snowflake: ALTER TABLE t ADD SEARCH OPTIMIZATION [ON method(cols), ...]
     prec.right(seq($.keyword_add, $.keyword_search, $.keyword_optimization,
       optional(seq($.keyword_on, comma_list($.invocation, true))))),
+    // Snowflake: ALTER TABLE t SWAP WITH other
+    seq($.keyword_swap, $.keyword_with, $.object_reference),
+    // Snowflake: ALTER TABLE t ADD | DROP ROW ACCESS POLICY p [ON (cols)] ; SET JOIN POLICY p ..
+    $._alter_policy_action,
+    // Snowflake: ALTER TABLE t SET TAG a = 'x' / UNSET TAG a / UNSET prop, ..
+    seq($.keyword_set, $.tag_assignments),
+    seq($.keyword_unset, $.tag_names),
+    seq($.keyword_unset, $.identifier),
+    // Snowflake: ALTER TABLE t SUSPEND | RESUME RECLUSTER
+    seq(choice($.keyword_suspend, $.keyword_resume), $.keyword_recluster),
+    // Snowflake: ALTER TABLE t ALTER | MODIFY CONSTRAINT name | PRIMARY KEY .. RELY | NOT ENFORCED ..
+    seq(
+      choice($.keyword_alter, $.keyword_modify),
+      $.keyword_constraint,
+      choice($.identifier, $._primary_key, seq($.keyword_unique, $.ordered_columns)),
+      repeat1($.constraint_property),
+    ),
+    // Snowflake: ALTER TABLE t ALTER (c1 DROP NOT NULL, COLUMN c2 COMMENT 'x', ..)
+    seq(
+      choice($.keyword_alter, $.keyword_modify),
+      paren_list(choice(
+        alias($._bare_alter_column, $.alter_column),
+        seq($.keyword_column, $._bare_alter_column),
+      ), true),
+    ),
     // Snowflake: ALTER TABLE t RENAME CONSTRAINT a TO b
     seq($.keyword_rename, $.keyword_constraint, $.identifier, $.keyword_to, $.identifier),
     // Snowflake: ALTER TABLE t ADD DATA METRIC FUNCTION func ON (col1, col2)
@@ -197,10 +222,25 @@ export default {
     $.keyword_view,
     optional($._if_exists),
     $.object_reference,
-    choice(
-      $.rename_object,
-      $.rename_column,
-    ),
+    $._alter_view_action,
+    repeat(seq(',', $._alter_view_action)),
+  ),
+
+  _alter_view_action: $ => choice(
+    $.rename_object,
+    $.rename_column,
+    seq(choice($.keyword_set, $.keyword_unset), $.keyword_secure),
+    seq($.keyword_set, $._snowflake_options),
+    seq($.keyword_set, $.tag_assignments),
+    seq($.keyword_unset, $.tag_names),
+    seq($.keyword_unset, $.identifier),
+    $._alter_policy_action,
+  ),
+
+  // ADD | DROP | SET <policy clause>:  ROW ACCESS POLICY p ON (cols), JOIN POLICY p ALLOWED JOIN KEYS (..), ..
+  _alter_policy_action: $ => seq(
+    choice($.keyword_add, $.keyword_drop, $.keyword_set),
+    $.policy_clause,
   ),
 
   // ALTER SCHEMA | DATABASE [IF EXISTS] name { RENAME TO new | SET props | UNSET prop }

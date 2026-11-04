@@ -1097,9 +1097,10 @@ CREATE OR REPLACE TRANSIENT DATABASE sales CLONE prod_sales DATA_RETENTION_TIME_
       (keyword_database)
       (object_reference
         (identifier))
-      (keyword_clone)
-      (object_reference
-        (identifier))
+      (clone_clause
+        (keyword_clone)
+        (object_reference
+          (identifier)))
       (identifier)
       (literal)
       (keyword_comment)

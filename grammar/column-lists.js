@@ -58,8 +58,24 @@ export default {
     ),
     $._default_expression,
     $._primary_key,
-    seq($.keyword_autoincrement, optional(choice($.keyword_order, seq($.keyword_no, $.keyword_order)))),
+    // AUTOINCREMENT | IDENTITY [(start, step) | START n INCREMENT n] [ORDER | NOORDER]
+    seq(
+      choice($.keyword_autoincrement, $.keyword_identity),
+      optional(choice(
+        seq('(', $.literal, ',', $.literal, ')'),
+        seq($.keyword_start, $.literal, $.keyword_increment, $.literal),
+      )),
+      optional(choice($.keyword_order, $.keyword_noorder, seq($.keyword_no, $.keyword_order))),
+    ),
     $._column_comment,
+    // CONSTRAINT name (the constraint itself follows as the next item), CHECK (expr), constraint properties
+    seq($.keyword_constraint, $.identifier),
+    seq($.keyword_check, wrapped_in_parenthesis($._expression)),
+    $.constraint_property,
+    // [WITH] PROJECTION POLICY name
+    seq(optional($.keyword_with), $.keyword_projection, $.keyword_policy, $.object_reference),
+    // [WITH] TAG (name = 'value', ..)
+    $.with_tag_clause,
     // Snowflake: [WITH] MASKING POLICY name [USING (col, ..)]
     seq(
       optional($.keyword_with),
@@ -72,9 +88,32 @@ export default {
       optional(seq($.keyword_generated, $.keyword_always)),
       $.keyword_as,
       $._expression,
+      optional($.keyword_virtual),
     ),
     $.keyword_unique
   )),
+
+  // [NOT] ENFORCED | [NOT] DEFERRABLE | INITIALLY DEFERRED|IMMEDIATE | ENABLE | DISABLE | VALIDATE | NOVALIDATE | RELY | NORELY
+  constraint_property: $ => choice(
+    seq(optional($.keyword_not), $.keyword_enforced),
+    seq(optional($.keyword_not), $.keyword_deferrable),
+    seq($.keyword_initially, choice($.keyword_deferred, $.keyword_immediate)),
+    $.keyword_enable,
+    $.keyword_disable,
+    $.keyword_validate,
+    $.keyword_novalidate,
+    $.keyword_rely,
+    $.keyword_norely,
+  ),
+
+  // [WITH] TAG (name = 'value', ..)
+  with_tag_clause: $ => seq(
+    optional($.keyword_with),
+    $.keyword_tag,
+    '(',
+    comma_list($.tag_assignment, true),
+    ')',
+  ),
 
   _default_expression: $ => seq(
     $.keyword_default,
@@ -115,7 +154,9 @@ export default {
       $._key_constraint,
       $._primary_key_constraint,
       $.index_definition,
+      seq($.keyword_check, wrapped_in_parenthesis($._expression)),
     ),
+    repeat($.constraint_property),
     optional($._column_comment),
   ),
 
@@ -145,6 +186,7 @@ export default {
         $.ordered_columns,
         $._references_clause,
       ),
+      seq($.keyword_check, wrapped_in_parenthesis($._expression)),
     ),
   )),
 

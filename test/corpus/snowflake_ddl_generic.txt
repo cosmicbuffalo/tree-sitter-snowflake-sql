@@ -973,3 +973,780 @@ REVOKE SERVICE ROLE svc1!ep_role FROM ROLE r1;
       (keyword_role)
       (identifier))))
 
+================================================================================
+CREATE TABLE variants, constraints and column features
+================================================================================
+
+CREATE OR ALTER TABLE tt1 (a INT PRIMARY KEY, b VARCHAR(20) COLLATE 'fr') DEFAULT_DDL_COLLATION = 'de';
+CREATE LOCAL TEMPORARY TABLE tt2 (i INT);
+CREATE TABLE tt3 (c1, c2) AS SELECT x, y FROM src;
+CREATE TABLE tt4 CLONE tt3 BEFORE (STATEMENT => 'abc') IGNORE HYBRID TABLES;
+CREATE TABLE tt5 USING TEMPLATE (SELECT ARRAY_AGG(OBJECT_CONSTRUCT(*)) FROM TABLE(INFER_SCHEMA(LOCATION => '@s/p/', FILE_FORMAT => 'ff')));
+CREATE TABLE tt6 (id INT IDENTITY START 1 INCREMENT 2 NOORDER, k INT AUTOINCREMENT (5, 10), v NUMBER(10, 2) CHECK (v > 0) NOT ENFORCED) COPY GRANTS COPY TAGS WITH TAG (env = 'dev') WITH ROW ACCESS POLICY rap1 ON (id) WITH AGGREGATION POLICY ap1 ENTITY KEY (id);
+CREATE TABLE tt7 (a INT, b INT, CONSTRAINT pk1 PRIMARY KEY (a, b) NOT ENFORCED RELY, CONSTRAINT fk1 FOREIGN KEY (b) REFERENCES tt6 (id) DEFERRABLE INITIALLY DEFERRED, UNIQUE (a) DISABLE COMMENT 'u', CHECK (b > 0));
+CREATE TABLE tt8 (a INT NOT NULL CONSTRAINT u1 UNIQUE NOT ENFORCED, c INT AS (a + 1) VIRTUAL PROJECTION POLICY pp1 TAG (t1 = 'x')) COPY = (COMMENTS, TAGS, GRANTS) WITH CONTACT (support = c1);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int))
+          (keyword_primary)
+          (keyword_key))
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar)
+            size: (literal))
+          (keyword_collate)))
+      (table_option
+        name: (identifier))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_local)
+      (keyword_temporary)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int))))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (list
+        (column
+          (identifier))
+        (column
+          (identifier)))
+      (keyword_as)
+      (create_query
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (field
+                name: (identifier)))
+            (term
+              value: (field
+                name: (identifier)))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier)))))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (clone_clause
+        (keyword_clone)
+        (object_reference
+          name: (identifier))
+        (at_before
+          (keyword_before)
+          (time_travel_parameter
+            name: (keyword_statement)
+            value: (literal)))
+        (ignore_clause
+          (keyword_ignore)
+          (keyword_hybrid)
+          (keyword_tables)))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_using)
+      (keyword_template)
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (invocation
+              (object_reference
+                name: (identifier))
+              parameter: (term
+                value: (invocation
+                  (object_reference
+                    name: (identifier))
+                  parameter: (term
+                    value: (all_fields))))))))
+      (from
+        (keyword_from)
+        (relation
+          (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (invocation
+                (object_reference
+                  name: (identifier))
+                parameter: (named_parameter
+                  name: (identifier)
+                  value: (literal))
+                parameter: (named_parameter
+                  name: (identifier)
+                  value: (literal)))))))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int))
+          (keyword_identity)
+          (keyword_start)
+          (literal)
+          (keyword_increment)
+          (literal)
+          (keyword_noorder))
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int))
+          (keyword_autoincrement)
+          (literal)
+          (literal))
+        (column_definition
+          name: (identifier)
+          type: (number
+            (keyword_number)
+            precision: (literal)
+            scale: (literal))
+          (keyword_check)
+          (binary_expression
+            left: (field
+              name: (identifier))
+            right: (literal))
+          (constraint_property
+            (keyword_not)
+            (keyword_enforced))))
+      (copy_clause
+        (keyword_copy)
+        (keyword_grants))
+      (copy_clause
+        (keyword_copy)
+        (keyword_tags))
+      (with_tag_clause
+        (keyword_with)
+        (keyword_tag)
+        (tag_assignment
+          name: (object_reference
+            name: (identifier))
+          value: (literal)))
+      (policy_clause
+        (keyword_with)
+        (keyword_row)
+        (keyword_access)
+        (keyword_policy)
+        (object_reference
+          name: (identifier))
+        (keyword_on)
+        (identifier))
+      (policy_clause
+        (keyword_with)
+        (keyword_aggregation)
+        (keyword_policy)
+        (object_reference
+          name: (identifier))
+        (keyword_entity)
+        (keyword_key)
+        (identifier))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int)))
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int)))
+        (constraints
+          (constraint
+            (keyword_constraint)
+            name: (identifier)
+            (keyword_primary)
+            (keyword_key)
+            (ordered_columns
+              (column
+                name: (identifier))
+              (column
+                name: (identifier)))
+            (constraint_property
+              (keyword_not)
+              (keyword_enforced))
+            (constraint_property
+              (keyword_rely)))
+          (constraint
+            (keyword_constraint)
+            name: (identifier)
+            (keyword_foreign)
+            (keyword_key)
+            (ordered_columns
+              (column
+                name: (identifier)))
+            (keyword_references)
+            (object_reference
+              name: (identifier))
+            (identifier)
+            (constraint_property
+              (keyword_deferrable))
+            (constraint_property
+              (keyword_initially)
+              (keyword_deferred)))
+          (constraint
+            (keyword_unique)
+            (ordered_columns
+              (column
+                name: (identifier)))
+            (constraint_property
+              (keyword_disable))
+            (keyword_comment)
+            (literal))
+          (constraint
+            (keyword_check)
+            (binary_expression
+              left: (field
+                name: (identifier))
+              right: (literal)))))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int))
+          (keyword_not)
+          (keyword_null)
+          (keyword_constraint)
+          (identifier)
+          (keyword_unique)
+          (constraint_property
+            (keyword_not)
+            (keyword_enforced)))
+        (column_definition
+          name: (identifier)
+          type: (int
+            (keyword_int))
+          (keyword_as)
+          (parenthesized_expression
+            (binary_expression
+              left: (field
+                name: (identifier))
+              right: (literal)))
+          (keyword_virtual)
+          (keyword_projection)
+          (keyword_policy)
+          (object_reference
+            name: (identifier))
+          (with_tag_clause
+            (keyword_tag)
+            (tag_assignment
+              name: (object_reference
+                name: (identifier))
+              value: (literal)))))
+      (copy_clause
+        (keyword_copy)
+        (identifier)
+        (identifier)
+        (identifier))
+      (contact_clause
+        (keyword_with)
+        (keyword_contact)
+        name: (identifier)
+        value: (identifier)))))
+
+================================================================================
+ALTER TABLE and VIEW: swap, policies, constraints, tags
+================================================================================
+
+ALTER TABLE a1 SWAP WITH a2;
+ALTER TABLE a1 ADD ROW ACCESS POLICY rap1 ON (c1, c2), DROP ROW ACCESS POLICY rap0;
+ALTER TABLE a1 SET JOIN POLICY jp1 ALLOWED JOIN KEYS (k1);
+ALTER TABLE a1 SUSPEND RECLUSTER;
+ALTER TABLE a1 ALTER CONSTRAINT pk1 RELY;
+ALTER TABLE a1 MODIFY CONSTRAINT PRIMARY KEY NOT ENFORCED;
+ALTER TABLE a1 SET TAG t1 = 'x', t2 = 'y';
+ALTER TABLE a1 UNSET TAG t1;
+ALTER TABLE a1 ALTER (c1 DROP NOT NULL, c2 COMMENT 'note', COLUMN c3 SET DEFAULT s1.NEXTVAL);
+ALTER VIEW v1 SET SECURE;
+ALTER VIEW v1 UNSET SECURE;
+ALTER VIEW v1 DROP ROW ACCESS POLICY rap0, ADD ROW ACCESS POLICY rap1 ON (c1);
+ALTER VIEW v1 SET TAG t1 = 'x';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_swap)
+      (keyword_with)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_add)
+      (policy_clause
+        (keyword_row)
+        (keyword_access)
+        (keyword_policy)
+        (object_reference
+          name: (identifier))
+        (keyword_on)
+        (identifier)
+        (identifier))
+      (keyword_drop)
+      (policy_clause
+        (keyword_row)
+        (keyword_access)
+        (keyword_policy)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      (policy_clause
+        (keyword_join)
+        (keyword_policy)
+        (object_reference
+          name: (identifier))
+        (keyword_allowed)
+        (keyword_join)
+        (keyword_keys)
+        (identifier))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_suspend)
+      (keyword_recluster)))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_alter)
+      (keyword_constraint)
+      (identifier)
+      (constraint_property
+        (keyword_rely))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_modify)
+      (keyword_constraint)
+      (keyword_primary)
+      (keyword_key)
+      (constraint_property
+        (keyword_not)
+        (keyword_enforced))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      (tag_assignments
+        (keyword_tag)
+        (tag_assignment
+          name: (object_reference
+            name: (identifier))
+          value: (literal))
+        (tag_assignment
+          name: (object_reference
+            name: (identifier))
+          value: (literal)))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_unset)
+      (tag_names
+        (keyword_tag)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_alter)
+      (alter_column
+        name: (identifier)
+        (keyword_drop)
+        (keyword_not)
+        (keyword_null))
+      (alter_column
+        name: (identifier)
+        (keyword_comment)
+        (literal))
+      (keyword_column)
+      name: (identifier)
+      (keyword_set)
+      (keyword_default)
+      (field
+        (object_reference
+          name: (identifier))
+        name: (identifier))))
+  (statement
+    (alter_view
+      (keyword_alter)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      (keyword_secure)))
+  (statement
+    (alter_view
+      (keyword_alter)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (keyword_unset)
+      (keyword_secure)))
+  (statement
+    (alter_view
+      (keyword_alter)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (keyword_drop)
+      (policy_clause
+        (keyword_row)
+        (keyword_access)
+        (keyword_policy)
+        (object_reference
+          name: (identifier)))
+      (keyword_add)
+      (policy_clause
+        (keyword_row)
+        (keyword_access)
+        (keyword_policy)
+        (object_reference
+          name: (identifier))
+        (keyword_on)
+        (identifier))))
+  (statement
+    (alter_view
+      (keyword_alter)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      (tag_assignments
+        (keyword_tag)
+        (tag_assignment
+          name: (object_reference
+            name: (identifier))
+          value: (literal))))))
+
+================================================================================
+CREATE VIEW, DYNAMIC TABLE, STREAM, SCHEMA, DATABASE variants
+================================================================================
+
+CREATE OR ALTER VIEW v2 (one COMMENT 'bar') COMMENT = 'foo' CHANGE_TRACKING = TRUE AS SELECT a FROM t;
+CREATE OR REPLACE VIEW v3 COPY TAGS WITH TAG (a = 'b') AS SELECT 1;
+CREATE OR REPLACE DYNAMIC TABLE dt1 (c1 COMMENT 'x', c2) TARGET_LAG = '1 hour' WAREHOUSE = w1 CLUSTER BY (c1) COPY GRANTS REQUIRE USER FROZEN WHERE (ts < CURRENT_TIMESTAMP()) WITH STORAGE LIFECYCLE POLICY slp1 ON (ts) AS SELECT a, b FROM t;
+CREATE DYNAMIC TABLE dt2 CLONE dt1 AT (OFFSET => -60);
+CREATE OR ALTER STREAM s1 ON TABLE t1 AT (OFFSET => -300) APPEND_ONLY = TRUE;
+CREATE STREAM s2 ON VIEW v1 BEFORE (STATEMENT => 'q');
+CREATE STREAM s3 ON STAGE st1;
+CREATE SCHEMA sc2 CLONE sc1 AT (TIMESTAMP => '2025-04-01 12:00:00'::TIMESTAMP);
+CREATE SCHEMA sc3 WITH MANAGED ACCESS DATA_RETENTION_TIME_IN_DAYS = 5;
+CREATE DATABASE d2 FROM SHARE prov.sh1;
+CREATE DATABASE d3 AS REPLICA OF org1.acct1.d1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_view
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (view_columns
+        (view_column
+          name: (identifier)
+          (keyword_comment)
+          (literal)))
+      (procedure_comment
+        (keyword_comment)
+        (literal))
+      (table_option
+        name: (identifier)
+        value: (identifier))
+      (keyword_as)
+      (create_query
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (field
+                name: (identifier)))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier)))))))
+  (statement
+    (create_view
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (copy_clause
+        (keyword_copy)
+        (keyword_tags))
+      (with_tag_clause
+        (keyword_with)
+        (keyword_tag)
+        (tag_assignment
+          name: (object_reference
+            name: (identifier))
+          value: (literal)))
+      (keyword_as)
+      (create_query
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (literal)))))))
+  (statement
+    (create_dynamic_table
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_dynamic)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (view_columns
+        (view_column
+          name: (identifier)
+          (keyword_comment)
+          (literal))
+        (view_column
+          name: (identifier)))
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (identifier)
+      (cluster_by
+        (keyword_cluster)
+        (keyword_by)
+        (field
+          name: (identifier)))
+      (copy_clause
+        (keyword_copy)
+        (keyword_grants))
+      (keyword_require)
+      (keyword_user)
+      (keyword_frozen)
+      (keyword_where)
+      (binary_expression
+        left: (field
+          name: (identifier))
+        right: (invocation
+          (object_reference
+            name: (identifier))))
+      (policy_clause
+        (keyword_with)
+        (keyword_storage)
+        (keyword_lifecycle)
+        (keyword_policy)
+        (object_reference
+          name: (identifier))
+        (keyword_on)
+        (identifier))
+      (keyword_as)
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (field
+              name: (identifier)))
+          (term
+            value: (field
+              name: (identifier)))))
+      (from
+        (keyword_from)
+        (relation
+          (object_reference
+            name: (identifier))))))
+  (statement
+    (create_dynamic_table
+      (keyword_create)
+      (keyword_dynamic)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (clone_clause
+        (keyword_clone)
+        (object_reference
+          name: (identifier))
+        (at_before
+          (keyword_at)
+          (time_travel_parameter
+            name: (keyword_offset)
+            value: (literal))))))
+  (statement
+    (create_stream
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (keyword_stream)
+      (object_reference
+        name: (identifier))
+      (keyword_on)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (at_before
+        (keyword_at)
+        (time_travel_parameter
+          name: (keyword_offset)
+          value: (literal)))
+      name: (identifier)
+      value: (literal
+        (keyword_true))))
+  (statement
+    (create_stream
+      (keyword_create)
+      (keyword_stream)
+      (object_reference
+        name: (identifier))
+      (keyword_on)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (at_before
+        (keyword_before)
+        (time_travel_parameter
+          name: (keyword_statement)
+          value: (literal)))))
+  (statement
+    (create_stream
+      (keyword_create)
+      (keyword_stream)
+      (object_reference
+        name: (identifier))
+      (keyword_on)
+      (keyword_stage)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (create_schema
+      (keyword_create)
+      (keyword_schema)
+      (object_reference
+        name: (identifier))
+      (clone_clause
+        (keyword_clone)
+        (object_reference
+          name: (identifier))
+        (at_before
+          (keyword_at)
+          (time_travel_parameter
+            name: (keyword_timestamp)
+            value: (cast
+              (literal)
+              (timestamp
+                (keyword_timestamp))))))))
+  (statement
+    (create_schema
+      (keyword_create)
+      (keyword_schema)
+      (object_reference
+        name: (identifier))
+      (keyword_with)
+      (keyword_managed)
+      (keyword_access)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (create_database
+      (keyword_create)
+      (keyword_database)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (keyword_share)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))))
+  (statement
+    (create_database
+      (keyword_create)
+      (keyword_database)
+      (object_reference
+        name: (identifier))
+      (keyword_as)
+      (keyword_replica)
+      (keyword_of)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier)))))
+

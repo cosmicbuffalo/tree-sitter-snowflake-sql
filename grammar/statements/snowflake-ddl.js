@@ -1,4 +1,4 @@
-import { comma_list, paren_list } from "../helpers.js";
+import { comma_list, paren_list, wrapped_in_parenthesis } from "../helpers.js";
 import { OBJECT_TYPES, SHOW_TARGETS, SCOPE_TYPES, words_regex } from "../object-types.js";
 
 // Which object types have a dedicated token/rule for each verb (they are excluded from the generic token)
@@ -111,14 +111,23 @@ export default {
   // --- CREATE STREAM ---
   create_stream: $ => prec.left(seq(
     $.keyword_create,
-    optional($._or_replace),
+    optional(choice($._or_replace, $._or_alter)),
     $.keyword_stream,
     optional($._if_not_exists),
     $.object_reference,
-    $.keyword_on,
-    optional($.keyword_event),
-    $.keyword_table,
-    $.object_reference,
+    optional(seq($.keyword_copy, $.keyword_grants)),
+    optional(seq(
+      $.keyword_on,
+      choice(
+        seq(optional($.keyword_event), $.keyword_table),
+        $.keyword_view,
+        $.keyword_stage,
+        seq($.keyword_dynamic, $.keyword_table),
+        seq($.keyword_external, $.keyword_table),
+      ),
+      $.object_reference,
+      optional($.at_before),
+    )),
     optional($._snowflake_options),
   )),
 
@@ -148,18 +157,32 @@ export default {
   // --- CREATE DYNAMIC TABLE ---
   create_dynamic_table: $ => prec.left(seq(
     $.keyword_create,
-    optional($._or_replace),
+    optional(choice($._or_replace, $._or_alter)),
     optional($.keyword_transient),
     $.keyword_dynamic,
     optional($.keyword_iceberg),
     $.keyword_table,
     optional($._if_not_exists),
     $.object_reference,
-    optional($.column_definitions),
-    optional($._snowflake_options),
-    $.keyword_as,
-    $._select_statement,
+    optional(choice($.column_definitions, $.view_columns)),
+    repeat(seq(optional(','), $._dynamic_table_setting)),
+    choice(
+      seq($.keyword_as, $._select_statement),
+      $.clone_clause,
+    ),
   )),
+
+  _dynamic_table_setting: $ => choice(
+    $._snowflake_property,
+    $.cluster_by,
+    $.copy_clause,
+    $.with_tag_clause,
+    $.policy_clause,
+    $.contact_clause,
+    seq($.keyword_require, $.keyword_user),
+    // FROZEN WHERE (predicate)
+    seq($.keyword_frozen, $.keyword_where, wrapped_in_parenthesis($._expression)),
+  ),
 
   // --- DROP rules for Snowflake objects ---
   // Consolidated drop for STAGE, FILE FORMAT, PIPE, STREAM, TASK, WAREHOUSE

@@ -1957,8 +1957,9 @@ CREATE OR REPLACE SECURE VIEW v2 (a, b) COPY GRANTS COMMENT = 'x' AS SELECT 1, 2
           name: (identifier))
         (view_column
           name: (identifier)))
-      (keyword_copy)
-      (keyword_grants)
+      (copy_clause
+        (keyword_copy)
+        (keyword_grants))
       (procedure_comment
         (keyword_comment)
         (literal))
@@ -2462,11 +2463,12 @@ list @STAGE/a/b/c_d PATTERN = '.*csv';
       (keyword_table)
       (object_reference
         name: (identifier))
-      (keyword_clone)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))))
+      (clone_clause
+        (keyword_clone)
+        (object_reference
+          database: (identifier)
+          schema: (identifier)
+          name: (identifier)))))
   (statement
     (create_table
       (keyword_create)
@@ -2475,9 +2477,10 @@ list @STAGE/a/b/c_d PATTERN = '.*csv';
       (keyword_table)
       (object_reference
         name: (identifier))
-      (keyword_clone)
-      (object_reference
-        name: (identifier))))
+      (clone_clause
+        (keyword_clone)
+        (object_reference
+          name: (identifier)))))
   (statement
     (create_table
       (keyword_create)
@@ -3695,8 +3698,9 @@ DROP SEQUENCE IF EXISTS seq_id_v2;
           (literal))
         (view_column
           name: (identifier)))
-      (keyword_copy)
-      (keyword_grants)
+      (copy_clause
+        (keyword_copy)
+        (keyword_grants))
       (procedure_comment
         (keyword_comment)
         (literal))
