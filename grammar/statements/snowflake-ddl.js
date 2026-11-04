@@ -194,7 +194,7 @@ export default {
     $.exists,
     ')',
     $.keyword_then,
-    $.statement,
+    choice($.snowflake_scripting_block, $.statement),
   ),
 
   drop_snowflake_object: $ => seq(
@@ -320,6 +320,14 @@ export default {
         $.keyword_immediate,
         alias($._dollar_quoted_string_start_tag, $.dollar_quote),
         $.snowflake_scripting_block,
+        optional(';'),
+        alias($._dollar_quoted_string_end_tag, $.dollar_quote),
+      )),
+      // Dollar-quoted single statement: EXECUTE IMMEDIATE $$ CREATE ALERT ... $$
+      prec(1, seq(
+        $.keyword_immediate,
+        alias($._dollar_quoted_string_start_tag, $.dollar_quote),
+        $.statement,
         optional(';'),
         alias($._dollar_quoted_string_end_tag, $.dollar_quote),
       )),

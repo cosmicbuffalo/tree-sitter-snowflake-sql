@@ -3075,3 +3075,137 @@ SELECT fee_id, amount, kind FROM fees;
             (object_reference
               name: (identifier))))))))
 
+================================================================================
+EXECUTE IMMEDIATE dollar-quoted CREATE ALERT, with scripting block action
+================================================================================
+
+EXECUTE IMMEDIATE $$
+CREATE OR REPLACE ALERT TASK_FAILURE_ALERT
+WAREHOUSE = 'WH'
+SCHEDULE = '5 MINUTE'
+IF (EXISTS(
+    SELECT 1
+    FROM events
+    WHERE severity = 'ERROR'
+))
+THEN
+    CALL PROCESS_ALERTS()
+$$;
+
+EXECUTE IMMEDIATE $$
+CREATE OR REPLACE ALERT SCRIPTED_ALERT
+WAREHOUSE = 'WH'
+SCHEDULE = '5 MINUTE'
+IF (EXISTS(SELECT 1 FROM candidates))
+THEN
+    BEGIN
+      LET v VARCHAR := 'x';
+      CALL RECORD_ALERT(:v);
+    END;
+$$;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_immediate)
+        (dollar_quote)
+        (statement
+          (create_snowflake_object
+            (keyword_create)
+            (keyword_or)
+            (keyword_replace)
+            (snowflake_object_type)
+            (object_reference
+              name: (identifier))
+            name: (identifier)
+            value: (literal)
+            name: (identifier)
+            value: (literal)
+            (alert_condition
+              (keyword_if)
+              (exists
+                (keyword_exists)
+                (subquery
+                  (select
+                    (keyword_select)
+                    (select_expression
+                      (term
+                        value: (literal))))
+                  (from
+                    (keyword_from)
+                    (relation
+                      (object_reference
+                        name: (identifier))))
+                  (where
+                    (keyword_where)
+                    predicate: (binary_expression
+                      left: (field
+                        name: (identifier))
+                      right: (literal)))))
+              (keyword_then)
+              (statement
+                (snowflake_statement
+                  (call_statement
+                    (keyword_call)
+                    (invocation
+                      (object_reference
+                        name: (identifier)))))))))
+        (dollar_quote))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_immediate)
+        (dollar_quote)
+        (statement
+          (create_snowflake_object
+            (keyword_create)
+            (keyword_or)
+            (keyword_replace)
+            (snowflake_object_type)
+            (object_reference
+              name: (identifier))
+            name: (identifier)
+            value: (literal)
+            name: (identifier)
+            value: (literal)
+            (alert_condition
+              (keyword_if)
+              (exists
+                (keyword_exists)
+                (subquery
+                  (select
+                    (keyword_select)
+                    (select_expression
+                      (term
+                        value: (literal))))
+                  (from
+                    (keyword_from)
+                    (relation
+                      (object_reference
+                        name: (identifier))))))
+              (keyword_then)
+              (snowflake_scripting_block
+                (keyword_begin)
+                (let_statement
+                  (keyword_let)
+                  name: (identifier)
+                  type: (varchar
+                    (keyword_varchar))
+                  value: (literal))
+                (statement
+                  (snowflake_statement
+                    (call_statement
+                      (keyword_call)
+                      (invocation
+                        (object_reference
+                          name: (identifier))
+                        parameter: (term
+                          value: (snowflake_variable_reference))))))
+                (keyword_end)))))
+        (dollar_quote)))))
+
