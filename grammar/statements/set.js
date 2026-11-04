@@ -50,14 +50,4 @@ export default {
     $.keyword_deferrable,
   ),
 
-  reset_statement: $ => seq(
-    $.keyword_reset,
-    choice(
-      $.object_reference,
-      $.keyword_all,
-      seq($.keyword_session, $.keyword_authorization),
-      $.keyword_role,
-    ),
-  ),
-
 };
