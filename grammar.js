@@ -3,6 +3,7 @@ import type_rules from "./grammar/types.js";
 import column_list_rules from "./grammar/column-lists.js";
 import expression_rules from "./grammar/expressions.js";
 import transaction_rules from "./grammar/transactions.js";
+import expr_extras_rules from "./grammar/expr-extras.js";
 import statement_rules from "./grammar/statements/index.js";
 
 export default grammar({
@@ -27,6 +28,11 @@ export default grammar({
     [$.timestamp],
     // a JOIN b JOIN c ON x ON y (nested) vs flat joins with optional ON
     [$.join],
+    // POSITION(a IN b): operands are plain expressions that cannot begin an IN list
+    [$._position_haystack, $._expression],
+    // lambda parameter name vs a field expression (x -> ..., (a, b) -> ...)
+    [$._qualified_field, $.lambda_parameter],
+    [$.object_reference, $._qualified_field, $.lambda_parameter],
     // ((SELECT 1) + 2): inner (SELECT ..) is a wrapped select or a scalar subquery operand; let GLR decide
     [$._select_statement],
     [$._dml_read],
@@ -116,6 +122,7 @@ export default grammar({
     ...type_rules,
     ...column_list_rules,
     ...expression_rules,
+    ...expr_extras_rules,
     ...transaction_rules,
     ...statement_rules,
 

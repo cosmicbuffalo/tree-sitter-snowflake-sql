@@ -93,6 +93,8 @@ export default {
       'value',
       choice(
         $.all_fields,
+        // f((*)) / f((t.*)): wildcard in parentheses
+        alias(wrapped_in_parenthesis($.all_fields), $.list),
         $._expression,
       ),
     ),
@@ -107,24 +109,34 @@ export default {
       ),
     ),
     '*',
-    // Snowflake: SELECT * EXCLUDE (col1, col2) RENAME (col1 AS new_col1)
+    // Snowflake: SELECT * ILIKE 'pattern' EXCLUDE (a, b) REPLACE (expr AS c) RENAME (a AS b)
+    // EXCLUDE and RENAME take a single bare item or a parenthesized list.
+    optional(seq($.keyword_like, $._literal_string)),
     optional(seq(
       $.keyword_exclude,
-      paren_list($.identifier, true),
+      choice(
+        paren_list($.identifier, true),
+        $.identifier,
+      ),
     )),
-    // Snowflake: SELECT * REPLACE (expr AS col, ...)
     optional(seq(
       $.keyword_replace,
-      paren_list(
+      choice(
+        paren_list(
+          seq($._expression, $.keyword_as, $.identifier),
+          true,
+        ),
         seq($._expression, $.keyword_as, $.identifier),
-        true,
       ),
     )),
     optional(seq(
       $.keyword_rename,
-      paren_list(
+      choice(
+        paren_list(
+          seq($.identifier, $.keyword_as, $.identifier),
+          true,
+        ),
         seq($.identifier, $.keyword_as, $.identifier),
-        true,
       ),
     )),
   )),
@@ -211,6 +223,8 @@ export default {
 
   window_function: $ => seq(
       $.invocation,
+      optional(choice($.keyword_from_first, $.keyword_from_last)),
+      optional(seq(choice($.keyword_ignore, $.keyword_respect), $.keyword_nulls)),
       $.keyword_over,
       choice(
           $.identifier,
@@ -252,6 +266,7 @@ export default {
         $.values,
         $.semantic_view_call,
         wrapped_in_parenthesis(seq($.relation, repeat1(choice($.join, $.cross_join)))),
+        wrapped_in_parenthesis(seq($.values, optional($._relation_alias))),
       ),
       optional(choice(
         seq(repeat1($._relation_modifier), optional($._relation_alias)),

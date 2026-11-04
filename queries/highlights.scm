@@ -409,6 +409,8 @@
 
 ;; AUTO-KEYWORDS-START
 [
+ (keyword_from_first)
+ (keyword_from_last)
  (keyword_at)
  (keyword_changes)
  (keyword_pivot)
@@ -449,5 +451,10 @@
  (keyword_unmatched)
  (keyword_next)
  (keyword_connect_by_root)
+ (keyword_escape)
+ (keyword_ignore)
+ (keyword_respect)
+ (keyword_period)
+ (keyword_position)
 ] @keyword
 ;; AUTO-KEYWORDS-END

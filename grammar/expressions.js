@@ -27,6 +27,7 @@ export default {
       $.between_expression,
       $.parenthesized_expression,
       $.variant_access,
+      $.variant_member,
       $.stage_reference,
       $.snowflake_variable_reference,
       $.snowflake_session_variable,
@@ -34,6 +35,10 @@ export default {
       $.prior_expression,
       $.connect_by_root,
       $.outer_join_column,
+      $.escape_clause,
+      $.position_call,
+      $.collate_expression,
+      $.period_literal,
     )
   ),
 
@@ -162,6 +167,8 @@ export default {
   invocation: $ => prec(1,
     seq(
       $.object_reference,
+      // instance method call: instance!METHOD(args)
+      optional(seq('!', field('method', $.identifier))),
       choice(
         // default invocation
         paren_list(
@@ -171,6 +178,7 @@ export default {
               'parameter',
               choice(
                 $.named_parameter,
+                $.lambda_expression,
                 $.term,
               ),
             ),
@@ -200,7 +208,7 @@ export default {
   named_parameter: $ => seq(
     field('name', $.identifier),
     '=>',
-    field('value', $._expression),
+    field('value', choice($._expression, $.type_literal)),
   ),
 
   within_group: $ => seq(
@@ -229,13 +237,20 @@ export default {
     ),
   ),
 
+  // member access after an indexed variant path: v:items[0].id
+  variant_member: $ => prec.left('binary_is', seq(
+    field('expression', choice($.subscript, $.variant_member)),
+    '.',
+    field('path', $.identifier),
+  )),
+
   // Snowflake semi-structured data access: v:key, v:key.nested, v:key1:key2
   variant_access: $ => prec.left('binary_is',
     seq(
       field('expression', $._expression),
       ':',
       field('path', $.identifier),
-      // dotted continuation: v:a.b.c
+      // dotted / indexed continuation: v:a.b.c, v:a[0].b
       repeat(prec.dynamic(1, seq('.', field('path', $.identifier)))),
     ),
   ),
@@ -423,11 +438,15 @@ export default {
   // Keys are always string literals in Snowflake.
   snowflake_object_literal: $ => seq(
     '{',
-    optional(seq(
+    choice(
+      // {*} or {t.*}: all columns as an object
+      $.all_fields,
+      optional(seq(
       $.snowflake_object_literal_pair,
       repeat(seq(',', $.snowflake_object_literal_pair)),
       optional(','),
     )),
+    ),
     '}',
   ),
 

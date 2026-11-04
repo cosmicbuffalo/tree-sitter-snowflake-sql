@@ -45,6 +45,8 @@ export default {
         // Snowflake semi-structured types
         $.keyword_variant,
         $.keyword_object,
+        $.object_type,
+        $.period_type,
 
         // Snowflake structured types MAP(k, v), ARRAY, ARRAY(type)
         $.map_type,

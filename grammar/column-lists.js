@@ -28,6 +28,8 @@ export default {
   ),
 
   _column_constraint: $ => prec.left(choice(
+    // VARCHAR COLLATE 'en-ci'
+    seq($.keyword_collate, $._literal_string),
     choice(
       $.keyword_null,
       $._not_null,

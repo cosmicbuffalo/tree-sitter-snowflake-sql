@@ -1935,3 +1935,676 @@ SELECT x FROM t at JOIN u before ON at.k = before.k;
               name: (identifier))
             name: (identifier)))))))
 
+================================================================================
+Lambda expressions as function arguments
+================================================================================
+
+SELECT FOLD_ALL(c, (st INT, v INT) -> st + v, (a INT, b INT) -> a + b, (st INT) -> st) FROM t;
+SELECT TRANSFORM(arr, e INT -> e * 3), FILTER(arr, x -> x > 1) FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (field
+                name: (identifier)))
+            parameter: (lambda_expression
+              (lambda_parameter
+                name: (identifier)
+                type: (int
+                  (keyword_int)))
+              (lambda_parameter
+                name: (identifier)
+                type: (int
+                  (keyword_int)))
+              body: (binary_expression
+                left: (field
+                  name: (identifier))
+                right: (field
+                  name: (identifier))))
+            parameter: (lambda_expression
+              (lambda_parameter
+                name: (identifier)
+                type: (int
+                  (keyword_int)))
+              (lambda_parameter
+                name: (identifier)
+                type: (int
+                  (keyword_int)))
+              body: (binary_expression
+                left: (field
+                  name: (identifier))
+                right: (field
+                  name: (identifier))))
+            parameter: (lambda_expression
+              (lambda_parameter
+                name: (identifier)
+                type: (int
+                  (keyword_int)))
+              body: (field
+                name: (identifier)))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (field
+                name: (identifier)))
+            parameter: (lambda_expression
+              (lambda_parameter
+                name: (identifier)
+                type: (int
+                  (keyword_int)))
+              body: (binary_expression
+                left: (field
+                  name: (identifier))
+                right: (literal)))))
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (field
+                name: (identifier)))
+            parameter: (lambda_expression
+              (lambda_parameter
+                name: (identifier))
+              body: (binary_expression
+                left: (field
+                  name: (identifier))
+                right: (literal)))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+LIKE ESCAPE, LIKE ANY/ALL, COLLATE
+================================================================================
+
+SELECT * FROM t WHERE a LIKE '%x^_y%' ESCAPE '^' AND b ILIKE ANY ('a%', 'b%') AND c LIKE ALL ('%p%', '%q%');
+SELECT LOWER('Z' COLLATE 'tr'), a COLLATE 'en-ci' = b FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))
+    (where
+      (keyword_where)
+      predicate: (binary_expression
+        left: (binary_expression
+          left: (escape_clause
+            expression: (binary_expression
+              left: (field
+                name: (identifier))
+              operator: (keyword_like)
+              right: (literal))
+            (keyword_escape))
+          operator: (keyword_and)
+          right: (binary_expression
+            left: (field
+              name: (identifier))
+            operator: (keyword_like)
+            right: (unary_expression
+              operator: (keyword_any)
+              operand: (list
+                (literal)
+                (literal)))))
+        operator: (keyword_and)
+        right: (binary_expression
+          left: (field
+            name: (identifier))
+          operator: (keyword_like)
+          right: (unary_expression
+            operator: (keyword_all)
+            operand: (list
+              (literal)
+              (literal)))))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (collate_expression
+                expression: (literal)
+                (keyword_collate)))))
+        (term
+          value: (binary_expression
+            left: (collate_expression
+              expression: (field
+                name: (identifier))
+              (keyword_collate))
+            right: (field
+              name: (identifier))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+POSITION(a IN b)
+================================================================================
+
+SELECT POSITION(n IN h), POSITION('@' IN email) - 1, POSITION(a, b, 3), LEFT(email, POSITION('@' IN email) - 1) FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (position_call
+            (keyword_position)
+            (field
+              name: (identifier))
+            (keyword_in)
+            (field
+              name: (identifier))))
+        (term
+          value: (binary_expression
+            left: (position_call
+              (keyword_position)
+              (literal)
+              (keyword_in)
+              (field
+                name: (identifier)))
+            right: (literal)))
+        (term
+          value: (position_call
+            (keyword_position)
+            (field
+              name: (identifier))
+            (field
+              name: (identifier))
+            (literal)))
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (field
+                name: (identifier)))
+            parameter: (term
+              value: (binary_expression
+                left: (position_call
+                  (keyword_position)
+                  (literal)
+                  (keyword_in)
+                  (field
+                    name: (identifier)))
+                right: (literal)))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Structured OBJECT type, PERIOD literal, TYPE argument, column COLLATE
+================================================================================
+
+SELECT {'a': 1, 'b': 'x'}::OBJECT(a NUMBER, b VARCHAR), PERIOD_BEGIN(PERIOD(DATE) '[2024-01-01, 2024-03-01)');
+SELECT AI_COMPLETE('m', 'p', response_format => TYPE OBJECT(item OBJECT(n NUMBER NOT NULL, tags ARRAY(STRING))));
+CREATE TABLE s (c1 VARCHAR COLLATE 'es', c2 PERIOD(DATE));
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (cast
+            (snowflake_object_literal
+              (snowflake_object_literal_pair
+                key: (literal)
+                value: (literal))
+              (snowflake_object_literal_pair
+                key: (literal)
+                value: (literal)))
+            (object_type
+              (keyword_object)
+              (object_type_field
+                name: (identifier)
+                type: (number
+                  (keyword_number)))
+              (object_type_field
+                name: (identifier)
+                type: (varchar
+                  (keyword_varchar))))))
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (period_literal
+                (period_type
+                  (keyword_period)
+                  (keyword_date)))))))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (literal))
+            parameter: (term
+              value: (literal))
+            parameter: (named_parameter
+              name: (identifier)
+              value: (type_literal
+                (keyword_type)
+                (object_type
+                  (keyword_object)
+                  (object_type_field
+                    name: (identifier)
+                    type: (object_type
+                      (keyword_object)
+                      (object_type_field
+                        name: (identifier)
+                        type: (number
+                          (keyword_number))
+                        (keyword_not)
+                        (keyword_null))
+                      (object_type_field
+                        name: (identifier)
+                        type: (structured_array_type
+                          (keyword_array)
+                          element: (keyword_string)))))))))))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))
+          (keyword_collate))
+        (column_definition
+          name: (identifier)
+          type: (period_type
+            (keyword_period)
+            (keyword_date)))))))
+
+================================================================================
+SELECT star ILIKE EXCLUDE REPLACE RENAME
+================================================================================
+
+SELECT * ILIKE '%id%' EXCLUDE c1 REPLACE ('X-' || c2 AS c2) RENAME c3 AS c4 FROM t;
+SELECT t.* EXCLUDE (a, b) RENAME (c AS d) FROM t;
+SELECT * REPLACE (a + 1 AS a) FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields
+            (keyword_like)
+            (keyword_exclude)
+            (identifier)
+            (keyword_replace)
+            (binary_expression
+              left: (literal)
+              operator: (op_other)
+              right: (field
+                name: (identifier)))
+            (keyword_as)
+            (identifier)
+            (keyword_rename)
+            (identifier)
+            (keyword_as)
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields
+            (object_reference
+              name: (identifier))
+            (keyword_exclude)
+            (identifier)
+            (identifier)
+            (keyword_rename)
+            (identifier)
+            (keyword_as)
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields
+            (keyword_replace)
+            (binary_expression
+              left: (field
+                name: (identifier))
+              right: (literal))
+            (keyword_as)
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Instance method calls
+================================================================================
+
+CALL my_db.my_schema.inst!ADD_THING(1, 'a');
+SELECT inst!SPCS_GET_LOGS();
+SELECT * FROM TABLE(db.sch.job!SPCS_GET_EVENTS());
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (call_statement
+        (keyword_call)
+        (invocation
+          (object_reference
+            database: (identifier)
+            schema: (identifier)
+            name: (identifier))
+          method: (identifier)
+          parameter: (term
+            value: (literal))
+          parameter: (term
+            value: (literal))))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            method: (identifier))))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (invocation
+          (object_reference
+            name: (identifier))
+          parameter: (term
+            value: (invocation
+              (object_reference
+                database: (identifier)
+                schema: (identifier)
+                name: (identifier))
+              method: (identifier))))))))
+
+================================================================================
+VALUES with alias inside parentheses
+================================================================================
+
+SELECT * FROM (VALUES (1, 'a'), (2, 'b') AS v(id, name));
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (values
+          (keyword_values)
+          (list
+            (literal)
+            (literal))
+          (list
+            (literal)
+            (literal)))
+        (keyword_as)
+        alias: (identifier)
+        (list
+          (column
+            (identifier))
+          (column
+            (identifier)))))))
+
+================================================================================
+IGNORE NULLS, RESPECT NULLS, FROM LAST
+================================================================================
+
+SELECT LAG(c1) IGNORE NULLS OVER (ORDER BY c0), FIRST_VALUE(c1) RESPECT NULLS OVER (PARTITION BY k ORDER BY c0), NTH_VALUE(c1, 2) FROM LAST IGNORE NULLS OVER (ORDER BY c0) FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (window_function
+            (invocation
+              (object_reference
+                name: (identifier))
+              parameter: (term
+                value: (field
+                  name: (identifier))))
+            (keyword_ignore)
+            (keyword_nulls)
+            (keyword_over)
+            (window_specification
+              (order_by
+                (keyword_order)
+                (keyword_by)
+                (order_target
+                  (field
+                    name: (identifier)))))))
+        (term
+          value: (window_function
+            (invocation
+              (object_reference
+                name: (identifier))
+              parameter: (term
+                value: (field
+                  name: (identifier))))
+            (keyword_respect)
+            (keyword_nulls)
+            (keyword_over)
+            (window_specification
+              (partition_by
+                (keyword_partition)
+                (keyword_by)
+                (field
+                  name: (identifier)))
+              (order_by
+                (keyword_order)
+                (keyword_by)
+                (order_target
+                  (field
+                    name: (identifier)))))))
+        (term
+          value: (window_function
+            (invocation
+              (object_reference
+                name: (identifier))
+              parameter: (term
+                value: (field
+                  name: (identifier)))
+              parameter: (term
+                value: (literal)))
+            (keyword_from_last)
+            (keyword_ignore)
+            (keyword_nulls)
+            (keyword_over)
+            (window_specification
+              (order_by
+                (keyword_order)
+                (keyword_by)
+                (order_target
+                  (field
+                    name: (identifier)))))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+Variant paths with subscripts, wildcard arguments
+================================================================================
+
+SELECT v:arr[0].id AS i, v:a.b[1][2].c FROM t;
+SELECT OBJECT_CONSTRUCT(*), SEARCH((t.*), 'x'), HASH(*) FROM t;
+SELECT m!PREDICT(INPUT_DATA => {*}) FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (variant_member
+            expression: (subscript
+              expression: (variant_access
+                expression: (field
+                  name: (identifier))
+                path: (identifier))
+              subscript: (literal))
+            path: (identifier))
+          (keyword_as)
+          alias: (identifier))
+        (term
+          value: (variant_member
+            expression: (subscript
+              expression: (subscript
+                expression: (variant_access
+                  expression: (field
+                    name: (identifier))
+                  path: (identifier)
+                  path: (identifier))
+                subscript: (literal))
+              subscript: (literal))
+            path: (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (all_fields))))
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (list)
+              value: (list
+                (object_reference
+                  name: (identifier)))
+              value: (list))
+            parameter: (term
+              value: (literal))))
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (all_fields))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              name: (identifier))
+            method: (identifier)
+            parameter: (named_parameter
+              name: (identifier)
+              value: (snowflake_object_literal
+                (all_fields)))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
+

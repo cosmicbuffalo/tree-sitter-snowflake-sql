@@ -370,5 +370,13 @@ export default {
   keyword_unmatched: _ => make_keyword("unmatched"),
   keyword_next: _ => make_keyword("next"),
   keyword_connect_by_root: _ => make_keyword("connect_by_root"),
+  keyword_escape: _ => make_keyword("escape"),
+  keyword_ignore: _ => make_keyword("ignore"),
+  keyword_respect: _ => make_keyword("respect"),
+  keyword_period: _ => make_keyword("period"),
+  keyword_position: _ => make_keyword("position"),
+  // NTH_VALUE(..) FROM FIRST|LAST: single tokens so they cannot be confused with the SELECT FROM clause
+  keyword_from_first: _ => /[fF][rR][oO][mM]\s+[fF][iI][rR][sS][tT]/,
+  keyword_from_last: _ => /[fF][rR][oO][mM]\s+[lL][aA][sS][tT]/,
 
 }
