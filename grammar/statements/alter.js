@@ -198,7 +198,6 @@ export default {
     optional($._if_exists),
     $.object_reference,
     choice(
-      // TODO Postgres allows a single "alter column" to set or drop default
       $.rename_object,
       $.rename_column,
     ),

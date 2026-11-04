@@ -183,18 +183,15 @@ export default {
   keyword_called: _ => make_keyword("called"),
   keyword_input: _ => make_keyword("input"),
   keyword_strict: _ => make_keyword("strict"),
-  keyword_rows: _ => make_keyword("rows"),
-  keyword_extension: _ => make_keyword("extension"),
   keyword_session: _ => make_keyword("session"),
   keyword_repeatable: _ => make_keyword("repeatable"),
   keyword_immediate: _ => make_keyword("immediate"),
   keyword_execute: _ => make_keyword("execute"),
   keyword_procedure: _ => make_keyword("procedure"),
-  // Hive Keywords
+  // Misc keywords
   keyword_external: _ => make_keyword("external"),
   keyword_comment: _ => make_keyword("comment"),
   keyword_cluster: _ => make_keyword("cluster"),
-  keyword_avro: _ => make_keyword("avro"),
   // Operators
   is_not: $ => prec.left(seq($.keyword_is, $.keyword_not)),
   not_like: $ => seq($.keyword_not, $.keyword_like),

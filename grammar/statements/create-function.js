@@ -199,10 +199,7 @@ export default {
 
   function_language: $ => seq(
     $.keyword_language,
-    // TODO Maybe we should do different version of function_body_statement in
-    // regard to the defined language to match either sql, plsql or
-    // plpgsql. Currently the function_body_statement support only sql.  And
-    // maybe for other language the function_body should be a string.
+    // SQL, JAVASCRIPT, PYTHON, JAVA, SCALA (handler languages are matched by routine_language)
     $.identifier
   ),
 
