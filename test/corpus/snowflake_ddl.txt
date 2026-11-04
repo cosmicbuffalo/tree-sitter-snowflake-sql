@@ -3645,3 +3645,152 @@ REVOKE SELECT ON ALL VIEWS IN DATABASE prod FROM ROLE reader;
       (keyword_role)
       (identifier))))
 
+================================================================================
+MATERIALIZED VIEW and SEQUENCE alter/drop
+================================================================================
+
+CREATE OR REPLACE MATERIALIZED VIEW mv_orders (ORDER_ID COMMENT 'Order id', TOTAL)
+  COPY GRANTS
+  COMMENT = 'orders rollup'
+  CLUSTER BY (ORDER_ID)
+AS
+SELECT ORDER_ID, SUM(AMOUNT) AS TOTAL FROM orders GROUP BY ORDER_ID;
+
+ALTER MATERIALIZED VIEW mv_orders SUSPEND;
+ALTER MATERIALIZED VIEW mv_orders RENAME TO mv_orders_v2;
+DROP MATERIALIZED VIEW IF EXISTS mv_orders_v2;
+
+CREATE SEQUENCE IF NOT EXISTS seq_id START = 1 INCREMENT = 1 NOORDER COMMENT = 'ids';
+ALTER SEQUENCE seq_id SET INCREMENT = 5;
+ALTER SEQUENCE IF EXISTS seq_id RENAME TO seq_id_v2;
+DROP SEQUENCE IF EXISTS seq_id_v2;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_view
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_materialized)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (view_columns
+        (view_column
+          name: (identifier)
+          (keyword_comment)
+          (literal))
+        (view_column
+          name: (identifier)))
+      (keyword_copy)
+      (keyword_grants)
+      (procedure_comment
+        (keyword_comment)
+        (literal))
+      (cluster_by
+        (keyword_cluster)
+        (keyword_by)
+        (field
+          name: (identifier)))
+      (keyword_as)
+      (create_query
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (field
+                name: (identifier)))
+            (term
+              value: (invocation
+                (object_reference
+                  name: (identifier))
+                parameter: (term
+                  value: (field
+                    name: (identifier))))
+              (keyword_as)
+              alias: (identifier))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier))))
+        (group_by
+          (keyword_group)
+          (keyword_by)
+          (field
+            name: (identifier))))))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_suspend)))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (rename_object
+        (keyword_rename)
+        (keyword_to)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (drop_snowflake_named_object
+      (keyword_drop)
+      (snowflake_drop_object_type)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (create_sequence
+      (keyword_create)
+      (keyword_sequence)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (keyword_start)
+      start: (literal)
+      (keyword_increment)
+      increment: (literal)
+      (keyword_noorder)
+      (table_option
+        name: (identifier))))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (rename_object
+        (keyword_rename)
+        (keyword_to)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (drop_snowflake_named_object
+      (keyword_drop)
+      (snowflake_drop_object_type)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier)))))
+

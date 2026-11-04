@@ -132,7 +132,7 @@ export default {
   // --- DROP rules for Snowflake objects ---
   // Consolidated drop for STAGE, FILE FORMAT, PIPE, STREAM, TASK, WAREHOUSE
   // Uses regex token to avoid 6 separate rules in _drop_statement
-  snowflake_drop_object_type: _ => /[dD][yY][nN][aA][mM][iI][cC]\s+([iI][cC][eE][bB][eE][rR][gG]\s+)?[tT][aA][bB][lL][eE]|[sS][tT][aA][gG][eE]|[fF][iI][lL][eE][\s_]+[fF][oO][rR][mM][aA][tT]|[pP][iI][pP][eE]|[sS][tT][rR][eE][aA][mM]|[tT][aA][sS][kK]|[wW][aA][rR][eE][hH][oO][uU][sS][eE]/,
+  snowflake_drop_object_type: _ => /[dD][yY][nN][aA][mM][iI][cC]\s+([iI][cC][eE][bB][eE][rR][gG]\s+)?[tT][aA][bB][lL][eE]|[sS][tT][aA][gG][eE]|[fF][iI][lL][eE][\s_]+[fF][oO][rR][mM][aA][tT]|[pP][iI][pP][eE]|[sS][tT][rR][eE][aA][mM]|[tT][aA][sS][kK]|[wW][aA][rR][eE][hH][oO][uU][sS][eE]|[sS][eE][qQ][uU][eE][nN][cC][eE]|[mM][aA][tT][eE][rR][iI][aA][lL][iI][zZ][eE][dD]\s+[vV][iI][eE][wW]/,
 
   drop_snowflake_named_object: $ => seq(
     $.keyword_drop,
@@ -160,9 +160,10 @@ export default {
     seq($.keyword_remove, $.keyword_after, $.object_reference),
   ),
 
-  // Consolidated alter for WAREHOUSE, STAGE, PIPE, STREAM, TASK, DYNAMIC [ICEBERG] TABLE
+  // Consolidated alter for WAREHOUSE, STAGE, PIPE, STREAM, TASK, DYNAMIC [ICEBERG] TABLE,
+  // SEQUENCE, MATERIALIZED VIEW
   // Uses regex token to avoid 5 separate rules in _alter_statement
-  snowflake_alter_object_type: _ => /[wW][aA][rR][eE][hH][oO][uU][sS][eE]|[sS][tT][aA][gG][eE]|[pP][iI][pP][eE]|[sS][tT][rR][eE][aA][mM]|[tT][aA][sS][kK]|[dD][yY][nN][aA][mM][iI][cC]\s+([iI][cC][eE][bB][eE][rR][gG]\s+)?[tT][aA][bB][lL][eE]/,
+  snowflake_alter_object_type: _ => /[wW][aA][rR][eE][hH][oO][uU][sS][eE]|[sS][tT][aA][gG][eE]|[pP][iI][pP][eE]|[sS][tT][rR][eE][aA][mM]|[tT][aA][sS][kK]|[dD][yY][nN][aA][mM][iI][cC]\s+([iI][cC][eE][bB][eE][rR][gG]\s+)?[tT][aA][bB][lL][eE]|[sS][eE][qQ][uU][eE][nN][cC][eE]|[mM][aA][tT][eE][rR][iI][aA][lL][iI][zZ][eE][dD]\s+[vV][iI][eE][wW]/,
 
   alter_snowflake_named_object: $ => prec.left(seq(
     $.keyword_alter,

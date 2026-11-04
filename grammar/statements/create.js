@@ -129,14 +129,16 @@ export default {
       optional($.keyword_secure),
       optional($._temporary),
       optional($.keyword_recursive),
+      optional($.keyword_materialized),
       $.keyword_view,
       optional($._if_not_exists),
       $.object_reference,
       optional($.view_columns),
-      // Snowflake: COPY GRANTS, COMMENT = '...'
+      // Snowflake: COPY GRANTS, COMMENT = '...', CLUSTER BY (..) (materialized views)
       repeat(choice(
         seq($.keyword_copy, $.keyword_grants),
         $.procedure_comment,
+        $.cluster_by,
       )),
       $.keyword_as,
       $.create_query,
