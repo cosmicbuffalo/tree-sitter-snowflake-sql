@@ -290,49 +290,6 @@ $$;
         (dollar_quote)))))
 
 ================================================================================
-Procedure with SECURITY DEFINER
-================================================================================
-
-CREATE PROCEDURE admin_reset(uid integer)
-LANGUAGE SQL
-SECURITY DEFINER
-AS $$
-DELETE FROM sessions;
-$$;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_procedure
-      (keyword_create)
-      (keyword_procedure)
-      (object_reference
-        name: (identifier))
-      (function_arguments
-        (function_argument
-          (identifier)
-          (int
-            (keyword_int))))
-      (function_language
-        (keyword_language)
-        (identifier))
-      (function_security
-        (keyword_security)
-        (keyword_definer))
-      (procedure_body
-        (keyword_as)
-        (dollar_quote)
-        (statement
-          (delete
-            (keyword_delete))
-          (from
-            (keyword_from)
-            (object_reference
-              name: (identifier))))
-        (dollar_quote)))))
-
-================================================================================
 Drop procedure
 ================================================================================
 

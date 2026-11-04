@@ -40,7 +40,6 @@ export default {
       optional(
         choice(
           $._temporary,
-          $.keyword_unlogged,
           $.keyword_external,
           $.keyword_iceberg,
           $.keyword_hybrid,
@@ -82,17 +81,7 @@ export default {
 
   _table_settings: $ => choice(
     $.table_partition,
-    $.stored_as,
-    $.storage_location,
-    $.table_sort,
     $.cluster_by,
-    $.row_format,
-    seq(
-      $.keyword_tblproperties,
-      paren_list($.table_option, true),
-    ),
-    seq($.keyword_without, $.keyword_oids),
-    $.storage_parameters,
     $.table_option,
   ),
 
@@ -103,131 +92,18 @@ export default {
     paren_list($._expression, true),
   ),
 
-  stored_as: $ => seq(
-      $.keyword_stored,
-      $.keyword_as,
-      choice(
-          $.keyword_parquet,
-          $.keyword_csv,
-          $.keyword_sequencefile,
-          $.keyword_textfile,
-          $.keyword_rcfile,
-          $.keyword_orc,
-          $.keyword_avro,
-          $.keyword_jsonfile,
-      ),
-  ),
-
-  storage_parameters: $ => seq(
-    $.keyword_with,
-    paren_list(
-      seq($.identifier, optional(seq('=', choice($.literal, $.array)))),
-      true
-    ),
-  ),
-
-  storage_location: $ => prec.right(
-      seq(
-          $.keyword_location,
-          field('path', alias($._literal_string, $.literal)),
-          optional(
-              seq(
-                  $.keyword_cached,
-                  $.keyword_in,
-                  field('pool', alias($._literal_string, $.literal)),
-                  optional(
-                      choice(
-                          $.keyword_uncached,
-                          seq(
-                              $.keyword_with,
-                              $.keyword_replication,
-                              '=',
-                              field('value', alias($._natural_number, $.literal)),
-                          ),
-                      ),
-                  ),
-              )
-          )
-      ),
-  ),
-
-  row_format: $ => seq(
-      $.keyword_row,
-      $.keyword_format,
-      $.keyword_delimited,
-      optional(
-          seq(
-              $.keyword_fields,
-              $.keyword_terminated,
-              $.keyword_by,
-              field('fields_terminated_char', alias($._literal_string, $.literal)),
-              optional(
-                  seq(
-                      $.keyword_escaped,
-                      $.keyword_by,
-                      field('escaped_char', alias($._literal_string, $.literal)),
-                  )
-              )
-          )
-      ),
-      optional(
-          seq(
-              $.keyword_lines,
-              $.keyword_terminated,
-              $.keyword_by,
-              field('row_terminated_char', alias($._literal_string, $.literal)),
-          )
-      )
-  ),
-
-  table_sort: $ => seq(
-      $.keyword_sort,
-      $.keyword_by,
-      paren_list($.identifier, true),
-  ),
-
-  table_partition: $ => choice(
-    // Snowflake Iceberg: PARTITION BY (col, MONTH(col), BUCKET(8, col), ...)
-    seq(
-      $.keyword_partition,
-      $.keyword_by,
-      paren_list($._expression, true),
-    ),
-    $._table_partition_spec,
-  ),
-
-  _table_partition_spec: $ => seq(
-    choice(
-      // Postgres/MySQL style
-      seq(
-        $.keyword_partition,
-        $.keyword_by,
-        choice(
-          $.keyword_range,
-          $.keyword_hash,
-        )
-      ),
-      // Hive style
-      seq(
-        $.keyword_partitioned,
-        $.keyword_by,
-      ),
-      // Spark SQL
-      $.keyword_partition,
-    ),
-    choice(
-      paren_list($.identifier),// postgres & Impala (CTAS)
-      $.column_definitions, // impala/hive external tables
-      paren_list($._key_value_pair, true), // Spark SQL
-    )
+  // Snowflake Iceberg: PARTITION BY (col, MONTH(col), BUCKET(8, col), ...)
+  table_partition: $ => seq(
+    $.keyword_partition,
+    $.keyword_by,
+    paren_list($._expression, true),
   ),
 
   table_option: $ => choice(
-    seq($.keyword_default, $.keyword_character, $.keyword_set, $.identifier),
     seq($.keyword_collate, $.identifier),
     field('name', $.keyword_default),
     seq(
-      field('name', choice($.keyword_engine, $.identifier, $._literal_string)),
+      field('name', choice($.identifier, $._literal_string)),
       '=',
       field('value', choice($.identifier, $._literal_string, alias($._integer, $.literal))),
     ),

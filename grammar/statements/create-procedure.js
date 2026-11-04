@@ -3,8 +3,6 @@ export default {
   create_procedure: $ => seq(
     $.keyword_create,
     optional(choice($._or_replace, $._or_alter)),
-    // mariadb/mysql
-    optional(seq($.keyword_definer, '=', $.identifier)),
     $.keyword_procedure,
     optional($._if_not_exists),
     $.object_reference,
@@ -32,7 +30,6 @@ export default {
 
   _procedure_option: $ => choice(
     $.function_language,
-    $.function_security,
     $.procedure_execute_as,
     $.procedure_comment,
   ),
@@ -82,18 +79,6 @@ export default {
   ),
 
   procedure_body: $ => choice(
-    // BEGIN ATOMIC block (SQL standard)
-    seq(
-      $.keyword_begin,
-      $.keyword_atomic,
-      repeat1(
-        seq(
-          $._function_body_statement,
-          ';',
-        ),
-      ),
-      $.keyword_end,
-    ),
     // Dollar-quoted Snowflake scripting block
     seq(
       $.keyword_as,

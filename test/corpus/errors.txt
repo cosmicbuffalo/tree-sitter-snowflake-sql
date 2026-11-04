@@ -70,8 +70,8 @@ Function body with a $$ string literal with the same name
 ================================================================================
 
 create or replace function public.do_stuff()
-  returns trigger
-  language plpgsql
+  returns varchar
+  language sql
 as $a$
 begin
   return $a$text$a$;
@@ -91,7 +91,8 @@ $a$
       name: (identifier))
     (function_arguments)
     (keyword_returns)
-    (keyword_trigger)
+    (varchar
+      (keyword_varchar))
     (function_language
       (keyword_language)
       (identifier))
@@ -112,8 +113,8 @@ Function body with a unbalanced $$
 ================================================================================
 
 create or replace function public.do_stuff()
-  returns trigger
-  language plpgsql
+  returns varchar
+  language sql
 as $a$
 begin
   return $b$text$b$;
@@ -134,7 +135,8 @@ $c$;
         name: (identifier))
       (function_arguments)
       (keyword_returns)
-      (keyword_trigger)
+      (varchar
+        (keyword_varchar))
       (function_language
         (keyword_language)
         (identifier))
@@ -154,8 +156,8 @@ Function body with a tag name contains whitespace
 ================================================================================
 
 create or replace function public.do_stuff()
-  returns trigger
-  language plpgsql
+  returns varchar
+  language sql
 as $a$
 begin
   return $b $text$b $;
@@ -176,7 +178,8 @@ $a$;
         name: (identifier))
       (function_arguments)
       (keyword_returns)
-      (keyword_trigger)
+      (varchar
+        (keyword_varchar))
       (function_language
         (keyword_language)
         (identifier))

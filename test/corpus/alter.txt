@@ -81,63 +81,6 @@ ALTER TABLE my_table
           (keyword_null))))))
 
 ================================================================================
-Alter table and add column first
-================================================================================
-
-ALTER TABLE my_table
-  ADD val3 VARCHAR(100) NOT NULL FIRST;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (alter_table
-      (keyword_alter)
-      (keyword_table)
-      (object_reference
-        name: (identifier))
-      (add_column
-        (keyword_add)
-        (column_definition
-          name: (identifier)
-          type: (varchar
-            (keyword_varchar)
-            size: (literal))
-          (keyword_not)
-          (keyword_null))
-        (column_position
-          (keyword_first))))))
-
-================================================================================
-Alter table and add column after column
-================================================================================
-
-ALTER TABLE my_table
-  ADD val3 VARCHAR(100) NOT NULL AFTER val2;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (alter_table
-      (keyword_alter)
-      (keyword_table)
-      (object_reference
-        name: (identifier))
-      (add_column
-        (keyword_add)
-        (column_definition
-          name: (identifier)
-          type: (varchar
-            (keyword_varchar)
-            size: (literal))
-          (keyword_not)
-          (keyword_null))
-        (column_position
-          (keyword_after)
-          col_name: (identifier))))))
-
-================================================================================
 Alter table and alter column setting default
 ================================================================================
 
@@ -210,11 +153,11 @@ ALTER TABLE my_table
           size: (literal))))))
 
 ================================================================================
-Alter table and modify column changing type and position
+Alter table and modify column comment
 ================================================================================
 
 ALTER TABLE my_table
-  MODIFY COLUMN IF EXISTS val6 INT UNSIGNED NOT NULL AFTER val3;
+  MODIFY COLUMN val6 COMMENT 'sixth value';
 
 --------------------------------------------------------------------------------
 
@@ -228,48 +171,9 @@ ALTER TABLE my_table
       (modify_column
         (keyword_modify)
         (keyword_column)
-        (keyword_if)
-        (keyword_exists)
-        (column_definition
-          name: (identifier)
-          type: (int
-            (keyword_int)
-            (keyword_unsigned))
-          (keyword_not)
-          (keyword_null))
-        (column_position
-          (keyword_after)
-          col_name: (identifier))))))
-
-================================================================================
-Alter table and change column renaming and changing type
-================================================================================
-
-ALTER TABLE my_table
-  CHANGE COLUMN IF EXISTS val3 val4 INT UNSIGNED NOT NULL;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (alter_table
-      (keyword_alter)
-      (keyword_table)
-      (object_reference
-        name: (identifier))
-      (change_column
-        (keyword_change)
-        (keyword_column)
-        (keyword_if)
-        (keyword_exists)
-        old_name: (identifier)
-        (column_definition
-          name: (identifier)
-          type: (int
-            (keyword_int)
-            (keyword_unsigned))
-          (keyword_not)
-          (keyword_null))))))
+        name: (identifier)
+        (keyword_comment)
+        (literal)))))
 
 ================================================================================
 Alter table and alter column changing type, eliding column keyword
@@ -656,19 +560,16 @@ ALTER TABLE posts DROP CONSTRAINT posts_user_id_fkey;
 --------------------------------------------------------------------------------
 
 (program
-    (statement
-        (alter_table
-            (keyword_alter)
-            (keyword_table)
-            (object_reference
-                name: (identifier))
-            (drop_constraint
-                (keyword_drop)
-                (keyword_constraint)
-                (identifier))
-        )
-    )
-)
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (drop_constraint
+        (keyword_drop)
+        (keyword_constraint)
+        (identifier)))))
 
 ================================================================================
 Add foreign key constraint
@@ -1064,7 +965,6 @@ ALTER TABLE table_name
             (column
               (identifier))))))))
 
-
 ================================================================================
 Alter Column Set Storage
 ================================================================================
@@ -1195,7 +1095,6 @@ ALTER TABLE table_name
         (keyword_set)
         (keyword_statistics)))))
 
-
 ================================================================================
 Snowflake: ADD COLUMN with COLUMN continuation
 ================================================================================
@@ -1324,4 +1223,3 @@ DROP COLUMN IF EXISTS c1, COLUMN IF EXISTS c2;
         (keyword_if)
         (keyword_exists)
         name: (identifier)))))
-

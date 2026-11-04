@@ -55,10 +55,9 @@ export default {
     $.add_constraint,
     $.drop_constraint,
     $.alter_column,
+    $.modify_column,
     // Bare column action continuation: col DROP NOT NULL (after ALTER COLUMN c1 DROP NOT NULL, ...)
     alias($._bare_alter_column, $.alter_column),
-    $.modify_column,
-    $.change_column,
     $.drop_column,
     // Bare DROP COLUMN continuation: COLUMN IF EXISTS col or bare col (after DROP COLUMN c1, ...)
     alias($._bare_drop_column, $.drop_column),
@@ -95,7 +94,6 @@ export default {
     ),
     optional($._if_not_exists),
     $.column_definition,
-    optional($.column_position),
   ),
 
   // Bare ADD COLUMN continuation: COLUMN col TYPE (after ADD COLUMN c1 TYPE, COLUMN c2 TYPE)
@@ -104,14 +102,12 @@ export default {
     $.keyword_column,
     optional($._if_not_exists),
     $.column_definition,
-    optional($.column_position),
   ),
 
   // Bare column_definition continuation: col TYPE (after ADD COLUMN IF NOT EXISTS c1 TYPE, c2 TYPE)
   // No COLUMN keyword — just a raw column_definition for multi-column ADD without COLUMN on continuations
   _bare_column_def: $ => seq(
     $.column_definition,
-    optional($.column_position),
   ),
 
   add_constraint: $ => seq(
@@ -204,37 +200,12 @@ export default {
     ),
   ),
 
-  modify_column: $ => prec.left(seq(
+  // Snowflake: MODIFY is a synonym of ALTER (ALTER TABLE t MODIFY COLUMN c DROP NOT NULL)
+  modify_column: $ => seq(
     $.keyword_modify,
-    optional(
-      $.keyword_column,
-    ),
-    optional($._if_exists),
-    choice(
-      $.column_definition,
-      // Snowflake: MODIFY COLUMN col COMMENT '...' (no type, just constraint)
-      seq(field('name', $._column), repeat1($._column_constraint)),
-    ),
-    optional($.column_position),
-  )),
-
-  change_column: $ => seq(
-    $.keyword_change,
-    optional(
-      $.keyword_column,
-    ),
-    optional($._if_exists),
-    field('old_name', $.identifier),
-    $.column_definition,
-    optional($.column_position),
-  ),
-
-  column_position: $ => choice(
-    $.keyword_first,
-    seq(
-      $.keyword_after,
-      field('col_name', $.identifier),
-    ),
+    optional($.keyword_column),
+    field('name', $.identifier),
+    $._alter_column_action,
   ),
 
   drop_column: $ => prec.left(seq(

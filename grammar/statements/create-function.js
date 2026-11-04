@@ -20,9 +20,7 @@ export default {
     $.keyword_returns,
     choice(
       $._type,
-      seq($.keyword_setof, $._type),
       seq($.keyword_table, $.column_definitions),
-      $.keyword_trigger,
     ),
     optional($._not_null),
     repeat($._function_option),
@@ -50,7 +48,6 @@ export default {
   _function_option: $ => choice(
     $.function_language,
     $.function_volatility,
-    $.function_security,
     $.function_strictness,
     $.procedure_comment,
   ),
@@ -107,21 +104,12 @@ export default {
     alias($._literal_string, $.literal),
   ),
 
-  _argmode: $ => choice(
-    $.keyword_in,
-    $.keyword_out,
-    $.keyword_inout,
-    $.keyword_variadic,
-    seq($.keyword_in, $.keyword_out),
-  ),
-
   function_argument: $ => seq(
-    optional($._argmode),
     optional($.identifier),
     choice($._type, $.structured_array_type),
     optional(
       seq(
-        choice($.keyword_default, '='),
+        $.keyword_default,
         // literal or expression such as CURRENT_DATE, CURRENT_DATE() - 1
         $._expression,
       ),
@@ -171,21 +159,6 @@ export default {
   ),
 
   function_body: $ => choice(
-    seq(
-      $._function_return,
-      ';'
-    ),
-    seq(
-      $.keyword_begin,
-      $.keyword_atomic,
-      repeat1(
-        seq(
-          $._function_body_statement,
-          ';',
-        ),
-      ),
-      $.keyword_end,
-    ),
     seq(
       $.keyword_as,
       alias($._dollar_quoted_string_start_tag, $.dollar_quote),
@@ -245,14 +218,7 @@ export default {
 
   function_volatility: $ => choice(
     $.keyword_immutable,
-    $.keyword_stable,
     $.keyword_volatile,
-  ),
-
-  function_security: $ => seq(
-    optional($.keyword_external),
-    $.keyword_security,
-    choice($.keyword_invoker, $.keyword_definer),
   ),
 
   function_strictness: $ => choice(

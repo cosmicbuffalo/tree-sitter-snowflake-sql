@@ -581,52 +581,6 @@ CREATE TABLE IF NOT EXISTS `addresses` (
             (keyword_null)))))))
 
 ================================================================================
-Create table with table options
-================================================================================
-
-CREATE TABLE my_table (
-  id BIGINT(20) NOT NULL,
-  date DATE DEFAULT NULL ASC
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_table
-      (keyword_create)
-      (keyword_table)
-      (object_reference
-        name: (identifier))
-      (column_definitions
-        (column_definition
-          name: (identifier)
-          type: (bigint
-            (keyword_bigint)
-            size: (literal))
-          (keyword_not)
-          (keyword_null))
-        (column_definition
-          name: (identifier)
-          type: (keyword_date)
-          (keyword_default)
-          (literal
-            (keyword_null))
-          (direction
-            (keyword_asc))))
-      (table_option
-        name: (keyword_engine)
-        value: (identifier))
-      (table_option
-        name: (keyword_default))
-      (table_option
-        name: (identifier)
-        value: (identifier))
-      (table_option
-        name: (identifier)
-        value: (identifier)))))
-
-================================================================================
 Create view
 ================================================================================
 
@@ -1138,94 +1092,6 @@ CREATE TABLE tableName (
           (keyword_null))))))
 
 ================================================================================
-Create unlogged table
-================================================================================
-
-CREATE UNLOGGED TABLE tableName (
-    id NUMERIC
-);
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_table
-      (keyword_create)
-      (keyword_unlogged)
-      (keyword_table)
-      (object_reference
-        (identifier))
-      (column_definitions
-        (column_definition
-          (identifier)
-          (numeric
-            (keyword_numeric)))))))
-
-================================================================================
-Create table with index
-================================================================================
-
-CREATE TABLE some_table(
-    `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `s_id` bigint(20) DEFAULT NULL,
-    INDEX `parent`(pid),
-    INDEX `range`(publication, published_at)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_table
-      (keyword_create)
-      (keyword_table)
-      (object_reference
-        name: (identifier))
-      (column_definitions
-        (column_definition
-          name: (identifier)
-          type: (bigint
-            (keyword_bigint)
-            size: (literal))
-          (keyword_not)
-          (keyword_null)
-          (keyword_auto_increment))
-        (column_definition
-          name: (identifier)
-          type: (bigint
-            (keyword_bigint)
-            size: (literal))
-          (keyword_default)
-          (literal
-            (keyword_null)))
-        (constraints
-          (constraint
-            (keyword_index)
-            name: (identifier)
-            (ordered_columns
-              (column
-                name: (identifier))))
-          (constraint
-            (keyword_index)
-            name: (identifier)
-            (ordered_columns
-              (column
-                name: (identifier))
-              (column
-                name: (identifier))))))
-      (table_option
-        (keyword_default)
-        (keyword_character)
-        (keyword_set)
-        (identifier))
-      (table_option
-        (keyword_collate)
-        (identifier))
-      (table_option
-        name: (keyword_engine)
-        value: (identifier)))))
-
-================================================================================
 Create table as select
 ================================================================================
 
@@ -1383,58 +1249,6 @@ SELECT * FROM _cte
           (select_expression
             (term
               (all_fields))))
-        (from
-          (keyword_from)
-          (relation
-            (object_reference
-              (identifier))))))))
-
-================================================================================
-Create table as select hive table
-================================================================================
-
-CREATE TABLE tab
-PARTITIONED BY (col1, col2)
-STORED AS PARQUET
-AS
-SELECT
-    col1,
-    col2,
-    col3
-FROM tab2
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_table
-      (keyword_create)
-      (keyword_table)
-      (object_reference
-        (identifier))
-      (table_partition
-        (keyword_partitioned)
-        (keyword_by)
-        (identifier)
-        (identifier))
-      (stored_as
-        (keyword_stored)
-        (keyword_as)
-        (keyword_parquet))
-      (keyword_as)
-      (create_query
-        (select
-          (keyword_select)
-          (select_expression
-            (term
-              (field
-                (identifier)))
-            (term
-              (field
-                (identifier)))
-            (term
-              (field
-                (identifier)))))
         (from
           (keyword_from)
           (relation
