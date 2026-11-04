@@ -67,6 +67,8 @@ export default {
             $.create_query,
           ),
         ),
+        // CREATE ICEBERG TABLE t EXTERNAL_VOLUME = .. CATALOG = .. (no column list, no query)
+        repeat1($._table_settings),
         // CREATE TABLE t (a, b) AS SELECT ...
         seq(
           alias($._column_list, $.list),
@@ -180,7 +182,7 @@ export default {
     seq(
       field('name', choice($.identifier, $._literal_string)),
       '=',
-      field('value', choice($.identifier, $._literal_string, alias($._integer, $.literal))),
+      field('value', $._property_value),
     ),
   ),
 
@@ -205,7 +207,7 @@ export default {
       optional($.keyword_secure),
       optional($._temporary),
       optional($.keyword_recursive),
-      optional($.keyword_materialized),
+      optional(choice($.keyword_materialized, seq($.keyword_interactive, $.keyword_materialized))),
       $.keyword_view,
       optional($._if_not_exists),
       $.object_reference,

@@ -87,12 +87,8 @@ export default {
     ),
     // Snowflake: ALTER TABLE t RENAME CONSTRAINT a TO b
     seq($.keyword_rename, $.keyword_constraint, $.identifier, $.keyword_to, $.identifier),
-    // Snowflake: ALTER TABLE t ADD DATA METRIC FUNCTION func ON (col1, col2)
-    seq($.keyword_add, $.keyword_data, $.keyword_metric, $.keyword_function, $.object_reference,
-      $.keyword_on, paren_list($.identifier, true)),
-    // Snowflake: ALTER TABLE t DROP DATA METRIC FUNCTION func ON (col1, col2)
-    seq($.keyword_drop, $.keyword_data, $.keyword_metric, $.keyword_function, $.object_reference,
-      $.keyword_on, paren_list($.identifier, true)),
+    // Snowflake: ADD | DROP DATA METRIC FUNCTION func ON (col, col -> expr) [EXPECTATION name (cond)]
+    $._dmf_action,
   ),
 
   // ADD COLUMN — keyword_add is required to prevent ambiguity with drop_column continuations
@@ -243,7 +239,24 @@ export default {
     repeat(seq(',', $._alter_view_action)),
   ),
 
+  _dmf_action: $ => seq(
+    choice($.keyword_add, $.keyword_drop),
+    $.keyword_data, $.keyword_metric, $.keyword_function,
+    $.object_reference,
+    $.keyword_on,
+    paren_list(choice($.lambda_expression, $.identifier)),
+    repeat($.dmf_expectation),
+  ),
+
+  // EXPECTATION name (VALUE >= 90)
+  dmf_expectation: $ => seq(
+    $.keyword_expectation,
+    $.identifier,
+    '(', $._expression, ')',
+  ),
+
   _alter_view_action: $ => choice(
+    $._dmf_action,
     $.rename_object,
     $.rename_column,
     seq(choice($.keyword_set, $.keyword_unset), $.keyword_secure),

@@ -1012,7 +1012,8 @@ CREATE TABLE tt8 (a INT NOT NULL CONSTRAINT u1 UNIQUE NOT ENFORCED, c INT AS (a 
             size: (literal))
           (keyword_collate)))
       (table_option
-        name: (identifier))))
+        name: (identifier)
+        value: (literal))))
   (statement
     (create_table
       (keyword_create)
@@ -1535,7 +1536,8 @@ CREATE DATABASE d3 AS REPLICA OF org1.acct1.d1;
         (literal))
       (table_option
         name: (identifier)
-        value: (identifier))
+        value: (literal
+          (keyword_true)))
       (keyword_as)
       (create_query
         (select
@@ -3000,3 +3002,361 @@ CREATE POSTGRES INSTANCE pg2 FORK pg1;
       (generic_clause
         (identifier)
         (identifier)))))
+================================================================================
+Iceberg, pipe, alert, tag, external table options, transactions, DMF attachment
+================================================================================
+
+CREATE OR REPLACE ICEBERG TABLE it1 EXTERNAL_VOLUME = 'ev' CATALOG = 'ci' CATALOG_TABLE_NAME = 'rt' AUTO_REFRESH = TRUE;
+CREATE ICEBERG TABLE it2 CATALOG = 'c' EXTERNAL_VOLUME = 'ev' BASE_LOCATION = 'p/' ENABLE_SCHEMA_INFERENCE = TRUE MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
+CREATE PIPE p1 AS (COPY INTO t FROM @s MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE INCLUDE_METADATA = (c1 = METADATA$START_SCAN_TIME) FILE_FORMAT = (TYPE = 'JSON'));
+CREATE OR REPLACE ALERT al1 FROM TEMPLATE tpl1 WAREHOUSE = w SCHEDULE = '30 MINUTE' TEMPLATE_PARAMS = '{ "a": 1 }';
+CREATE DYNAMIC TABLE dt9 CLONE dt0 COPY GRANTS;
+CREATE TAG tg1 ALLOWED_VALUES 'blue', 'red' PROPAGATE = ON_DEPENDENCY;
+CREATE EXTERNAL TABLE et1 (c1 VARCHAR AS (value:c1::VARCHAR), dp DATE AS (TO_DATE(SPLIT_PART(metadata$filename, '/', 3)))) PARTITION BY (dp) LOCATION = @s1/logs/ AUTO_REFRESH = TRUE FILE_FORMAT = (TYPE = PARQUET);
+CREATE INTERACTIVE MATERIALIZED VIEW IF NOT EXISTS mv1 AS SELECT SUM(q) AS tq FROM it;
+CREATE OR REPLACE STREAM s1 ON TABLE t1 COPY = (GRANTS);
+ALTER TASK tk1 REMOVE AFTER p1, p2;
+ALTER TASK tk1 ADD AFTER p3, p4;
+BEGIN NAME t1;
+START TRANSACTION NAME t2;
+EXECUTE USING POLICY_CONTEXT(CURRENT_ROLE => 'PUBLIC') AS SELECT * FROM t1;
+ALTER TABLE t1 ADD DATA METRIC FUNCTION SNOWFLAKE.CORE.FRESHNESS ON ();
+ALTER VIEW v1 ADD DATA METRIC FUNCTION SNOWFLAKE.CORE.ACCEPTED_VALUES ON (st, st -> st IN ('a', 'b')) EXPECTATION ok (VALUE = 0);
+SELECT SNOWFLAKE.CORE.AVG(SELECT salary FROM hr.t) AS a;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (table_option
+        name: (identifier)
+        value: (literal))
+      (table_option
+        name: (identifier)
+        value: (literal))
+      (table_option
+        name: (identifier)
+        value: (literal))
+      (table_option
+        name: (identifier)
+        value: (literal
+          (keyword_true)))))
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (table_option
+        name: (identifier)
+        value: (literal))
+      (table_option
+        name: (identifier)
+        value: (literal))
+      (table_option
+        name: (identifier)
+        value: (literal))
+      (table_option
+        name: (identifier)
+        value: (literal
+          (keyword_true)))
+      (table_option
+        name: (identifier)
+        value: (identifier))))
+  (statement
+    (create_pipe
+      (keyword_create)
+      (keyword_pipe)
+      (object_reference
+        name: (identifier))
+      (keyword_as)
+      (statement
+        (snowflake_copy_into
+          (keyword_copy)
+          (keyword_into)
+          (object_reference
+            name: (identifier))
+          (keyword_from)
+          (stage_reference)
+          name: (identifier)
+          value: (identifier)
+          name: (identifier)
+          name: (identifier)
+          value: (identifier)
+          name: (identifier)
+          name: (identifier)
+          value: (literal)))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (keyword_template)
+      (identifier)
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (create_dynamic_table
+      (keyword_create)
+      (keyword_dynamic)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (clone_clause
+        (keyword_clone)
+        (object_reference
+          name: (identifier)))
+      (copy_clause
+        (keyword_copy)
+        (keyword_grants))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_allowed_values)
+      (literal)
+      (literal)
+      name: (identifier)
+      value: (identifier)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))
+          (keyword_as)
+          (parenthesized_expression
+            (cast
+              (variant_access
+                expression: (field
+                  name: (identifier))
+                path: (identifier))
+              (varchar
+                (keyword_varchar)))))
+        (column_definition
+          name: (identifier)
+          type: (keyword_date)
+          (keyword_as)
+          (parenthesized_expression
+            (invocation
+              (object_reference
+                name: (identifier))
+              parameter: (term
+                value: (invocation
+                  (object_reference
+                    name: (identifier))
+                  parameter: (term
+                    value: (field
+                      name: (identifier)))
+                  parameter: (term
+                    value: (literal))
+                  parameter: (term
+                    value: (literal))))))))
+      (table_partition
+        (keyword_partition)
+        (keyword_by)
+        (field
+          name: (identifier)))
+      name: (identifier)
+      value: (stage_reference)
+      name: (identifier)
+      value: (literal
+        (keyword_true))
+      name: (identifier)
+      name: (identifier)
+      value: (identifier)))
+  (statement
+    (create_view
+      (keyword_create)
+      (keyword_interactive)
+      (keyword_materialized)
+      (keyword_view)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (keyword_as)
+      (create_query
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (invocation
+                (object_reference
+                  name: (identifier))
+                parameter: (term
+                  value: (field
+                    name: (identifier))))
+              (keyword_as)
+              alias: (identifier))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier)))))))
+  (statement
+    (create_stream
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_stream)
+      (object_reference
+        name: (identifier))
+      (keyword_on)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (copy_clause
+        (keyword_copy)
+        (identifier))))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_remove)
+      (keyword_after)
+      (object_reference
+        name: (identifier))
+      (object_reference
+        name: (identifier))))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_add)
+      (keyword_after)
+      (object_reference
+        name: (identifier))
+      (object_reference
+        name: (identifier))))
+  (begin_transaction_statement
+    (keyword_begin)
+    (keyword_name)
+    (identifier))
+  (begin_transaction_statement
+    (keyword_start)
+    (keyword_transaction)
+    (keyword_name)
+    (identifier))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_using)
+        (keyword_policy_context)
+        (named_parameter
+          name: (identifier)
+          value: (literal))
+        (keyword_as)
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (all_fields))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier)))))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_add)
+      (keyword_data)
+      (keyword_metric)
+      (keyword_function)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_on)))
+  (statement
+    (alter_view
+      (keyword_alter)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (keyword_add)
+      (keyword_data)
+      (keyword_metric)
+      (keyword_function)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_on)
+      (identifier)
+      (lambda_expression
+        (lambda_parameter
+          name: (identifier))
+        body: (binary_expression
+          left: (field
+            name: (identifier))
+          operator: (keyword_in)
+          right: (list
+            (literal)
+            (literal))))
+      (dmf_expectation
+        (keyword_expectation)
+        (identifier)
+        (binary_expression
+          left: (field
+            name: (identifier))
+          right: (literal)))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (invocation
+            (object_reference
+              database: (identifier)
+              schema: (identifier)
+              name: (identifier))
+            (select
+              (keyword_select)
+              (select_expression
+                (term
+                  value: (field
+                    name: (identifier)))))
+            (from
+              (keyword_from)
+              (relation
+                (object_reference
+                  schema: (identifier)
+                  name: (identifier)))))
+          (keyword_as)
+          alias: (identifier))))))
+

@@ -2324,13 +2324,16 @@ END;
           (invocation
             (object_reference
               (identifier))
-            (term
-              (binary_expression
-                (field
-                  (identifier))
-                (field
-                  (identifier)))
-              (identifier)))))
+            (select
+              (keyword_select)
+              (select_expression
+                (term
+                  (all_fields))))
+            (from
+              (keyword_from)
+              (relation
+                (object_reference
+                  (identifier)))))))
       (keyword_begin)
       (return_statement
         (keyword_return)

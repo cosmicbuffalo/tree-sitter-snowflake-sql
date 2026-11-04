@@ -185,6 +185,8 @@ export default {
             optional($.order_by)
           )
         ),
+        // f(SELECT ..): query argument (data metric functions)
+        seq('(', $._select_statement, ')'),
         // EXTRACT(unit FROM expr)
         paren_list(
           seq(

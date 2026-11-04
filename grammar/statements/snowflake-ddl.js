@@ -123,7 +123,7 @@ export default {
     $.object_reference,
     optional($._snowflake_options),
     $.keyword_as,
-    $.statement,
+    choice($.statement, wrapped_in_parenthesis($.statement)),
   )),
 
   // --- CREATE STREAM ---
@@ -133,7 +133,7 @@ export default {
     $.keyword_stream,
     optional($._if_not_exists),
     $.object_reference,
-    optional(seq($.keyword_copy, $.keyword_grants)),
+    optional($.copy_clause),
     optional(seq(
       $.keyword_on,
       choice(
@@ -146,7 +146,7 @@ export default {
       $.object_reference,
       optional($.at_before),
     )),
-    optional($._snowflake_options),
+    repeat(seq(optional(','), choice($._snowflake_property, $.copy_clause))),
   )),
 
   // --- CREATE TASK ---
@@ -186,7 +186,7 @@ export default {
     repeat(seq(optional(','), $._dynamic_table_setting)),
     choice(
       seq($.keyword_as, $._select_statement),
-      $.clone_clause,
+      seq($.clone_clause, repeat($._dynamic_table_setting)),
     ),
   )),
 
@@ -240,8 +240,8 @@ export default {
       seq($.keyword_when, $._expression),
     )),
     // ALTER TASK ... ADD AFTER task | REMOVE AFTER task
-    seq($.keyword_add, $.keyword_after, $.object_reference),
-    seq($.keyword_remove, $.keyword_after, $.object_reference),
+    seq($.keyword_add, $.keyword_after, comma_list($.object_reference, true)),
+    seq($.keyword_remove, $.keyword_after, comma_list($.object_reference, true)),
     $.generic_action,
   ),
 
@@ -312,6 +312,7 @@ export default {
     $.object_reference,
     // class instances: CREATE SNOWFLAKE.CORE.BUDGET b(args)
     optional($.class_instance_arguments),
+    optional($.column_definitions),
     repeat(seq(optional(','), $._generic_option)),
     optional(choice($.alert_condition, $._generic_tail)),
   )),
@@ -480,6 +481,8 @@ export default {
     $.keyword_execute,
     choice(
       seq($.keyword_task, $.object_reference, optional($.generic_clause)),
+      // EXECUTE USING POLICY_CONTEXT(k => v, ..) AS <query>
+      seq($.keyword_using, $.keyword_policy_context, paren_list($.named_parameter, true), $.keyword_as, $._dml_read),
       // EXECUTE IMMEDIATE FROM @stage/file.sql [USING (name => value, ..)]
       seq(
         $.keyword_immediate, $.keyword_from, choice($.stage_reference, $.literal, $.object_reference),
@@ -568,6 +571,11 @@ export default {
     $._snowflake_property,
     seq($.keyword_with, $._snowflake_property),
     seq($.keyword_with, $.generic_clause),
+    // TAG: ALLOWED_VALUES 'a', 'b'
+    prec.right(seq($.keyword_allowed_values, comma_list(alias($._plain_literal, $.literal), true))),
+    $.table_partition,
+    // ALERT: FROM TEMPLATE name
+    seq($.keyword_from, $.keyword_template, $.identifier),
     // AS REPLICA OF org.account.name
     seq($.keyword_as, $.keyword_replica, $.keyword_of, $.object_reference),
     $.with_tag_clause,

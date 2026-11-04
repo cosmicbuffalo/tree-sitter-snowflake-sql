@@ -506,5 +506,9 @@
  (keyword_specification)
  (keyword_force)
  (keyword_body)
+ (keyword_expectation)
+ (keyword_interactive)
+ (keyword_policy_context)
+ (keyword_allowed_values)
 ] @keyword
 ;; AUTO-KEYWORDS-END

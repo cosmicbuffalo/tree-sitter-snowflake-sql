@@ -310,7 +310,7 @@ export default {
   keyword_open: _ => make_keyword("open"),
   keyword_fetch: _ => make_keyword("fetch"),
   keyword_close: _ => make_keyword("close"),
-  keyword_async: _ => make_keyword("async"),
+  keyword_async: _ => token(prec(2, make_keyword("async"))),
   keyword_other: _ => make_keyword("other"),
   keyword_reverse: _ => make_keyword("reverse"),
   keyword_caller: _ => make_keyword("caller"),
@@ -425,5 +425,9 @@ export default {
   keyword_specification: _ => make_keyword("specification"),
   keyword_force: _ => make_keyword("force"),
   keyword_body: _ => make_keyword("body"),
+  keyword_expectation: _ => make_keyword("expectation"),
+  keyword_interactive: _ => make_keyword("interactive"),
+  keyword_policy_context: _ => make_keyword("policy_context"),
+  keyword_allowed_values: _ => make_keyword("allowed_values"),
 
 }

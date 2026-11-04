@@ -1572,11 +1572,14 @@ ALTER ICEBERG TABLE t1 SET COMMENT = 'x';
             precision: (literal)
             scale: (literal))))
       (table_option
-        name: (identifier))
+        name: (identifier)
+        value: (literal))
       (table_option
-        name: (identifier))
+        name: (identifier)
+        value: (literal))
       (table_option
-        name: (identifier))))
+        name: (identifier)
+        value: (literal))))
   (statement
     (alter_table
       (keyword_alter)
@@ -1708,11 +1711,14 @@ BASE_LOCATION = 'a/b';
             value: (field
               name: (identifier)))))
       (table_option
-        name: (identifier))
+        name: (identifier)
+        value: (literal))
       (table_option
-        name: (identifier))
+        name: (identifier)
+        value: (literal))
       (table_option
-        name: (identifier)))))
+        name: (identifier)
+        value: (literal)))))
 
 ================================================================================
 ALTER DYNAMIC TABLE
@@ -2543,7 +2549,8 @@ list @STAGE/a/b/c_d PATTERN = '.*csv';
               name: (identifier))
             (identifier))))
       (table_option
-        name: (identifier))))
+        name: (identifier)
+        value: (literal))))
   (statement
     (snowflake_statement
       (list_statement
@@ -2800,10 +2807,12 @@ END;
           type: (int
             (keyword_int))))
       (table_option
-        name: (identifier))
+        name: (identifier)
+        value: (literal))
       (table_option
         name: (identifier)
-        value: (identifier))
+        value: (literal
+          (keyword_true)))
       (table_option
         name: (identifier)
         value: (literal))))
@@ -3777,7 +3786,8 @@ DROP SEQUENCE IF EXISTS seq_id_v2;
       increment: (literal)
       (keyword_noorder)
       (table_option
-        name: (identifier))))
+        name: (identifier)
+        value: (literal))))
   (statement
     (alter_snowflake_named_object
       (keyword_alter)
