@@ -7,6 +7,8 @@ export default {
     optional($._if_not_exists),
     $.object_reference,
     optional($.function_arguments),
+    // Snowflake: COPY GRANTS
+    optional(seq($.keyword_copy, $.keyword_grants)),
     // Snowflake: RETURNS type [NOT NULL]
     optional($.procedure_returns),
     repeat($._procedure_option),

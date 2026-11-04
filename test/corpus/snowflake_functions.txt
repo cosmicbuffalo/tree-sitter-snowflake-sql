@@ -739,3 +739,69 @@ DROP PROCEDURE IF EXISTS P4(ARRAY(VARCHAR));
             (keyword_array)
             element: (varchar
               (keyword_varchar))))))))
+================================================================================
+Procedure with COPY GRANTS before RETURNS
+================================================================================
+
+CREATE OR REPLACE PROCEDURE ADD_DELIVERY_CONFIG(
+  SUBSCRIPTION_ID NUMBER,
+  CONFIG VARIANT
+)
+COPY GRANTS
+RETURNS VARIANT
+LANGUAGE PYTHON
+RUNTIME_VERSION = '3.12'
+PACKAGES = ('snowflake-snowpark-python')
+HANDLER = 'run'
+EXECUTE AS OWNER
+AS
+$$
+def run(session, subscription_id, config):
+    return config
+$$;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_procedure
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_procedure)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (identifier)
+          (number
+            (keyword_number)))
+        (function_argument
+          (identifier)
+          (keyword_variant)))
+      (keyword_copy)
+      (keyword_grants)
+      (procedure_returns
+        (keyword_returns)
+        (keyword_variant))
+      (routine_language
+        (keyword_language)
+        (keyword_python))
+      (routine_property
+        name: (keyword_runtime_version)
+        value: (literal))
+      (routine_property
+        name: (keyword_packages)
+        value: (routine_property_list
+          (literal)))
+      (routine_property
+        name: (keyword_handler)
+        value: (literal))
+      (procedure_execute_as
+        (keyword_execute)
+        (keyword_as)
+        (keyword_owner))
+      (routine_body
+        (keyword_as)
+        (literal)))))
+
