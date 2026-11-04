@@ -28,7 +28,6 @@ export default {
       $.parenthesized_expression,
       $.variant_access,
       $.stage_reference,
-      $.object_id,
       $.snowflake_variable_reference,
       $.snowflake_object_literal,
     )
@@ -171,7 +170,7 @@ export default {
             optional($.order_by)
           )
         ),
-        // https://dev.mysql.com/doc/refman/8.4/en/date-and-time-functions.html#function_extract
+        // EXTRACT(unit FROM expr)
         paren_list(
           seq(
             field(
@@ -182,22 +181,6 @@ export default {
             $.term
           )
         ),
-        // _aggregate_function, e.g. group_concat
-        wrapped_in_parenthesis(
-          seq(
-            optional($.keyword_distinct),
-            field('parameter', $.term),
-            optional($.order_by),
-            optional(seq(
-              choice($.keyword_separator, ','),
-              alias($._literal_string, $.literal)
-            )),
-            optional($.limit),
-          ),
-        ),
-      ),
-      optional(
-        $.filter_expression
       ),
       // Snowflake: WITHIN GROUP (ORDER BY ...)
       // Used with LISTAGG, PERCENTILE_CONT, etc.
@@ -211,11 +194,6 @@ export default {
     field('name', $.identifier),
     '=>',
     field('value', $._expression),
-  ),
-
-  filter_expression : $ => seq(
-    $.keyword_filter,
-    wrapped_in_parenthesis($.where),
   ),
 
   within_group: $ => seq(
@@ -258,49 +236,12 @@ export default {
   // Snowflake stage references: @~, @%table, @stage, @stage/path, @db.schema.stage/path
   stage_reference: _ => /@(~|%[A-Za-z_][0-9A-Za-z_]*)(\/[^\s;,)]*)?|@[A-Za-z_][0-9A-Za-z_]*(\.[A-Za-z_][0-9A-Za-z_]*)*(\/[^\s;,)]*)?/,
 
+  // Snowflake operators: || (concatenation), -> (lambda / pipe) and ->> (pipe)
   op_other: $ => token(
     choice(
       '->',
       '->>',
-      '#>',
-      '#>>',
-      '~',
-      '!~',
-      '~*',
-      '!~*',
-      '|',
-      '&',
-      '#',
-      '<<',
-      '>>',
-      '<<=',
-      '>>=',
-      '##',
-      '<->',
-      '@>',
-      '<@',
-      '&<',
-      '&>',
-      '|>>',
-      '<<|',
-      '&<|',
-      '|&>',
-      '<^',
-      '^>',
-      '?#',
-      '?-',
-      '?|',
-      '?-|',
-      '?||',
-      '@@',
-      '@@@',
-      '@?',
-      '#-',
-      '?&',
-      '?',
-      '-|-',
       '||',
-      '^@',
     ),
   ),
 
@@ -311,7 +252,6 @@ export default {
       ['*', 'binary_times'],
       ['/', 'binary_times'],
       ['%', 'binary_times'],
-      ['^', 'binary_exp'],
       ['=', 'binary_relation'],
       ['<', 'binary_relation'],
       ['<=', 'binary_relation'],
@@ -326,8 +266,6 @@ export default {
       [$.not_like, 'pattern_matching'],
       [$.keyword_rlike, 'pattern_matching'],
       [$.not_rlike, 'pattern_matching'],
-      [$.similar_to, 'pattern_matching'],
-      [$.not_similar_to, 'pattern_matching'],
       // binary_is precedence disambiguates `(is not distinct from)` from an
       // `is (not distinct from)` with a unary `not`
       [$.distinct_from, 'binary_is'],
@@ -361,21 +299,6 @@ export default {
     ),
   ),
 
-  op_unary_other: $ => token(
-    choice(
-      '|/',
-      '||/',
-      '@',
-      '~',
-      '@-@',
-      '@@',
-      '#',
-      '?-',
-      '?|',
-      '!!',
-    ),
-  ),
-
   unary_expression: $ => choice(
     ...[
       [$.keyword_not, 'unary_not'],
@@ -383,7 +306,6 @@ export default {
       [$.keyword_any, 'unary_not'],
       [$.keyword_some, 'unary_not'],
       [$.keyword_all, 'unary_not'],
-      [$.op_unary_other, 'unary_other'],
     ].map(([operator, precedence]) =>
       prec.left(precedence, seq(
         field('operator', operator),
@@ -400,7 +322,7 @@ export default {
     ),
   ),
 
-  // Postgres syntax for intervals
+  // Snowflake interval constant: INTERVAL '1 day'
   interval: $ => seq(
       $.keyword_interval,
       $._literal_string,
@@ -445,12 +367,8 @@ export default {
     ),
   ),
   _double_quote_string: _ => /"[^"]*"/,
-  _backtick_quoted_string: _ => /`[^`]*`/,
-  // The norm specify that between two consecutive string must be a return,
-  // but this is good enough.
-  _single_quote_string: _ => seq(/([uU]&|[nN])?'([^'\\]|''|\\.)*'/, repeat(/'([^'\\]|''|\\.)*'/)),
-
-  _postgres_escape_string: _ => /(e|E)'([^']|\\')*'/,
+  // Snowflake single-quoted string: '' and backslash escapes (no adjacent-literal concatenation)
+  _single_quote_string: _ => /'([^'\\]|''|\\.)*'/,
 
   _literal_string: $ => prec(
     1,
@@ -458,7 +376,6 @@ export default {
       $._single_quote_string,
       $._double_quote_string,
       $._dollar_quoted_string,
-      $._postgres_escape_string,
     ),
   ),
   _natural_number: _ => /\d+/,
@@ -471,7 +388,8 @@ export default {
       choice("-", "+")),
     /((\d+(_\d+)*)?[.]\d+(_\d+)*(e[+-]?\d+(_\d+)*)?)|(\d+(_\d+)*[.](e[+-]?\d+(_\d+)*)?)/
   )),
-  _bit_string: $ => seq(/[bBxX]'([^']|'')*'/, repeat(/'([^']|'')*'/)),
+  // Snowflake hexadecimal binary literal: X'4142'
+  _bit_string: _ => /[xX]'([^']|'')*'/,
   // The identifier should be followed by a string (no parenthesis allowed)
   _string_casting: $ => seq($.identifier, $._single_quote_string),
 
@@ -480,11 +398,7 @@ export default {
   identifier: $ => choice(
     $._identifier,
     $._double_quote_string,
-    $._backtick_quoted_string,
-    $._tsql_parameter,
-    seq("`", $._identifier, "`"),
   ),
-  _tsql_parameter: $ => seq('@', $._identifier),
   // support nordic chars and umlaue
   // Snowflake allows $ in identifiers (e.g. SYSTEM$STREAM_HAS_DATA)
   // Also accepts deploy-time placeholders anywhere in the identifier:
@@ -492,21 +406,6 @@ export default {
   //   {{ name }} simple Jinja variable substitution, e.g. {{health_check_name}}_FAILURE
   // Only bare variables; Jinja blocks/filters ({% %}, {{ x | f }}) are out of scope.
   _identifier: _ => /(\$\{[A-Za-z_][0-9A-Za-z_]*\}|\{\{ *[A-Za-z_][0-9A-Za-z_]* *\}\}|[A-Za-z_\u00C0-\u017F])([0-9A-Za-z_$\u00C0-\u017F]|\$\{[A-Za-z_][0-9A-Za-z_]*\}|\{\{ *[A-Za-z_][0-9A-Za-z_]* *\}\})*/,
-
-  object_id: $ => seq(
-    $.keyword_object_id,
-    wrapped_in_parenthesis(
-      seq(
-        alias($._literal_string, $.literal),
-        optional(
-          seq(
-            ',',
-            alias($._literal_string, $.literal),
-          ),
-        ),
-      ),
-    ),
-  ),
 
   // Snowflake object literal: { 'key': value, 'key2': value2 }
   // Shorthand for OBJECT_CONSTRUCT('key', value, ...)

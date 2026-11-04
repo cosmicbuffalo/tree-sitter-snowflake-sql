@@ -345,14 +345,14 @@ export default {
   put_statement: $ => prec.left(seq(
     $.keyword_put,
     $.literal,
-    choice($.stage_reference, $._tsql_parameter),
+    $.stage_reference,
     optional($._snowflake_options),
   )),
 
   // GET @stage file_path [options]
   get_statement: $ => prec.left(seq(
     $.keyword_get,
-    choice($.stage_reference, $._tsql_parameter),
+    $.stage_reference,
     $.literal,
     optional($._snowflake_options),
   )),

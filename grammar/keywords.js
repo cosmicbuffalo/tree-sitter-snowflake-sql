@@ -126,7 +126,7 @@ export default {
   keyword_for: _ => make_keyword("for"),
   keyword_if: _ => make_keyword("if"),
   keyword_exists: _ => make_keyword("exists"),
-  keyword_auto_increment: _ => choice(make_keyword("auto_increment"), make_keyword("autoincrement")),
+  keyword_autoincrement: _ => make_keyword("autoincrement"),
   keyword_generated: _ => make_keyword("generated"),
   keyword_always: _ => make_keyword("always"),
   keyword_collate: _ => make_keyword("collate"),
@@ -317,8 +317,6 @@ export default {
 
   // Hive Keywords
   keyword_external: _ => make_keyword("external"),
-  keyword_stored: _ => make_keyword("stored"),
-  keyword_virtual: _ => make_keyword("virtual"),
   keyword_cached: _ => make_keyword("cached"),
   keyword_uncached: _ => make_keyword("uncached"),
   keyword_replication: _ => make_keyword("replication"),
@@ -361,8 +359,6 @@ export default {
   is_not: $ => prec.left(seq($.keyword_is, $.keyword_not)),
   not_like: $ => seq($.keyword_not, $.keyword_like),
   not_rlike: $ => seq($.keyword_not, $.keyword_rlike),
-  similar_to: $ => seq($.keyword_similar, $.keyword_to),
-  not_similar_to: $ => seq($.keyword_not, $.keyword_similar, $.keyword_to),
   distinct_from: $ => seq($.keyword_is, $.keyword_distinct, $.keyword_from),
   not_distinct_from: $ => seq($.keyword_is, $.keyword_not, $.keyword_distinct, $.keyword_from),
 
@@ -379,7 +375,6 @@ export default {
   _exclude_group: $ => seq($.keyword_exclude, $.keyword_group),
   _exclude_no_others: $ => seq($.keyword_exclude, $.keyword_no, $.keyword_others),
   _exclude_ties: $ => seq($.keyword_exclude, $.keyword_ties),
-  _check_option: $ => seq($.keyword_check, $.keyword_option),
   direction: $ => choice($.keyword_desc, $.keyword_asc),
 
   // Types
@@ -396,11 +391,11 @@ export default {
   keyword_smallserial: _ => choice(make_keyword("smallserial"),make_keyword("serial2")),
   keyword_serial: _ => choice(make_keyword("serial"),make_keyword("serial4")),
   keyword_bigserial: _ => choice(make_keyword("bigserial"),make_keyword("serial8")),
-  keyword_tinyint: _ => choice(make_keyword("tinyint"),make_keyword("int1")),
-  keyword_smallint: _ => choice(make_keyword("smallint"),make_keyword("int2")),
+  keyword_tinyint: _ => make_keyword("tinyint"),
+  keyword_smallint: _ => make_keyword("smallint"),
   keyword_mediumint: _ => choice(make_keyword("mediumint"),make_keyword("int3")),
-  keyword_int: _ => choice(make_keyword("int"), make_keyword("integer"), make_keyword("int4")),
-  keyword_bigint: _ => choice(make_keyword("bigint"),make_keyword("int8")),
+  keyword_int: _ => choice(make_keyword("int"), make_keyword("integer")),
+  keyword_bigint: _ => make_keyword("bigint"),
   keyword_decimal: _ => make_keyword("decimal"),
   keyword_numeric: _ => make_keyword("numeric"),
   keyword_real: _ => choice(make_keyword("real"),make_keyword("float4")),

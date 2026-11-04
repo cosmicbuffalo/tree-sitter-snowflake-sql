@@ -542,9 +542,9 @@ ALTER TABLE "Role" ADD CONSTRAINT "pkRole" PRIMARY KEY ("roleId");
         name: (identifier))
       (add_constraint
         (keyword_add)
-        (keyword_constraint)
-        (identifier)
         (constraint
+          (keyword_constraint)
+          name: (identifier)
           (keyword_primary)
           (keyword_key)
           (ordered_columns
@@ -589,9 +589,9 @@ FOREIGN KEY ("accountId") REFERENCES "Account" ("accountId") ON DELETE CASCADE;
         name: (identifier))
       (add_constraint
         (keyword_add)
-        (keyword_constraint)
-        (identifier)
         (constraint
+          (keyword_constraint)
+          name: (identifier)
           (keyword_foreign)
           (keyword_key)
           (ordered_columns
@@ -914,9 +914,9 @@ ON UPDATE SET DEFAULT;
         (identifier))
       (add_constraint
         (keyword_add)
-        (keyword_constraint)
-        (identifier)
         (constraint
+          (keyword_constraint)
+          (identifier)
           (keyword_foreign)
           (keyword_key)
           (ordered_columns
@@ -953,9 +953,9 @@ ALTER TABLE table_name
         (identifier))
       (add_constraint
         (keyword_add)
-        (keyword_constraint)
-        (identifier)
         (constraint
+          (keyword_constraint)
+          (identifier)
           (keyword_unique)
           (ordered_columns
             (column

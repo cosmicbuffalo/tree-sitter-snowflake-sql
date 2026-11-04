@@ -110,10 +110,9 @@ export default {
     $.column_definition,
   ),
 
+  // ADD [CONSTRAINT name] { PRIMARY KEY | UNIQUE | FOREIGN KEY } (cols) ...
   add_constraint: $ => seq(
     $.keyword_add,
-    optional($.keyword_constraint),
-    $.identifier,
     $.constraint,
   ),
 

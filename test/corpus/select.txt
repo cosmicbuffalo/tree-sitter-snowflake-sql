@@ -2590,43 +2590,6 @@ parenthesized select
           (literal))))))
 
 ================================================================================
-Select with filtered aggregation
-================================================================================
-
-SELECT
-    count(*) FILTER (WHERE i < 5) AS filtered
-FROM tab
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (select
-      (keyword_select)
-      (select_expression
-        (term
-          (invocation
-            (object_reference
-              (identifier))
-            (term
-              (all_fields))
-            (filter_expression
-              (keyword_filter)
-              (where
-                (keyword_where)
-                (binary_expression
-                  (field
-                    (identifier))
-                  (literal)))))
-          (keyword_as)
-          (identifier))))
-    (from
-      (keyword_from)
-      (relation
-        (object_reference
-          (identifier))))))
-
-================================================================================
 SELECT FROM SUBQUERY WITH UNION
 ================================================================================
 
@@ -2832,27 +2795,6 @@ SELECT * FROM table_name;
           name: (identifier))))))
 
 ================================================================================
-Select from table with backtick-quoted identifier
-================================================================================
-
-SELECT * FROM `table_name`;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (select
-      (keyword_select)
-      (select_expression
-        (term
-          value: (all_fields))))
-    (from
-      (keyword_from)
-      (relation
-        (object_reference
-          name: (identifier))))))
-
-================================================================================
 Select from table with double-quoted identifier
 ================================================================================
 
@@ -2873,23 +2815,3 @@ SELECT * FROM "table_name";
         (object_reference
           name: (identifier))))))
 
-================================================================================
-Select from table with identifiers containing hyphens, dots, or other special characters within backticks
-================================================================================
-
-SELECT * FROM `complex-database.schema_name.table_name`;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (select
-      (keyword_select)
-      (select_expression
-        (term
-          value: (all_fields))))
-    (from
-      (keyword_from)
-      (relation
-        (object_reference
-          name: (identifier))))))

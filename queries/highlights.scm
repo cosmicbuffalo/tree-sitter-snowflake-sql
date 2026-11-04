@@ -9,7 +9,6 @@
 
 [
   (keyword_array)
-  (keyword_object_id)
 ] @function.call
 
 (relation
@@ -68,7 +67,7 @@
  (keyword_desc)
  (keyword_nulls)
  (keyword_last)
- (keyword_auto_increment)
+ (keyword_autoincrement)
  (keyword_default)
  (keyword_collate)
  (keyword_always)
@@ -120,7 +119,6 @@
   (keyword_select)
   (keyword_from)
   (keyword_where)
-  (keyword_index)
   (keyword_join)
   (keyword_primary)
   (keyword_delete)
@@ -192,7 +190,6 @@
   (keyword_only)
   (keyword_like)
   (keyword_rlike)
-  (keyword_similar)
   (keyword_over)
   (keyword_modify)
   (keyword_after)
@@ -205,8 +202,6 @@
   (keyword_others)
   (keyword_row)
   (keyword_comment)
-  (keyword_stored)
-  (keyword_virtual)
   (keyword_analyze)
   (keyword_explain)
   (keyword_verbose)
@@ -242,14 +237,12 @@
   (keyword_scala)
   (keyword_called)
   (keyword_declare)
-  (keyword_filter)
   (keyword_function)
   (keyword_input)
   (keyword_precision)
   (keyword_restricted)
   (keyword_return)
   (keyword_returns)
-  (keyword_separator)
   (keyword_admin)
   (keyword_connection)
   (keyword_database)
@@ -348,10 +341,8 @@
  (keyword_unbounded)
  (keyword_unique)
  (keyword_cascade)
- (keyword_check)
  (keyword_option)
  (keyword_local)
- (keyword_cascaded)
  (keyword_statistics)
 ] @type.qualifier
 
@@ -420,7 +411,6 @@
   "*"
   "/"
   "%"
-  "^"
   ":="
   "="
   "<"
@@ -430,7 +420,6 @@
   ">"
   "<>"
   (op_other)
-  (op_unary_other)
 ] @operator
 
 ; Punctuation

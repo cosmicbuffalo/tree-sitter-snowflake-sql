@@ -133,18 +133,6 @@ export default {
       )),
       $.keyword_as,
       $.create_query,
-      optional(
-        seq(
-          $.keyword_with,
-          optional(
-            choice(
-              $.keyword_local,
-              $.keyword_cascaded,
-            )
-          ),
-          $._check_option,
-        ),
-      ),
     ),
   ),
 

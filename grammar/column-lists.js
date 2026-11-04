@@ -62,32 +62,15 @@ export default {
     ),
     $._default_expression,
     $._primary_key,
-    seq($.keyword_auto_increment, optional(choice($.keyword_order, seq($.keyword_no, $.keyword_order)))),
-    $.direction,
+    seq($.keyword_autoincrement, optional(choice($.keyword_order, seq($.keyword_no, $.keyword_order)))),
     $._column_comment,
-    $._check_constraint,
     seq(
       optional(seq($.keyword_generated, $.keyword_always)),
       $.keyword_as,
       $._expression,
     ),
-    choice(
-      $.keyword_stored,
-      $.keyword_virtual,
-    ),
     $.keyword_unique
   )),
-
-  _check_constraint: $ => seq(
-    optional(
-      seq(
-        $.keyword_constraint,
-        $.literal
-      )
-    ),
-    $.keyword_check,
-    wrapped_in_parenthesis($.binary_expression)
-  ),
 
   _default_expression: $ => seq(
     $.keyword_default,
@@ -123,7 +106,6 @@ export default {
     $._constraint_literal,
     $._key_constraint,
     $._primary_key_constraint,
-    $._check_constraint
   ),
 
   _constraint_literal: $ => prec.left(seq(
@@ -133,9 +115,6 @@ export default {
       seq(
         $._primary_key,
         $.ordered_columns,
-      ),
-      seq(
-        $._check_constraint
       ),
       seq(
         $.keyword_unique,
@@ -156,24 +135,15 @@ export default {
     $.ordered_columns,
   ),
 
-  _key_constraint: $ => seq(
-    choice(
-      seq(
-        $.keyword_unique,
-        optional(
-          choice(
-            $.keyword_index,
-            $.keyword_key,
-            seq($.keyword_nulls, optional($.keyword_not), $.keyword_distinct),
-          ),
-        ),
-      ),
-      seq(optional($.keyword_foreign), $.keyword_key, optional($._if_not_exists)),
-      $.keyword_index,
+  // Out-of-line UNIQUE (cols) and [FOREIGN KEY] (cols) REFERENCES t (cols)
+  _key_constraint: $ => choice(
+    seq($.keyword_unique, $.ordered_columns),
+    seq(
+      $.keyword_foreign,
+      $.keyword_key,
+      $.ordered_columns,
+      $._references_clause,
     ),
-    optional(field('name', $.identifier)),
-    $.ordered_columns,
-    optional($._references_clause),
   ),
 
   // REFERENCES t (cols) [ON DELETE|UPDATE action ...]
@@ -201,9 +171,6 @@ export default {
 
   ordered_columns: $ => paren_list(alias($.ordered_column, $.column), true),
 
-  ordered_column: $ => seq(
-    field('name', $._column),
-    optional($.direction),
-  ),
+  ordered_column: $ => field('name', $._column),
 
 };
