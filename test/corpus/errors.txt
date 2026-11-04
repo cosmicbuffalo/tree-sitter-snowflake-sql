@@ -81,32 +81,31 @@ $a$
 --------------------------------------------------------------------------------
 
 (program
-  (ERROR
-    (keyword_create)
-    (keyword_or)
-    (keyword_replace)
-    (keyword_function)
-    (object_reference
-      schema: (identifier)
-      name: (identifier))
-    (function_arguments)
-    (keyword_returns)
-    (varchar
-      (keyword_varchar))
-    (function_language
-      (keyword_language)
-      (identifier))
-    (keyword_as)
-    (dollar_quote)
-    (keyword_begin)
-    (keyword_return)
-    (snowflake_session_variable)
-    (ERROR
-      (snowflake_session_variable)
-      (dollar_quote))
-    (keyword_end)
-    (snowflake_session_variable)
-    (UNEXPECTED '\n')))
+  (statement
+    (create_function
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_function)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (function_arguments)
+      (keyword_returns)
+      (varchar
+        (keyword_varchar))
+      (function_language
+        (keyword_language)
+        (identifier))
+      (function_body
+        (keyword_as)
+        (dollar_quote)
+        (keyword_begin)
+        (keyword_return)
+        (snowflake_session_variable)
+        (ERROR)
+        (keyword_end)
+        (dollar_quote)))))
 
 ================================================================================
 Function body with a unbalanced $$
@@ -147,9 +146,7 @@ $c$;
         (keyword_return)
         (literal)
         (keyword_end)
-        (ERROR
-          (snowflake_session_variable)
-          (UNEXPECTED ';'))
+        (ERROR)
         (MISSING dollar_quote)))))
 
 ================================================================================
@@ -190,9 +187,7 @@ $a$;
         (keyword_begin)
         (keyword_return)
         (snowflake_session_variable)
-        (ERROR
-          (snowflake_session_variable)
-          (snowflake_session_variable)
-          (UNEXPECTED ';'))
+        (ERROR)
         (keyword_end)
         (dollar_quote)))))
+

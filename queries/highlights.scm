@@ -406,3 +406,48 @@
   ","
   "."
 ] @punctuation.delimiter
+
+;; AUTO-KEYWORDS-START
+[
+ (keyword_at)
+ (keyword_changes)
+ (keyword_pivot)
+ (keyword_unpivot)
+ (keyword_match_recognize)
+ (keyword_resample)
+ (keyword_asof)
+ (keyword_match_condition)
+ (keyword_directed)
+ (keyword_connect)
+ (keyword_prior)
+ (keyword_grouping)
+ (keyword_sets)
+ (keyword_cube)
+ (keyword_rollup)
+ (keyword_top)
+ (keyword_information)
+ (keyword_append_only)
+ (keyword_statement)
+ (keyword_measures)
+ (keyword_define)
+ (keyword_match)
+ (keyword_skip)
+ (keyword_past)
+ (keyword_one)
+ (keyword_per)
+ (keyword_final)
+ (keyword_running)
+ (keyword_permute)
+ (keyword_metadata_columns)
+ (keyword_semantic_view)
+ (keyword_metrics)
+ (keyword_dimensions)
+ (keyword_facts)
+ (keyword_empty)
+ (keyword_matches)
+ (keyword_omit)
+ (keyword_unmatched)
+ (keyword_next)
+ (keyword_connect_by_root)
+] @keyword
+;; AUTO-KEYWORDS-END

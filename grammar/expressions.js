@@ -31,6 +31,9 @@ export default {
       $.snowflake_variable_reference,
       $.snowflake_session_variable,
       $.snowflake_object_literal,
+      $.prior_expression,
+      $.connect_by_root,
+      $.outer_join_column,
     )
   ),
 
@@ -53,6 +56,9 @@ export default {
     ),
 
     field: $ => field('name', $.identifier),
+
+    // Oracle-style outer join marker: t1.c1 = t2.c2(+)
+    outer_join_column: $ => seq(alias($._qualified_field, $.field), alias(token(seq('(', /\s*/, '+', /\s*/, ')')), $.outer_join_marker)),
 
     _qualified_field: $ => choice(
       seq(

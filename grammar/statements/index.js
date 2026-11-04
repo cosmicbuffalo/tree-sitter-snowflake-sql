@@ -10,6 +10,7 @@ import insert_rules from "./insert.js";
 import update_rules from "./update.js";
 import truncate_rules from "./truncate.js";
 import select_rules from "./select.js";
+import query_extras_rules from "./query-extras.js";
 import set_rules from "./set.js";
 import snowflake_ddl_rules from "./snowflake-ddl.js";
 import snowflake_scripting_rules from "./snowflake-scripting.js";
@@ -85,6 +86,7 @@ export default {
   ),
 
   ...select_rules,
+  ...query_extras_rules,
   ...set_rules,
 
   _show_statement: $ => seq(

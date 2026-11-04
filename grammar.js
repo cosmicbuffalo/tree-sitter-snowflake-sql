@@ -25,6 +25,8 @@ export default grammar({
   conflicts: $ => [
     // TIMESTAMP WITH TIME ZONE (type synonym) vs TIMESTAMP followed by a WITH MASKING POLICY / WITH TAG column clause
     [$.timestamp],
+    // a JOIN b JOIN c ON x ON y (nested) vs flat joins with optional ON
+    [$.join],
     // ((SELECT 1) + 2): inner (SELECT ..) is a wrapped select or a scalar subquery operand; let GLR decide
     [$._select_statement],
     [$._dml_read],

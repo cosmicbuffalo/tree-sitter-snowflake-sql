@@ -56,12 +56,14 @@ export default {
       ),
       optional($.from),
       optional($.where),
+      optional($.hierarchical_query),
       optional($.group_by),
       optional($.having),
       optional($.qualify),
       optional($.window_clause),
       optional($.order_by),
       optional($.limit),
+      optional(seq($.keyword_for, $.keyword_update)),
     ),
   ),
 
@@ -69,6 +71,7 @@ export default {
     $.keyword_select,
     seq(
       optional($.keyword_distinct),
+      optional(seq($.keyword_top, $.literal)),
       $.select_expression,
     ),
   ),
@@ -229,6 +232,7 @@ export default {
         // FROM a, b JOIN c ON x, LATERAL FLATTEN(..)
         seq(',', choice($.relation, $.lateral_relation)),
         $.join,
+        $.asof_join,
         $.cross_join,
         $.lateral_join,
         $.lateral_cross_join,
@@ -246,15 +250,23 @@ export default {
         seq($.stage_reference, optional($.stage_arguments)),
         wrapped_in_parenthesis($.values),
         $.values,
+        $.semantic_view_call,
+        wrapped_in_parenthesis(seq($.relation, repeat1(choice($.join, $.cross_join)))),
       ),
-      optional(
-        seq(
-          $._alias,
-          optional(alias($._column_list, $.list)),
-        ),
-      ),
+      optional(choice(
+        seq(repeat1($._relation_modifier), optional($._relation_alias)),
+        $._relation_alias,
+      )),
       optional($.table_sample),
     ),
+  ),
+
+  // AT and BEFORE are time-travel keywords but remain usable as table aliases
+  _relation_alias: $ => seq(
+    optional($.keyword_as),
+    field('alias', choice($.identifier, alias($.keyword_at, $.identifier), alias($.keyword_before, $.identifier))),
+    optional(alias($._column_list, $.list)),
+    repeat($._relation_modifier),
   ),
 
   stage_arguments: $ => paren_list($.named_parameter, true),
@@ -308,10 +320,11 @@ export default {
         $.keyword_full,
       ),
     ),
+    optional($.keyword_directed),
     $.keyword_join,
     $.relation,
     optional($.join),
-    choice(
+    optional(choice(
       seq(
         $.keyword_on,
         field("predicate", $._expression),
@@ -320,12 +333,14 @@ export default {
         $.keyword_using,
         alias($._column_list, $.list),
       )
-    )
+    )),
+    optional(seq(choice($.keyword_first, $.keyword_last), wrapped_in_parenthesis($.identifier))),
   ),
 
   cross_join: $ => prec.right(
     seq(
       $.keyword_cross,
+      optional($.keyword_directed),
       $.keyword_join,
       $.relation,
     )
@@ -395,7 +410,7 @@ export default {
     $.keyword_by,
     choice(
       $.keyword_all,
-      comma_list($._expression, true),
+      comma_list(choice($._expression, $.grouping_sets), true),
     ),
   )),
 
@@ -412,7 +427,10 @@ export default {
   order_by: $ => prec.right(seq(
     $.keyword_order,
     $.keyword_by,
-    comma_list($.order_target, true),
+    choice(
+      seq($.keyword_all, optional($.direction), optional(seq($.keyword_nulls, choice($.keyword_first, $.keyword_last)))),
+      comma_list($.order_target, true),
+    ),
   )),
 
   order_target: $ => seq(
