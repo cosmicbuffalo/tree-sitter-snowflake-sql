@@ -216,6 +216,11 @@ export default {
       repeat(choice(
         $.procedure_comment,
         $._table_settings,
+        seq(
+          $.keyword_with, $.keyword_data, $.keyword_metric, $.keyword_function,
+          '(', $.object_reference, $.keyword_on, paren_list(choice($.lambda_expression, $.identifier)),
+          repeat($.dmf_expectation), ')',
+        ),
       )),
       $.keyword_as,
       $.create_query,

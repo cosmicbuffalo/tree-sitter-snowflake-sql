@@ -14,7 +14,7 @@ const NAMED_DROP = ["STAGE", "FILE FORMAT", "PIPE", "STREAM", "TASK", "WAREHOUSE
 const PREPOSITION_WORDS = ["to", "on", "for", "by", "of"];
 const KEYWORD_WORDS = ["key", "access", "policy", "row", "identity", "default", "data",
   "type", "session", "account", "schema", "database", "role", "user", "table", "view", "stage", "share", "secure",
-  "integration", "function", "procedure", "option", "search", "grants"];
+  "integration", "function", "procedure", "option", "search", "grants", "pattern"];
 const KEYWORD_DESCRIBE = ["STAGE", "PIPE", "STREAM", "TASK", "WAREHOUSE", "DATA METRIC FUNCTION"];
 
 
@@ -26,6 +26,7 @@ export default {
   snowflake_statement: $ => choice(
     $.describe_statement,
     $.use_statement,
+    $.unset_statement,
     $.call_statement,
     $.call_with_procedure,
     $.execute_statement,
@@ -36,6 +37,7 @@ export default {
     $.remove_statement,
     $.copy_files_statement,
     $.snowflake_show_statement,
+    $.pipe_query,
     $.alter_session,
   ),
 
@@ -117,7 +119,7 @@ export default {
   // --- CREATE PIPE ---
   create_pipe: $ => prec.left(seq(
     $.keyword_create,
-    optional($._or_replace),
+    optional(choice($._or_replace, $._or_alter)),
     $.keyword_pipe,
     optional($._if_not_exists),
     $.object_reference,
@@ -185,7 +187,7 @@ export default {
     optional(choice($.column_definitions, $.view_columns)),
     repeat(seq(optional(','), $._dynamic_table_setting)),
     choice(
-      seq($.keyword_as, $._select_statement),
+      seq($.keyword_as, $._select_statement, optional($.copy_clause)),
       seq($.clone_clause, repeat($._dynamic_table_setting)),
     ),
   )),
@@ -222,6 +224,8 @@ export default {
   ),
 
   _alter_keyword_actions: $ => choice(
+    // ALTER ALERT a FROM TEMPLATE t SET ..
+    seq($.keyword_from, $.keyword_template, $.identifier, $.keyword_set, $._snowflake_options),
     seq($.keyword_set, $._snowflake_options),
     seq($.keyword_set, $.tag_assignments),
     seq($.keyword_unset, $.tag_names),
@@ -300,6 +304,7 @@ export default {
 
   // object-type tokens for the other verbs; presented as snowflake_object_type nodes
   _alter_object_type: _ => words_regex(without(OBJECT_TYPES, [...NAMED_ALTER, "ICEBERG TABLE", "HYBRID TABLE", "ACCOUNT", "ORGANIZATION"]), true),
+  _undrop_object_type: _ => words_regex(OBJECT_TYPES, true),
   _drop_object_type: _ => words_regex(without(OBJECT_TYPES, NAMED_DROP), true),
   _describe_object_type_token: _ => token(prec(1, words_regex(without(OBJECT_TYPES, KEYWORD_DESCRIBE), true))),
 
@@ -347,6 +352,7 @@ export default {
     optional($._if_exists),
     $.object_reference,
     optional($._drop_behavior),
+    optional(choice($.keyword_purge, $.keyword_nopurge)),
   ),
 
   alter_snowflake_object: $ => prec.left(seq(
@@ -382,17 +388,14 @@ export default {
   // RETURNS NUMBER [COMMENT = 'text'] AS $$ body $$
   create_data_metric_function: $ => prec.left(seq(
     $.keyword_create,
-    optional($._or_replace),
+    optional(choice($._or_replace, $._or_alter)),
+    optional($.keyword_secure),
     $.keyword_data,
     $.keyword_metric,
     $.keyword_function,
     optional($._if_not_exists),
     $.object_reference,
-    '(',
-    field('arg_name', $.identifier),
-    $.keyword_table,
-    $.column_definitions,
-    ')',
+    paren_list(seq(field('arg_name', $.identifier), $.keyword_table, $.column_definitions), true),
     $.keyword_returns,
     $._type,
     optional(seq($.keyword_comment, '=', alias($._literal_string, $.literal))),
@@ -459,13 +462,15 @@ export default {
   use_statement: $ => seq(
     $.keyword_use,
     choice(
-      $.keyword_database,
-      $.keyword_schema,
-      $.keyword_warehouse,
-      $.keyword_role,
+      seq(
+        optional(choice($.keyword_database, $.keyword_schema, $.keyword_warehouse, $.keyword_role)),
+        choice($.object_reference, alias($._single_quote_string, $.literal)),
+      ),
     ),
-    $.object_reference,
   ),
+
+  // UNSET var [, var ..]
+  unset_statement: $ => seq($.keyword_unset, choice(comma_list($.identifier, true), paren_list($.identifier, true))),
 
   // --- CALL statement ---
   // CALL procedure_name(args...)
@@ -601,7 +606,7 @@ export default {
       $.keyword_table,
       $.keyword_schema,
       $.keyword_database,
-      alias($._drop_object_type, $.snowflake_object_type),
+      alias($._undrop_object_type, $.snowflake_object_type),
     ),
     $.object_reference,
   ),
@@ -625,7 +630,7 @@ export default {
   get_statement: $ => prec.left(seq(
     $.keyword_get,
     $.stage_reference,
-    choice($.literal, $.file_url),
+    choice($.literal, $.file_url, $.identifier),
     optional($._snowflake_options),
   )),
 
@@ -782,6 +787,7 @@ export default {
     $.snowflake_show_target,
     optional(seq($.keyword_root, $.keyword_only)),
     optional($.keyword_instances),
+    optional($.keyword_history),
     repeat1($._show_clause),
     optional(seq($.keyword_root, $.keyword_only)),
   )),

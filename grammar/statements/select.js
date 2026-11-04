@@ -265,6 +265,8 @@ export default {
         wrapped_in_parenthesis($.values),
         $.values,
         $.semantic_view_call,
+        // $1: result of the previous statement (SHOW .. ->> SELECT .. FROM $1)
+        $.parameter,
         wrapped_in_parenthesis(seq($.relation, repeat1(choice($.join, $.cross_join)))),
         wrapped_in_parenthesis(seq($.values, optional($._relation_alias))),
       ),

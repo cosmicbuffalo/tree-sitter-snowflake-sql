@@ -429,5 +429,9 @@ export default {
   keyword_interactive: _ => make_keyword("interactive"),
   keyword_policy_context: _ => make_keyword("policy_context"),
   keyword_allowed_values: _ => make_keyword("allowed_values"),
+  keyword_version_tag: _ => make_keyword("version_tag"),
+  keyword_history: _ => make_keyword("history"),
+  keyword_purge: _ => make_keyword("purge"),
+  keyword_nopurge: _ => make_keyword("nopurge"),
 
 }

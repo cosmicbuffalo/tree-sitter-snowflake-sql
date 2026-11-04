@@ -60,6 +60,19 @@ export default {
     // Snowflake: ALTER TABLE t ADD SEARCH OPTIMIZATION [ON method(cols), ...]
     prec.right(seq($.keyword_add, $.keyword_search, $.keyword_optimization,
       optional(seq($.keyword_on, comma_list($.invocation, true))))),
+    // Snowflake: REFRESH ['metadata path']
+    seq($.keyword_refresh, optional($.literal)),
+    // Snowflake Iceberg: ADD | DROP | REPLACE PARTITION BY (exprs) [WITH (exprs)]
+    seq(choice($.keyword_add, $.keyword_drop, $.keyword_replace), $.keyword_partition, $.keyword_by, paren_list($._expression, true),
+      optional(seq($.keyword_with, paren_list($._expression, true)))),
+    // Snowflake Iceberg: CREATE | REPLACE | DROP VERSION_TAG [IF [NOT] EXISTS] name [AS OF VERSION n | AS OF TIMESTAMP n] [RETAIN n DAYS|HOURS]
+    seq(choice($.keyword_create, $.keyword_replace, $.keyword_drop), $.keyword_version_tag,
+      optional(choice($._if_exists, $._if_not_exists)), $.identifier,
+      optional(seq($.keyword_as, $.identifier, $.identifier, $.literal)),
+      optional(seq($.identifier, $.literal, $.identifier))),
+    // Snowflake: DROP SEARCH OPTIMIZATION [ON method(cols), ..]
+    prec.right(seq($.keyword_drop, $.keyword_search, $.keyword_optimization,
+      optional(seq($.keyword_on, comma_list($.invocation, true))))),
     // Snowflake: ALTER TABLE t SWAP WITH other
     seq($.keyword_swap, $.keyword_with, $.object_reference),
     // Snowflake: ALTER TABLE t ADD | DROP ROW ACCESS POLICY p [ON (cols)] ; SET JOIN POLICY p ..

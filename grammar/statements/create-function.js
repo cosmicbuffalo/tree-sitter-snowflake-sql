@@ -114,7 +114,7 @@ export default {
       // Snowflake procedure argument modes: name { IN | INPUT | OUT | OUTPUT } type
       optional(field('mode', choice($.keyword_in, $.keyword_input, $.keyword_out, $.keyword_output))),
     )),
-    $._type,
+    choice($._type, seq($.keyword_table, paren_list($._type))),
     optional(
       seq(
         $.keyword_default,

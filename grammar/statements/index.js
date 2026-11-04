@@ -21,7 +21,7 @@ export default {
   block: $ => $.snowflake_scripting_block,
 
   statement: $ => seq(
-    optional($.keyword_explain),
+    optional(seq($.keyword_explain, optional(seq($.keyword_using, $.identifier)))),
     choice(
       $._ddl_statement,
       $._dml_write,
@@ -85,6 +85,12 @@ export default {
     prec(-1, $.snowflake_show_statement),
   ),
 
+  // SHOW ... ->> SELECT ... FROM $1 (result of the previous statement as $1)
+  pipe_query: $ => seq(
+    choice($._show_statement, $.snowflake_show_statement),
+    alias($.op_other, $.pipe_operator), $._select_statement,
+  ),
+
   ...select_rules,
   ...query_extras_rules,
   ...set_rules,
@@ -94,6 +100,7 @@ export default {
     optional($.keyword_terse),
     $.snowflake_show_target,
     optional(seq($.keyword_root, $.keyword_only)),
+    optional($.keyword_history),
   ),
 
   ...snowflake_ddl_rules,

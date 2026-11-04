@@ -510,5 +510,9 @@
  (keyword_interactive)
  (keyword_policy_context)
  (keyword_allowed_values)
+ (keyword_version_tag)
+ (keyword_history)
+ (keyword_purge)
+ (keyword_nopurge)
 ] @keyword
 ;; AUTO-KEYWORDS-END
