@@ -7,11 +7,25 @@ export default {
     optional($._if_not_exists),
     $.object_reference,
     optional($.function_arguments),
-    // Snowflake: COPY GRANTS
-    optional(seq($.keyword_copy, $.keyword_grants)),
-    // Snowflake: RETURNS type [NOT NULL]
-    optional($.procedure_returns),
+    $._procedure_definition,
+  ),
+
+  // WITH name AS PROCEDURE (args) RETURNS .. AS <body> CALL name(..)
+  call_with_procedure: $ => seq(
+    $.keyword_with,
+    $.identifier,
+    $.keyword_as,
+    $.keyword_procedure,
+    optional($.function_arguments),
+    $._procedure_definition,
+    $.call_statement,
+  ),
+
+  _procedure_definition: $ => seq(
+    // options (COPY GRANTS, LANGUAGE, ..) may precede RETURNS
     repeat($._procedure_option),
+    // Snowflake: RETURNS type [NOT NULL]
+    optional(seq($.procedure_returns, repeat($._procedure_option))),
     choice(
       // SQL / Snowflake Scripting procedure
       seq(
@@ -34,6 +48,9 @@ export default {
     $.function_language,
     $.procedure_execute_as,
     $.procedure_comment,
+    $.function_strictness,
+    $.function_volatility,
+    $.copy_clause,
   ),
 
   // Snowflake: RETURNS type [NOT NULL] | RETURNS TABLE (col type, ...)

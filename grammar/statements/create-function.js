@@ -9,7 +9,7 @@ export default {
 
   create_function: $ => prec.left(seq(
     $.keyword_create,
-    optional($._or_replace),
+    optional(choice($._or_replace, $._or_alter)),
     optional($.keyword_secure),
     $.keyword_function,
     optional($._if_not_exists),
@@ -21,6 +21,7 @@ export default {
     choice(
       $._type,
       seq($.keyword_table, $.column_definitions),
+      seq($.keyword_table, '(', ')'),
     ),
     optional($._not_null),
     repeat($._function_option),
@@ -50,6 +51,9 @@ export default {
     $.function_volatility,
     $.function_strictness,
     $.procedure_comment,
+    $.copy_clause,
+    // SERVICE = svc ENDPOINT = ep CONTEXT_HEADERS = (..) MAX_BATCH_ROWS = n (service functions)
+    $._plain_property,
   ),
 
   // LANGUAGE for handler-based routines whose body is source code in another

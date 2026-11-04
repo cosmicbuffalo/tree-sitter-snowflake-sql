@@ -739,6 +739,7 @@ DROP PROCEDURE IF EXISTS P4(ARRAY(VARCHAR));
             (keyword_array)
             element: (varchar
               (keyword_varchar))))))))
+
 ================================================================================
 Procedure with COPY GRANTS before RETURNS
 ================================================================================
@@ -779,8 +780,9 @@ $$;
         (function_argument
           (identifier)
           (keyword_variant)))
-      (keyword_copy)
-      (keyword_grants)
+      (copy_clause
+        (keyword_copy)
+        (keyword_grants))
       (procedure_returns
         (keyword_returns)
         (keyword_variant))
@@ -804,4 +806,3 @@ $$;
       (routine_body
         (keyword_as)
         (literal)))))
-

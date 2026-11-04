@@ -423,5 +423,6 @@ export default {
   keyword_rm: _ => make_keyword("rm"),
   keyword_ls: _ => make_keyword("ls"),
   keyword_specification: _ => make_keyword("specification"),
+  keyword_force: _ => make_keyword("force"),
 
 }

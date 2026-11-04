@@ -22,6 +22,7 @@ export default {
     $.describe_statement,
     $.use_statement,
     $.call_statement,
+    $.call_with_procedure,
     $.execute_statement,
     $.undrop_statement,
     $.put_statement,
@@ -47,6 +48,13 @@ export default {
   // A single key=value property (used in CREATE/ALTER options)
   _snowflake_property: $ => seq(
     field('name', choice($.identifier, $.keyword_comment)),
+    '=',
+    field('value', $._property_value),
+  ),
+
+  // property whose name is a plain identifier (COMMENT is handled by dedicated rules)
+  _plain_property: $ => seq(
+    field('name', $.identifier),
     '=',
     field('value', $._property_value),
   ),

@@ -176,6 +176,22 @@ export default {
       $.keyword_drop,
       $.keyword_default,
     ),
+    // Snowflake: SET [WITH] MASKING POLICY p [USING (cols)] [FORCE] | UNSET MASKING POLICY
+    seq(
+      $.keyword_set,
+      optional($.keyword_with),
+      $.keyword_masking,
+      $.keyword_policy,
+      $.object_reference,
+      optional(seq($.keyword_using, paren_list($.identifier, true))),
+      optional($.keyword_force),
+    ),
+    seq($.keyword_unset, $.keyword_masking, $.keyword_policy),
+    // Snowflake: SET | UNSET PROJECTION POLICY, SET TAG, UNSET TAG
+    seq($.keyword_set, $.keyword_projection, $.keyword_policy, $.object_reference),
+    seq($.keyword_unset, $.keyword_projection, $.keyword_policy),
+    seq($.keyword_set, $.tag_assignments),
+    seq($.keyword_unset, $.tag_names),
   ),
 
   // Snowflake: MODIFY is a synonym of ALTER (ALTER TABLE t MODIFY COLUMN c DROP NOT NULL)

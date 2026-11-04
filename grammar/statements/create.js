@@ -273,7 +273,7 @@ export default {
   //            AS (arg type, ..) RETURNS type -> expr [COMMENT = '..'] [EXEMPT_OTHER_POLICIES = bool]
   create_policy: $ => prec.left(seq(
     $.keyword_create,
-    optional($._or_replace),
+    optional(choice($._or_replace, $._or_alter)),
     choice($.keyword_masking, seq($.keyword_row, $.keyword_access)),
     $.keyword_policy,
     optional($._if_not_exists),
