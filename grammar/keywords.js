@@ -381,5 +381,8 @@ export default {
   keyword_starts: _ => make_keyword("starts"),
   keyword_of: _ => make_keyword("of"),
   keyword_instances: _ => make_keyword("instances"),
+  keyword_inherited: _ => make_keyword("inherited"),
+  keyword_service: _ => make_keyword("service"),
+  keyword_application: _ => make_keyword("application"),
 
 }

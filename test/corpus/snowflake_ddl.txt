@@ -481,7 +481,8 @@ GRANT SELECT ON TABLE my_table TO ROLE analyst;
   (statement
     (grant_statement
       (keyword_grant)
-      (identifier)
+      (privilege
+        (identifier))
       (keyword_on)
       (keyword_table)
       (object_reference
@@ -527,7 +528,8 @@ GRANT USAGE ON DATABASE my_db TO USER jdoe;
   (statement
     (grant_statement
       (keyword_grant)
-      (identifier)
+      (privilege
+        (identifier))
       (keyword_on)
       (keyword_database)
       (object_reference
@@ -548,7 +550,8 @@ REVOKE SELECT ON TABLE my_table FROM ROLE analyst;
   (statement
     (revoke_statement
       (keyword_revoke)
-      (identifier)
+      (privilege
+        (identifier))
       (keyword_on)
       (keyword_table)
       (object_reference
@@ -2039,7 +2042,8 @@ GRANT USAGE ON SCHEMA PUBLIC TO DATABASE ROLE REPORT_READER;
   (statement
     (grant_statement
       (keyword_grant)
-      (identifier)
+      (privilege
+        (identifier))
       (keyword_on)
       (keyword_schema)
       (object_reference
@@ -2768,7 +2772,8 @@ END;
   (statement
     (grant_statement
       (keyword_grant)
-      (identifier)
+      (privilege
+        (identifier))
       (keyword_on)
       (keyword_procedure)
       (object_reference
@@ -3020,6 +3025,7 @@ AS
             (invocation
               (object_reference
                 name: (identifier)))))))))
+
 ================================================================================
 CREATE VIEW with per-column COMMENT
 ================================================================================
@@ -3580,7 +3586,8 @@ REVOKE SELECT ON ALL VIEWS IN DATABASE prod FROM ROLE reader;
   (statement
     (grant_statement
       (keyword_grant)
-      (identifier)
+      (privilege
+        (identifier))
       (keyword_on)
       (keyword_schema)
       (object_reference
@@ -3592,7 +3599,8 @@ REVOKE SELECT ON ALL VIEWS IN DATABASE prod FROM ROLE reader;
   (statement
     (grant_statement
       (keyword_grant)
-      (identifier)
+      (privilege
+        (identifier))
       (keyword_on)
       (keyword_task)
       (object_reference
@@ -3604,7 +3612,8 @@ REVOKE SELECT ON ALL VIEWS IN DATABASE prod FROM ROLE reader;
   (statement
     (grant_statement
       (keyword_grant)
-      (identifier)
+      (privilege
+        (identifier))
       (keyword_on)
       (keyword_all)
       (snowflake_object_type)
@@ -3619,7 +3628,8 @@ REVOKE SELECT ON ALL VIEWS IN DATABASE prod FROM ROLE reader;
   (statement
     (grant_statement
       (keyword_grant)
-      (identifier)
+      (privilege
+        (identifier))
       (keyword_on)
       (keyword_future)
       (snowflake_object_type)
@@ -3633,7 +3643,8 @@ REVOKE SELECT ON ALL VIEWS IN DATABASE prod FROM ROLE reader;
   (statement
     (revoke_statement
       (keyword_revoke)
-      (identifier)
+      (privilege
+        (identifier))
       (keyword_on)
       (keyword_all)
       (snowflake_object_type)
@@ -3793,4 +3804,3 @@ DROP SEQUENCE IF EXISTS seq_id_v2;
       (keyword_exists)
       (object_reference
         name: (identifier)))))
-

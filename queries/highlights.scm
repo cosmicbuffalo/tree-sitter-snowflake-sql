@@ -460,5 +460,8 @@
  (keyword_starts)
  (keyword_of)
  (keyword_instances)
+ (keyword_inherited)
+ (keyword_service)
+ (keyword_application)
 ] @keyword
 ;; AUTO-KEYWORDS-END

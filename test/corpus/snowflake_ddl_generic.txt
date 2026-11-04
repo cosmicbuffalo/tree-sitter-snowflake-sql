@@ -471,3 +471,505 @@ SHOW IMAGES IN IMAGE REPOSITORY ir1;
         (object_reference
           name: (identifier))))))
 
+================================================================================
+GRANT roles, ownership and caller grants
+================================================================================
+
+GRANT ROLE analyst TO ROLE sysadmin;
+GRANT ROLE analyst TO USER bob WITH GRANT OPTION;
+GRANT DATABASE ROLE d1.dr1 TO SHARE sh1;
+GRANT DATABASE ROLE dr1 TO APPLICATION app1;
+GRANT APPLICATION ROLE app1.reader TO ROLE r1;
+GRANT SERVICE ROLE svc1!ep_role TO ROLE r1;
+GRANT OWNERSHIP ON TABLE d1.s1.t1 TO ROLE r2 COPY CURRENT GRANTS;
+GRANT OWNERSHIP ON ALL TABLES IN SCHEMA d1.s1 TO DATABASE ROLE d1.dr1 REVOKE CURRENT GRANTS;
+GRANT OWNERSHIP ON DATA EXCHANGE LISTING lst1 TO ROLE r2;
+GRANT CALLER SELECT ON VIEW v1 TO ROLE owner_role;
+GRANT INHERITED CALLER SELECT, INSERT ON ALL TABLES IN SCHEMA d1.s1 TO ROLE owner_role;
+GRANT ALL INHERITED CALLER PRIVILEGES ON ALL SCHEMAS IN ACCOUNT TO ROLE owner_role;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_role)
+      (identifier)
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_role)
+      (identifier)
+      (keyword_to)
+      (keyword_user)
+      (identifier)
+      (keyword_with)
+      (keyword_grant)
+      (keyword_option)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_database)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))
+      (keyword_to)
+      (keyword_share)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_database)
+      (keyword_role)
+      (identifier)
+      (keyword_to)
+      (keyword_application)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_application)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_service)
+      (keyword_role)
+      (object_reference)
+      (object_reference)
+      (object_reference)
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_table)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)
+      (keyword_copy)
+      (keyword_current)
+      (keyword_grants)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_schema)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_database)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))
+      (keyword_revoke)
+      (keyword_current)
+      (keyword_grants)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_caller)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_inherited)
+      (keyword_caller)
+      (privilege
+        (identifier))
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_schema)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_all)
+      (keyword_inherited)
+      (keyword_caller)
+      (keyword_privileges)
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_account)
+      (keyword_to)
+      (keyword_role)
+      (identifier))))
+
+================================================================================
+GRANT privileges on assorted object types and grantees
+================================================================================
+
+GRANT USAGE, CREATE TABLE ON SCHEMA d1.s1 TO ROLE r1;
+GRANT APPLY MASKING POLICY, MANAGE GRANTS ON ACCOUNT TO ROLE sec_admin WITH GRANT OPTION;
+GRANT SELECT ON ALL TABLES IN SCHEMA d1.s1 TO DATABASE ROLE d1.dr1;
+GRANT SELECT, INSERT ON FUTURE TABLES IN DATABASE d1 TO ROLE r1;
+GRANT ALL PRIVILEGES ON FUNCTION d1.s1.f1(number) TO ROLE r1;
+GRANT USAGE ON NOTEBOOK d1.s1.nb TO ROLE r1;
+GRANT READ ON MODEL d1.s1.m1 TO SHARE sh1;
+GRANT SELECT ON VIEW d1.s1.v1 TO APPLICATION ROLE app1.reader;
+GRANT SELECT ON VIEW d1.s1.v1 TO APPLICATION app2;
+GRANT USAGE ON STREAMLIT d1.s1.app1 TO USER bob;
+GRANT CREATE SNOWFLAKE.CORE.BUDGET ON SCHEMA d1.s1 TO ROLE r1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (privilege
+        (identifier)
+        (identifier))
+      (keyword_on)
+      (keyword_schema)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier)
+        (identifier)
+        (identifier))
+      (privilege
+        (identifier)
+        (identifier))
+      (keyword_on)
+      (object_reference
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)
+      (keyword_with)
+      (keyword_grant)
+      (keyword_option)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_schema)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_database)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_future)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_database)
+      (object_reference
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_all)
+      (keyword_privileges)
+      (keyword_on)
+      (keyword_function)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (number
+            (keyword_number))))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (snowflake_object_type)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (snowflake_object_type)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_share)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_view)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_application)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_view)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_application)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (snowflake_object_type)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_user)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier)
+        (object_reference
+          (identifier)
+          (identifier)
+          (identifier)))
+      (keyword_on)
+      (keyword_schema)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier))))
+
+================================================================================
+REVOKE privileges, roles and caller grants
+================================================================================
+
+REVOKE GRANT OPTION FOR OPERATE ON WAREHOUSE wh1 FROM ROLE analyst;
+REVOKE CREATE WAREHOUSE ON ACCOUNT FROM ROLE analyst CASCADE;
+REVOKE USAGE ON MODEL d1.s1.m1 FROM SHARE sh1;
+REVOKE ROLE analyst FROM USER bob;
+REVOKE GRANT OPTION FOR DATABASE ROLE d1.dr1 FROM ROLE r1 CASCADE;
+REVOKE APPLICATION ROLE app1.reader FROM APPLICATION ROLE app1.other;
+REVOKE ALL INHERITED CALLER PRIVILEGES ON ALL VIEWS IN ACCOUNT FROM ROLE owner_role;
+REVOKE SERVICE ROLE svc1!ep_role FROM ROLE r1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_grant)
+      (keyword_option)
+      (keyword_for)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_warehouse)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (privilege
+        (identifier)
+        (identifier))
+      (keyword_on)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (keyword_role)
+      (identifier)
+      (keyword_cascade)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (snowflake_object_type)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_from)
+      (keyword_share)
+      (identifier)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_role)
+      (identifier)
+      (keyword_from)
+      (keyword_user)
+      (identifier)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_grant)
+      (keyword_option)
+      (keyword_for)
+      (keyword_database)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))
+      (keyword_from)
+      (keyword_role)
+      (identifier)
+      (keyword_cascade)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_application)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))
+      (keyword_from)
+      (keyword_application)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_all)
+      (keyword_inherited)
+      (keyword_caller)
+      (keyword_privileges)
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_account)
+      (keyword_from)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_service)
+      (keyword_role)
+      (object_reference)
+      (object_reference)
+      (object_reference)
+      (keyword_from)
+      (keyword_role)
+      (identifier))))
+

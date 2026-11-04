@@ -462,49 +462,82 @@ export default {
   )),
 
   // --- GRANT / REVOKE ---
+  // Privilege grants (incl. OWNERSHIP and CALLER), role grants (ROLE / DATABASE ROLE / APPLICATION ROLE /
+  // SERVICE ROLE) and the CURRENT GRANTS / GRANT OPTION modifiers.
   grant_statement: $ => prec.left(seq(
-    $.keyword_grant, $._grant_privileges,
-    $.keyword_on,
-    $._grant_target,
+    $.keyword_grant,
+    choice(
+      seq($._grant_privileges, $.keyword_on, $._grant_target),
+      $._grant_role,
+    ),
     $.keyword_to, $._grant_grantee,
     optional(seq(
       $.keyword_with,
       $.keyword_grant,
       $.keyword_option,
     )),
+    optional($._current_grants),
   )),
 
   revoke_statement: $ => prec.left(seq(
-    $.keyword_revoke, $._grant_privileges,
-    $.keyword_on,
-    $._grant_target,
+    $.keyword_revoke,
+    optional(seq($.keyword_grant, $.keyword_option, $.keyword_for)),
+    choice(
+      seq($._grant_privileges, $.keyword_on, $._grant_target),
+      $._grant_role,
+    ),
     $.keyword_from, $._grant_grantee,
     optional($.keyword_restrict),
     optional($.keyword_cascade),
   )),
 
-  // GRANT/REVOKE target: [type] name[(arg types)] | { ALL | FUTURE } <objects> IN { SCHEMA | DATABASE } name
+  // [DATABASE | APPLICATION | SERVICE] ROLE name
+  _grant_role: $ => seq(
+    optional(choice($.keyword_database, $.keyword_application, $.keyword_service)),
+    $.keyword_role,
+    $._grant_name,
+  ),
+
+  // COPY CURRENT GRANTS | REVOKE CURRENT GRANTS
+  _current_grants: $ => seq(choice($.keyword_copy, $.keyword_revoke), $.keyword_current, $.keyword_grants),
+
+  // a role/user/share name: plain identifier, dotted (db.role) or service role (svc!role)
+  _grant_name: $ => choice(
+    $.identifier,
+    alias($._dotted_reference, $.object_reference),
+    alias(seq($.identifier, '!', $.identifier), $.object_reference),
+  ),
+
+  // GRANT/REVOKE target: [type] name[(arg types)] | ACCOUNT | { ALL | FUTURE } <objects> IN { SCHEMA | DATABASE | ACCOUNT } [name]
   _grant_target: $ => choice(
     seq(
       optional($._grant_object_type),
       $.object_reference,
       optional($.function_arguments),
     ),
+    $.keyword_account,
     seq(
       choice($.keyword_all, $.keyword_future),
       alias($.snowflake_show_target, $.snowflake_object_type),
       $.keyword_in,
-      choice($.keyword_schema, $.keyword_database),
-      $.object_reference,
+      choice($.keyword_schema, $.keyword_database, $.keyword_account),
+      optional($.object_reference),
     ),
   ),
 
+  // [INHERITED] CALLER and multi-word privileges (CREATE MATERIALIZED VIEW, APPLY MASKING POLICY, ...)
   _grant_privileges: $ => choice(
-    seq($.keyword_all, optional($.keyword_privileges)),
-    comma_list($.identifier, true),
+    seq($.keyword_all, optional(seq(optional($.keyword_inherited), $.keyword_caller)), optional($.keyword_privileges)),
+    seq(
+      optional(seq(optional($.keyword_inherited), $.keyword_caller)),
+      comma_list($.privilege, true),
+    ),
   ),
 
-  // Grant object type — use existing keywords instead of regex to avoid token conflicts
+  // one privilege: its words (CREATE MATERIALIZED VIEW) and, for class instances, a dotted class name
+  privilege: $ => repeat1(choice($.identifier, alias($._dotted_reference, $.object_reference))),
+
+  // Grant object type: existing keywords, plus the generic type vocabulary for everything else
   _grant_object_type: $ => choice(
     $.keyword_table,
     $.keyword_view,
@@ -521,12 +554,21 @@ export default {
     $.keyword_pipe,
     $.keyword_sequence,
     seq($.keyword_dynamic, $.keyword_table),
+    alias($._grant_type_token, $.snowflake_object_type),
   ),
 
+  _grant_type_token: _ => token(prec(1, words_regex(
+    without(OBJECT_TYPES, ["STAGE", "WAREHOUSE", "PIPE", "STREAM", "TASK", "SEQUENCE", "DYNAMIC TABLE", "INTEGRATION", "SCHEMA", "DATABASE", "FILE FORMAT", "ACCOUNT"])
+      .concat(["DATA EXCHANGE LISTING", "WORKSPACE", "USER", "FILE FORMAT", "ORGANIZATION LISTING"]),
+  ))),
+
   _grant_grantee: $ => choice(
-    seq($.keyword_database, $.keyword_role, $.identifier),
-    seq($.keyword_role, $.identifier),
-    seq($.keyword_user, $.identifier),
+    seq($.keyword_database, $.keyword_role, $._grant_name),
+    seq($.keyword_application, $.keyword_role, $._grant_name),
+    seq($.keyword_application, $._grant_name),
+    seq($.keyword_role, $._grant_name),
+    seq($.keyword_user, $._grant_name),
+    seq($.keyword_share, $._grant_name),
     $.identifier,
   ),
 
