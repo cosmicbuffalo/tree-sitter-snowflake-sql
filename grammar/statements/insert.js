@@ -46,11 +46,6 @@ export default {
     optional(prec.dynamic(1, seq($.keyword_values, $.list))),
   ),
 
-  assignment_list: $ => seq(
-    $.assignment,
-    repeat(seq(',', $.assignment)),
-  ),
-
   assignment: $ => seq(
     field('left',
       alias(

@@ -9,12 +9,6 @@ export default {
     alias($._literal_string, $.literal),
   ),
 
-  _key_value_pair: $ => seq(
-    field('key',$.identifier),
-    '=',
-    field('value', alias($._literal_string, $.literal)),
-  ),
-
   column_definitions: $ => seq(
     '(',
     comma_list($.column_definition, true),
