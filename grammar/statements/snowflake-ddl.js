@@ -5,7 +5,7 @@ import { OBJECT_TYPES, SHOW_TARGETS, SCOPE_TYPES, EXECUTE_TYPES, EXECUTE_NAMELES
 const without = (list, drop) => list.filter(t => !drop.includes(t));
 const DEDICATED_CREATE = ["FILE FORMAT", "STAGE", "WAREHOUSE", "PIPE", "STREAM", "TASK", "SEQUENCE", "MATERIALIZED VIEW",
   "DYNAMIC TABLE", "DYNAMIC ICEBERG TABLE", "ICEBERG TABLE", "HYBRID TABLE", "DATA METRIC FUNCTION", "MASKING POLICY",
-  "ROW ACCESS POLICY", "DATABASE ROLE"];
+  "ROW ACCESS POLICY", "DATABASE ROLE", "SEMANTIC VIEW"];
 const NAMED_ALTER = ["WAREHOUSE", "STAGE", "PIPE", "STREAM", "TASK", "DYNAMIC TABLE", "DYNAMIC ICEBERG TABLE", "SEQUENCE",
   "MATERIALIZED VIEW"];
 const NAMED_DROP = ["STAGE", "FILE FORMAT", "PIPE", "STREAM", "TASK", "WAREHOUSE", "SEQUENCE", "MATERIALIZED VIEW",
@@ -581,6 +581,7 @@ export default {
     $.table_partition,
     // ALERT: FROM TEMPLATE name
     seq($.keyword_from, $.keyword_template, $.identifier),
+    seq($.keyword_using, $.keyword_template, wrapped_in_parenthesis($._select_statement)),
     // AS REPLICA OF org.account.name
     seq($.keyword_as, $.keyword_replica, $.keyword_of, $.object_reference),
     $.with_tag_clause,

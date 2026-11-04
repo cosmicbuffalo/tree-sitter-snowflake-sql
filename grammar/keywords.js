@@ -360,7 +360,7 @@ export default {
   keyword_running: _ => make_keyword("running"),
   keyword_permute: _ => make_keyword("permute"),
   keyword_metadata_columns: _ => make_keyword("metadata_columns"),
-  keyword_semantic_view: _ => make_keyword("semantic_view"),
+  keyword_semantic_view: _ => token(prec(1, /[sS][eE][mM][aA][nN][tT][iI][cC][_ ][vV][iI][eE][wW]/)),
   keyword_metrics: _ => make_keyword("metrics"),
   keyword_dimensions: _ => make_keyword("dimensions"),
   keyword_facts: _ => make_keyword("facts"),
@@ -433,5 +433,8 @@ export default {
   keyword_history: _ => make_keyword("history"),
   keyword_purge: _ => make_keyword("purge"),
   keyword_nopurge: _ => make_keyword("nopurge"),
+  keyword_relationships: _ => make_keyword("relationships"),
+  keyword_synonyms: _ => make_keyword("synonyms"),
+  keyword_private: _ => make_keyword("private"),
 
 }

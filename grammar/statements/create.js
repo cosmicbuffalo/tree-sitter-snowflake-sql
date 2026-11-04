@@ -25,6 +25,7 @@ export default {
       $.create_snowflake_object,
       $.create_data_metric_function,
       $.create_schema,
+      $.create_semantic_view,
     ),
   ),
 

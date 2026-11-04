@@ -3002,6 +3002,7 @@ CREATE POSTGRES INSTANCE pg2 FORK pg1;
       (generic_clause
         (identifier)
         (identifier)))))
+
 ================================================================================
 Iceberg, pipe, alert, tag, external table options, transactions, DMF attachment
 ================================================================================
@@ -3359,4 +3360,212 @@ SELECT SNOWFLAKE.CORE.AVG(SELECT salary FROM hr.t) AS a;
                   name: (identifier)))))
           (keyword_as)
           alias: (identifier))))))
+================================================================================
+CREATE SEMANTIC VIEW and spaced SEMANTIC VIEW() call
+================================================================================
+
+CREATE OR REPLACE SEMANTIC VIEW sv1
+  TABLES (
+    o AS db1.s1.orders PRIMARY KEY (oid) WITH SYNONYMS ('sales') COMMENT = 'orders',
+    c AS db1.s1.customers PRIMARY KEY (cid),
+    li AS db1.s1.items UNIQUE (a, b)
+  )
+  RELATIONSHIPS (
+    o_to_c AS o (cid) REFERENCES c,
+    li_to_o AS li (oid) REFERENCES o (oid)
+  )
+  FACTS (
+    li.disc AS price * (1 - rate) COMMENT = 'net'
+  )
+  DIMENSIONS (
+    c.cname AS cname,
+    PRIVATE o.oday AS DATE_TRUNC('DAY', ts) WITH SYNONYMS ('day')
+  )
+  METRICS (
+    o.total AS SUM(li.disc)
+  )
+  COMMENT = 'revenue';
+SELECT * FROM SEMANTIC VIEW(sv1 METRICS (o.total) DIMENSIONS (c.cname, o.oday AS d) WHERE c.cname = 'x');
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_semantic_view
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_semantic_view)
+      (object_reference
+        name: (identifier))
+      (semantic_section
+        (keyword_tables)
+        (semantic_table
+          name: (identifier)
+          (keyword_as)
+          (object_reference
+            database: (identifier)
+            schema: (identifier)
+            name: (identifier))
+          (keyword_primary)
+          (keyword_key)
+          (list
+            (column
+              (identifier)))
+          (keyword_with)
+          (keyword_synonyms)
+          (literal)
+          (procedure_comment
+            (keyword_comment)
+            (literal)))
+        (semantic_table
+          name: (identifier)
+          (keyword_as)
+          (object_reference
+            database: (identifier)
+            schema: (identifier)
+            name: (identifier))
+          (keyword_primary)
+          (keyword_key)
+          (list
+            (column
+              (identifier))))
+        (semantic_table
+          name: (identifier)
+          (keyword_as)
+          (object_reference
+            database: (identifier)
+            schema: (identifier)
+            name: (identifier))
+          (keyword_unique)
+          (list
+            (column
+              (identifier))
+            (column
+              (identifier)))))
+      (semantic_section
+        (keyword_relationships)
+        (semantic_relationship
+          name: (identifier)
+          (keyword_as)
+          (object_reference
+            name: (identifier))
+          (list
+            (column
+              (identifier)))
+          (keyword_references)
+          (object_reference
+            name: (identifier)))
+        (semantic_relationship
+          name: (identifier)
+          (keyword_as)
+          (object_reference
+            name: (identifier))
+          (list
+            (column
+              (identifier)))
+          (keyword_references)
+          (object_reference
+            name: (identifier))
+          (list
+            (column
+              (identifier)))))
+      (semantic_section
+        (keyword_facts)
+        (semantic_item
+          name: (object_reference
+            schema: (identifier)
+            name: (identifier))
+          (keyword_as)
+          (binary_expression
+            left: (field
+              name: (identifier))
+            right: (parenthesized_expression
+              (binary_expression
+                left: (literal)
+                right: (field
+                  name: (identifier)))))
+          (procedure_comment
+            (keyword_comment)
+            (literal))))
+      (semantic_section
+        (keyword_dimensions)
+        (semantic_item
+          name: (object_reference
+            schema: (identifier)
+            name: (identifier))
+          (keyword_as)
+          (field
+            name: (identifier)))
+        (semantic_item
+          (keyword_private)
+          name: (object_reference
+            schema: (identifier)
+            name: (identifier))
+          (keyword_as)
+          (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (literal))
+            parameter: (term
+              value: (field
+                name: (identifier))))
+          (keyword_with)
+          (keyword_synonyms)
+          (literal)))
+      (semantic_section
+        (keyword_metrics)
+        (semantic_item
+          name: (object_reference
+            schema: (identifier)
+            name: (identifier))
+          (keyword_as)
+          (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (field
+                (object_reference
+                  name: (identifier))
+                name: (identifier))))))
+      (procedure_comment
+        (keyword_comment)
+        (literal))))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (semantic_view_call
+          (keyword_semantic_view)
+          (object_reference
+            name: (identifier))
+          (keyword_metrics)
+          (semantic_call_item
+            (object_reference
+              schema: (identifier)
+              name: (identifier)))
+          (keyword_dimensions)
+          (semantic_call_item
+            (object_reference
+              schema: (identifier)
+              name: (identifier)))
+          (semantic_call_item
+            (object_reference
+              schema: (identifier)
+              name: (identifier))
+            (keyword_as)
+            alias: (identifier))
+          (keyword_where)
+          (binary_expression
+            left: (field
+              (object_reference
+                name: (identifier))
+              name: (identifier))
+            right: (literal)))))))
 

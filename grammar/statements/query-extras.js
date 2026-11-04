@@ -222,12 +222,73 @@ export default {
     '(',
     $.object_reference,
     repeat(choice(
-      seq($.keyword_metrics, comma_list($.term, true)),
-      seq($.keyword_facts, comma_list($.term, true)),
-      seq($.keyword_dimensions, comma_list($.term, true)),
+      seq($.keyword_metrics, choice(comma_list($.semantic_call_item, true), paren_list($.semantic_call_item, true))),
+      seq($.keyword_facts, choice(comma_list($.semantic_call_item, true), paren_list($.semantic_call_item, true))),
+      seq($.keyword_dimensions, choice(comma_list($.semantic_call_item, true), paren_list($.semantic_call_item, true))),
     )),
     optional(seq($.keyword_where, $._expression)),
     ')',
+  ),
+
+  semantic_call_item: $ => seq($.object_reference, optional($._alias)),
+
+  // CREATE [OR REPLACE] SEMANTIC VIEW name TABLES (..) [RELATIONSHIPS (..)] [FACTS (..)] [DIMENSIONS (..)] [METRICS (..)] [COMMENT = ..]
+  create_semantic_view: $ => prec.left(seq(
+    $.keyword_create,
+    optional(choice($._or_replace, $._or_alter)),
+    $.keyword_semantic_view,
+    optional($._if_not_exists),
+    $.object_reference,
+    repeat(choice(
+      $.semantic_section,
+      $.procedure_comment,
+      $.copy_clause,
+      $._plain_property,
+    )),
+  )),
+
+  semantic_section: $ => choice(
+    seq($.keyword_tables, '(', comma_list($.semantic_table, true), optional(','), ')'),
+    seq($.keyword_relationships, '(', comma_list($.semantic_relationship, true), optional(','), ')'),
+    seq(
+      choice($.keyword_facts, $.keyword_dimensions, $.keyword_metrics),
+      '(', comma_list($.semantic_item, true), optional(','), ')',
+    ),
+  ),
+
+  // logical table:  t AS db.s.tbl PRIMARY KEY (c) UNIQUE (c) WITH SYNONYMS ('x') COMMENT = '..'
+  semantic_table: $ => seq(
+    field('name', $.identifier),
+    optional($.keyword_as),
+    $.object_reference,
+    repeat($._semantic_modifier),
+  ),
+
+  // relationship:  r AS a (c1, c2) REFERENCES b [(c)]
+  semantic_relationship: $ => seq(
+    field('name', $.identifier),
+    $.keyword_as,
+    $.object_reference,
+    alias($._column_list, $.list),
+    $.keyword_references,
+    $.object_reference,
+    optional(alias($._column_list, $.list)),
+  ),
+
+  // fact / dimension / metric:  [PRIVATE] t.n AS expr [WITH SYNONYMS ('x')] [COMMENT = '..']
+  semantic_item: $ => seq(
+    optional(choice($.keyword_private, $.keyword_public)),
+    field('name', $.object_reference),
+    $.keyword_as,
+    $._expression,
+    repeat($._semantic_modifier),
+  ),
+
+  _semantic_modifier: $ => choice(
+    seq($.keyword_primary, $.keyword_key, alias($._column_list, $.list)),
+    seq($.keyword_unique, alias($._column_list, $.list)),
+    seq($.keyword_with, $.keyword_synonyms, optional('='), paren_list(alias($._literal_string, $.literal), true)),
+    $.procedure_comment,
   ),
 
 };

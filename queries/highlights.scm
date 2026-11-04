@@ -514,5 +514,8 @@
  (keyword_history)
  (keyword_purge)
  (keyword_nopurge)
+ (keyword_relationships)
+ (keyword_synonyms)
+ (keyword_private)
 ] @keyword
 ;; AUTO-KEYWORDS-END

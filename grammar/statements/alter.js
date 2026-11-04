@@ -66,7 +66,7 @@ export default {
     seq(choice($.keyword_add, $.keyword_drop, $.keyword_replace), $.keyword_partition, $.keyword_by, paren_list($._expression, true),
       optional(seq($.keyword_with, paren_list($._expression, true)))),
     // Snowflake Iceberg: CREATE | REPLACE | DROP VERSION_TAG [IF [NOT] EXISTS] name [AS OF VERSION n | AS OF TIMESTAMP n] [RETAIN n DAYS|HOURS]
-    seq(choice($.keyword_create, $.keyword_replace, $.keyword_drop), $.keyword_version_tag,
+    seq(choice($.keyword_create, $.keyword_replace, $.keyword_drop, $.keyword_alter), $.keyword_version_tag,
       optional(choice($._if_exists, $._if_not_exists)), $.identifier,
       optional(seq($.keyword_as, $.identifier, $.identifier, $.literal)),
       optional(seq($.identifier, $.literal, $.identifier))),
@@ -257,7 +257,7 @@ export default {
     $.keyword_data, $.keyword_metric, $.keyword_function,
     $.object_reference,
     $.keyword_on,
-    paren_list(choice($.lambda_expression, $.identifier)),
+    paren_list(choice($.lambda_expression, $.identifier, seq($.keyword_table, '(', $.object_reference, paren_list($.identifier), ')'))),
     repeat($.dmf_expectation),
   ),
 

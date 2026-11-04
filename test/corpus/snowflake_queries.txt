@@ -728,18 +728,16 @@ SELECT * FROM SEMANTIC_VIEW(sales FACTS orders.amt DIMENSIONS orders.day);
             schema: (identifier)
             name: (identifier))
           (keyword_metrics)
-          (term
-            value: (field
-              (object_reference
-                name: (identifier))
+          (semantic_call_item
+            (object_reference
+              schema: (identifier)
               name: (identifier))
             (keyword_as)
             alias: (identifier))
           (keyword_dimensions)
-          (term
-            value: (field
-              (object_reference
-                name: (identifier))
+          (semantic_call_item
+            (object_reference
+              schema: (identifier)
               name: (identifier)))
           (keyword_where)
           (binary_expression
@@ -770,16 +768,14 @@ SELECT * FROM SEMANTIC_VIEW(sales FACTS orders.amt DIMENSIONS orders.day);
           (object_reference
             name: (identifier))
           (keyword_facts)
-          (term
-            value: (field
-              (object_reference
-                name: (identifier))
+          (semantic_call_item
+            (object_reference
+              schema: (identifier)
               name: (identifier)))
           (keyword_dimensions)
-          (term
-            value: (field
-              (object_reference
-                name: (identifier))
+          (semantic_call_item
+            (object_reference
+              schema: (identifier)
               name: (identifier))))))))
 
 ================================================================================
@@ -1512,18 +1508,16 @@ SELECT * FROM SEMANTIC_VIEW(sales FACTS orders.amt DIMENSIONS orders.day);
             schema: (identifier)
             name: (identifier))
           (keyword_metrics)
-          (term
-            value: (field
-              (object_reference
-                name: (identifier))
+          (semantic_call_item
+            (object_reference
+              schema: (identifier)
               name: (identifier))
             (keyword_as)
             alias: (identifier))
           (keyword_dimensions)
-          (term
-            value: (field
-              (object_reference
-                name: (identifier))
+          (semantic_call_item
+            (object_reference
+              schema: (identifier)
               name: (identifier)))
           (keyword_where)
           (binary_expression
@@ -1554,16 +1548,14 @@ SELECT * FROM SEMANTIC_VIEW(sales FACTS orders.amt DIMENSIONS orders.day);
           (object_reference
             name: (identifier))
           (keyword_facts)
-          (term
-            value: (field
-              (object_reference
-                name: (identifier))
+          (semantic_call_item
+            (object_reference
+              schema: (identifier)
               name: (identifier)))
           (keyword_dimensions)
-          (term
-            value: (field
-              (object_reference
-                name: (identifier))
+          (semantic_call_item
+            (object_reference
+              schema: (identifier)
               name: (identifier))))))))
 
 ================================================================================
@@ -2607,4 +2599,3 @@ SELECT m!PREDICT(INPUT_DATA => {*}) FROM t;
       (relation
         (object_reference
           name: (identifier))))))
-
