@@ -112,6 +112,14 @@ export default {
     wrapped_in_parenthesis(seq($._cte, choice($._select_statement, $.set_operation))),
   ),
 
+  // Snowflake: CREATE VIEW v (col [COMMENT '..'], ...)
+  view_columns: $ => paren_list($.view_column, true),
+
+  view_column: $ => seq(
+    field('name', $.identifier),
+    optional($._column_comment),
+  ),
+
   create_view: $ => prec.right(
     seq(
       $.keyword_create,
@@ -122,7 +130,7 @@ export default {
       $.keyword_view,
       optional($._if_not_exists),
       $.object_reference,
-      optional(paren_list($.identifier)),
+      optional($.view_columns),
       // Snowflake: COPY GRANTS, COMMENT = '...'
       repeat(choice(
         seq($.keyword_copy, $.keyword_grants),

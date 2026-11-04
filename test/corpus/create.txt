@@ -536,8 +536,11 @@ CREATE VIEW foo(a, b) AS SELECT 1 a, 2 b;
       (keyword_view)
       (object_reference
         (identifier))
-      (identifier)
-      (identifier)
+      (view_columns
+        (view_column
+          (identifier))
+        (view_column
+          (identifier)))
       (keyword_as)
       (create_query
         (select

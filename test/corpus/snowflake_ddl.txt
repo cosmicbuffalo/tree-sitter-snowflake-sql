@@ -1417,6 +1417,7 @@ SHOW TERSE TASKS ROOT ONLY;
     (snowflake_show_target)
     (keyword_root)
     (keyword_only)))
+
 ================================================================================
 CREATE DYNAMIC ICEBERG TABLE with properties and column definitions
 ================================================================================
@@ -1948,8 +1949,11 @@ CREATE OR REPLACE SECURE VIEW v2 (a, b) COPY GRANTS COMMENT = 'x' AS SELECT 1, 2
       (keyword_view)
       (object_reference
         name: (identifier))
-      (identifier)
-      (identifier)
+      (view_columns
+        (view_column
+          name: (identifier))
+        (view_column
+          name: (identifier)))
       (keyword_copy)
       (keyword_grants)
       (procedure_comment
@@ -3016,4 +3020,58 @@ AS
             (invocation
               (object_reference
                 name: (identifier)))))))))
+================================================================================
+CREATE VIEW with per-column COMMENT
+================================================================================
+
+CREATE OR REPLACE SECURE VIEW PAYMENTS.FEE_V1 (
+  FEE_ID COMMENT 'The unique identifier for the fee.',
+  AMOUNT COMMENT 'The signed amount of the fee.',
+  KIND
+) AS
+SELECT fee_id, amount, kind FROM fees;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_view
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_secure)
+      (keyword_view)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (view_columns
+        (view_column
+          name: (identifier)
+          (keyword_comment)
+          (literal))
+        (view_column
+          name: (identifier)
+          (keyword_comment)
+          (literal))
+        (view_column
+          name: (identifier)))
+      (keyword_as)
+      (create_query
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (field
+                name: (identifier)))
+            (term
+              value: (field
+                name: (identifier)))
+            (term
+              value: (field
+                name: (identifier)))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier))))))))
 
