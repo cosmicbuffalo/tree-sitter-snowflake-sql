@@ -61,6 +61,7 @@ export default {
   keyword_order: _ => make_keyword("order"),
   keyword_index: _ => make_keyword("index"),
   keyword_include: _ => make_keyword("include"),
+  keyword_future: _ => make_keyword("future"),
   keyword_masking: _ => make_keyword("masking"),
   keyword_access: _ => make_keyword("access"),
   keyword_noorder: _ => make_keyword("noorder"),

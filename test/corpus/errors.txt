@@ -97,16 +97,16 @@ $a$
       (keyword_language)
       (identifier))
     (keyword_as)
+    (dollar_quote)
+    (keyword_begin)
+    (keyword_return)
+    (snowflake_session_variable)
     (ERROR
-      (dollar_quote)
-      (keyword_begin)
-      (keyword_return)
-      (ERROR
-        (dollar_quote))
-      (field
-        name: (identifier))
-      (keyword_end))
-    (dollar_quote)))
+      (snowflake_session_variable)
+      (dollar_quote))
+    (keyword_end)
+    (snowflake_session_variable)
+    (UNEXPECTED '\n')))
 
 ================================================================================
 Function body with a unbalanced $$
@@ -148,7 +148,8 @@ $c$;
         (literal)
         (keyword_end)
         (ERROR
-          (UNEXPECTED 'c'))
+          (snowflake_session_variable)
+          (UNEXPECTED ';'))
         (MISSING dollar_quote)))))
 
 ================================================================================
@@ -188,13 +189,10 @@ $a$;
         (dollar_quote)
         (keyword_begin)
         (keyword_return)
+        (snowflake_session_variable)
         (ERROR
-          (UNEXPECTED 'b')
-          (identifier)
-          (UNEXPECTED 't'))
-        (field
-          name: (identifier))
-        (ERROR
+          (snowflake_session_variable)
+          (snowflake_session_variable)
           (UNEXPECTED ';'))
         (keyword_end)
         (dollar_quote)))))

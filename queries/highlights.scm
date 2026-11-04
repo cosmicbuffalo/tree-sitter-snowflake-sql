@@ -95,6 +95,7 @@
 
 ; Snowflake scripting: variable references (:var)
 (snowflake_variable_reference) @variable
+(snowflake_session_variable) @variable
 
 ; Conditionals (conditional → keyword.conditional)
 
@@ -204,6 +205,7 @@
   (keyword_clone)
   (keyword_hybrid)
   (keyword_policy)
+  (keyword_future)
   (keyword_index)
   (keyword_include)
   (keyword_masking)

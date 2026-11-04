@@ -376,9 +376,7 @@ export default {
   grant_statement: $ => prec.left(seq(
     $.keyword_grant, $._grant_privileges,
     $.keyword_on,
-    optional($._grant_object_type),
-    $.object_reference,
-    optional($.function_arguments),
+    $._grant_target,
     $.keyword_to, $._grant_grantee,
     optional(seq(
       $.keyword_with,
@@ -390,13 +388,27 @@ export default {
   revoke_statement: $ => prec.left(seq(
     $.keyword_revoke, $._grant_privileges,
     $.keyword_on,
-    optional($._grant_object_type),
-    $.object_reference,
-    optional($.function_arguments),
+    $._grant_target,
     $.keyword_from, $._grant_grantee,
     optional($.keyword_restrict),
     optional($.keyword_cascade),
   )),
+
+  // GRANT/REVOKE target: [type] name[(arg types)] | { ALL | FUTURE } <objects> IN { SCHEMA | DATABASE } name
+  _grant_target: $ => choice(
+    seq(
+      optional($._grant_object_type),
+      $.object_reference,
+      optional($.function_arguments),
+    ),
+    seq(
+      choice($.keyword_all, $.keyword_future),
+      alias($.snowflake_show_target, $.snowflake_object_type),
+      $.keyword_in,
+      choice($.keyword_schema, $.keyword_database),
+      $.object_reference,
+    ),
+  ),
 
   _grant_privileges: $ => choice(
     seq($.keyword_all, optional($.keyword_privileges)),
@@ -415,6 +427,11 @@ export default {
     $.keyword_integration,
     $.keyword_procedure,
     $.keyword_function,
+    $.keyword_task,
+    $.keyword_stream,
+    $.keyword_pipe,
+    $.keyword_sequence,
+    seq($.keyword_dynamic, $.keyword_table),
   ),
 
   _grant_grantee: $ => choice(
@@ -430,7 +447,7 @@ export default {
 
   // Single token matching all SHOW-able Snowflake plural object types
   // Added: ALERTS, TAGS, SHARES, INTEGRATIONS, TABLES
-  snowflake_show_target: _ => /[dD][yY][nN][aA][mM][iI][cC]\s+[tT][aA][bB][lL][eE][sS]|[pP][rR][oO][cC][eE][dD][uU][rR][eE][sS]|[fF][uU][nN][cC][tT][iI][oO][nN][sS]|[tT][aA][bB][lL][eE][sS]|[sS][tT][aA][gG][eE][sS]|[pP][iI][pP][eE][sS]|[sS][tT][rR][eE][aA][mM][sS]|[tT][aA][sS][kK][sS]|[wW][aA][rR][eE][hH][oO][uU][sS][eE][sS]|[dD][aA][tT][aA][bB][aA][sS][eE][sS]|[sS][cC][hH][eE][mM][aA][sS]|[vV][iI][eE][wW][sS]|[rR][oO][lL][eE][sS]|[uU][sS][eE][rR][sS]|[gG][rR][aA][nN][tT][sS]|[aA][lL][eE][rR][tT][sS]|[tT][aA][gG][sS]|[sS][hH][aA][rR][eE][sS]|[iI][nN][tT][eE][gG][rR][aA][tT][iI][oO][nN][sS]/,
+  snowflake_show_target: _ => /[dD][yY][nN][aA][mM][iI][cC]\s+[tT][aA][bB][lL][eE][sS]|[pP][rR][oO][cC][eE][dD][uU][rR][eE][sS]|[fF][uU][nN][cC][tT][iI][oO][nN][sS]|[tT][aA][bB][lL][eE][sS]|[sS][tT][aA][gG][eE][sS]|[pP][iI][pP][eE][sS]|[sS][tT][rR][eE][aA][mM][sS]|[tT][aA][sS][kK][sS]|[wW][aA][rR][eE][hH][oO][uU][sS][eE][sS]|[dD][aA][tT][aA][bB][aA][sS][eE][sS]|[sS][cC][hH][eE][mM][aA][sS]|[vV][iI][eE][wW][sS]|[sS][eE][qQ][uU][eE][nN][cC][eE][sS]|[rR][oO][lL][eE][sS]|[uU][sS][eE][rR][sS]|[gG][rR][aA][nN][tT][sS]|[aA][lL][eE][rR][tT][sS]|[tT][aA][gG][sS]|[sS][hH][aA][rR][eE][sS]|[iI][nN][tT][eE][gG][rR][aA][tT][iI][oO][nN][sS]/,
 
   // Snowflake SHOW with LIKE and/or IN — placed in snowflake_statement to avoid
   // state explosion from optional_parenthesis wrapping in _dml_read.
@@ -444,7 +461,7 @@ export default {
     choice(
       // LIKE 'pattern' [IN ...]
       seq(
-        $.keyword_like, $.literal,
+        $.keyword_like, choice($.literal, $.snowflake_variable_reference),
         optional(seq(
           $.keyword_in,
           optional(choice($.keyword_database, $.keyword_schema, $.keyword_account)),

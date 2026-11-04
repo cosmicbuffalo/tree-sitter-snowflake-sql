@@ -3515,3 +3515,133 @@ DROP INDEX IF EXISTS OUTPUT_FILES.IDX_EXTRA;
         schema: (identifier)
         name: (identifier)))))
 
+================================================================================
+SET variable, $session_variable reference, SHOW TASKS LIKE :var
+================================================================================
+
+SET demo_account_id = 'demo-account-001';
+
+SELECT
+  $demo_account_id AS ACCOUNT_ID,
+  1 AS AMOUNT
+FROM t;
+
+SHOW TASKS LIKE :child_task_pattern IN SCHEMA;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (set_statement
+      (keyword_set)
+      (object_reference
+        name: (identifier))
+      (literal)))
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (snowflake_session_variable)
+          (keyword_as)
+          alias: (identifier))
+        (term
+          value: (literal)
+          (keyword_as)
+          alias: (identifier))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_like)
+        (snowflake_variable_reference)
+        (keyword_in)
+        (keyword_schema)))))
+
+================================================================================
+GRANT/REVOKE on tasks, ALL/FUTURE objects, Flyway colon placeholder
+================================================================================
+
+GRANT USAGE ON SCHEMA ${flyway:defaultSchema} TO DATABASE ROLE APP_ROLE;
+GRANT OPERATE ON TASK PROCESS_TASK TO DATABASE ROLE APP_ROLE;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA ${flyway:defaultSchema} TO DATABASE ROLE APP_ROLE;
+GRANT SELECT ON FUTURE TABLES IN SCHEMA analytics TO ROLE reader;
+REVOKE SELECT ON ALL VIEWS IN DATABASE prod FROM ROLE reader;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (identifier)
+      (keyword_on)
+      (keyword_schema)
+      (object_reference
+        name: (identifier))
+      (keyword_to)
+      (keyword_database)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (identifier)
+      (keyword_on)
+      (keyword_task)
+      (object_reference
+        name: (identifier))
+      (keyword_to)
+      (keyword_database)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (identifier)
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_schema)
+      (object_reference
+        name: (identifier))
+      (keyword_to)
+      (keyword_database)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (identifier)
+      (keyword_on)
+      (keyword_future)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_schema)
+      (object_reference
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (identifier)
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_database)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (keyword_role)
+      (identifier))))
+
