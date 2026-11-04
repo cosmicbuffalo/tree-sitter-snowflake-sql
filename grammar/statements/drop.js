@@ -46,14 +46,12 @@ export default {
     $.keyword_database,
     optional($._if_exists),
     $.identifier,
-    optional($.keyword_with),
-    optional($.keyword_force),
+    optional($._drop_behavior),
   )),
 
   drop_role: $ => seq(
     $.keyword_drop,
     choice(
-      $.keyword_group,
       $.keyword_role,
       $.keyword_user,
     ),

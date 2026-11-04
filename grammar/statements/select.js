@@ -482,9 +482,4 @@ export default {
     choice($.literal, $.snowflake_variable_reference),
   ),
 
-  returning: $ => seq(
-    $.keyword_returning,
-    $.select_expression,
-  ),
-
 };

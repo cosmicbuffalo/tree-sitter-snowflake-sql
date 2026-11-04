@@ -44,13 +44,12 @@ FROM my_cte;
           name: (identifier))))))
 
 ================================================================================
-Multiple ctes with returning
+Multiple ctes with insert
 ================================================================================
 
 WITH first AS (
   INSERT INTO my_table (one, two)
   VALUES (1, 2)
-  RETURNING *
 ), second AS (
   SELECT one, two
   FROM my_table
@@ -80,12 +79,7 @@ FROM second;
           (keyword_values)
           (list
             (literal)
-            (literal)))
-        (returning
-          (keyword_returning)
-          (select_expression
-            (term
-              value: (all_fields))))))
+            (literal)))))
     (cte
       (identifier)
       (keyword_as)

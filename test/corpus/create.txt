@@ -1038,91 +1038,8 @@ CREATE SCHEMA myschema;
     (create_schema
       (keyword_create)
       (keyword_schema)
-      (identifier))))
-
-================================================================================
-Create schema with authorization
-================================================================================
-
-CREATE SCHEMA IF NOT EXISTS test AUTHORIZATION joe;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_schema
-      (keyword_create)
-      (keyword_schema)
-      (keyword_if)
-      (keyword_not)
-      (keyword_exists)
-      (identifier)
-      (keyword_authorization)
-      (identifier))))
-
-================================================================================
-Create schema with subsequent creates
-================================================================================
-
-CREATE SCHEMA hollywood
-    CREATE TABLE films (title text, release date, awards text)
-    CREATE VIEW winners AS
-        SELECT title, release FROM films WHERE awards IS NOT NULL;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_schema
-      (keyword_create)
-      (keyword_schema)
-      (identifier))
-    (create_table
-      (keyword_create)
-      (keyword_table)
       (object_reference
-        (identifier))
-      (column_definitions
-        (column_definition
-          (identifier)
-          (keyword_text))
-        (column_definition
-          (identifier)
-          (keyword_date))
-        (column_definition
-          (identifier)
-          (keyword_text))))
-    (create_view
-      (keyword_create)
-      (keyword_view)
-      (object_reference
-        (identifier))
-      (keyword_as)
-      (create_query
-        (select
-          (keyword_select)
-          (select_expression
-            (term
-              (field
-                (identifier)))
-            (term
-              (field
-                (identifier)))))
-        (from
-          (keyword_from)
-          (relation
-            (object_reference
-              (identifier))))
-        (where
-          (keyword_where)
-          (binary_expression
-            (field
-              (identifier))
-            (is_not
-              (keyword_is)
-              (keyword_not))
-            (literal
-              (keyword_null))))))))
+        (identifier)))))
 
 ================================================================================
 Create database
@@ -1137,7 +1054,8 @@ CREATE DATABASE hollywood
     (create_database
       (keyword_create)
       (keyword_database)
-      (identifier))))
+      (object_reference
+        (identifier)))))
 
 ================================================================================
 Create database if not exists
@@ -1155,13 +1073,14 @@ CREATE DATABASE IF NOT EXISTS hollywood
       (keyword_if)
       (keyword_not)
       (keyword_exists)
-      (identifier))))
+      (object_reference
+        (identifier)))))
 
 ================================================================================
 Create database with settings
 ================================================================================
 
-CREATE DATABASE sales OWNER operations_dept;
+CREATE OR REPLACE TRANSIENT DATABASE sales CLONE prod_sales DATA_RETENTION_TIME_IN_DAYS = 1 COMMENT = 'sales data';
 
 --------------------------------------------------------------------------------
 
@@ -1169,24 +1088,30 @@ CREATE DATABASE sales OWNER operations_dept;
   (statement
     (create_database
       (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_transient)
       (keyword_database)
+      (object_reference
+        (identifier))
+      (keyword_clone)
+      (object_reference
+        (identifier))
       (identifier)
-      (identifier)
-      (identifier))))
+      (literal)
+      (keyword_comment)
+      (literal))))
 
 ================================================================================
 Create user
 ================================================================================
 
-CREATE ROLE rapunzel
-WITH ROLE hansel, gretel
-IN GROUP fairy, tale
-ADMIN grandma
-PASSWORD 'secret'
-VALID UNTIL '2022-01-01'
-CONNECTION LIMIT 42
-NOLOGIN
-INHERIT;
+CREATE USER IF NOT EXISTS rapunzel
+PASSWORD = 'secret'
+DEFAULT_ROLE = hansel
+COMMENT = 'tower';
+CREATE OR REPLACE ROLE gretel;
+CREATE DATABASE ROLE IF NOT EXISTS reader;
 
 --------------------------------------------------------------------------------
 
@@ -1194,28 +1119,36 @@ INHERIT;
   (statement
     (create_role
       (keyword_create)
+      (keyword_user)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        (identifier))
+      (identifier)
+      (literal)
+      (identifier)
+      (identifier)
+      (keyword_comment)
+      (literal)))
+  (statement
+    (create_role
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
       (keyword_role)
-      (identifier)
-      (keyword_with)
+      (object_reference
+        (identifier))))
+  (statement
+    (create_role
+      (keyword_create)
+      (keyword_database)
       (keyword_role)
-      (identifier)
-      (identifier)
-      (keyword_in)
-      (keyword_group)
-      (identifier)
-      (identifier)
-      (keyword_admin)
-      (identifier)
-      (keyword_password)
-      (literal)
-      (keyword_valid)
-      (keyword_until)
-      (literal)
-      (keyword_connection)
-      (keyword_limit)
-      (literal)
-      (identifier)
-      (identifier))))
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        (identifier)))))
 
 ===============================================================================
 Create view rule conflict with time and timestamp rules (check create_view)

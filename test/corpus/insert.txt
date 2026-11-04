@@ -21,34 +21,10 @@ VALUES('foo','bar', 3);
         (literal)))))
 
 ================================================================================
-Simple insert with alias
-================================================================================
-
-INSERT INTO my_table AS x
-VALUES('foo','bar', 3);
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (insert
-      (keyword_insert)
-      (keyword_into)
-      (object_reference
-        name: (identifier))
-      (keyword_as)
-      alias: (identifier)
-      (keyword_values)
-      (list
-        (literal)
-        (literal)
-        (literal)))))
-
-================================================================================
 Simple insert with column ordering
 ================================================================================
 
-REPLACE INTO my_table (name, id, year)
+INSERT INTO my_table (name, id, year)
 VALUES ('foo', 123, '2020');
 
 --------------------------------------------------------------------------------
@@ -56,7 +32,7 @@ VALUES ('foo', 123, '2020');
 (program
   (statement
     (insert
-      (keyword_replace)
+      (keyword_insert)
       (keyword_into)
       (object_reference
         name: (identifier))
@@ -116,98 +92,6 @@ FROM my_other_table;
             name: (identifier)))))))
 
 ================================================================================
-Insert returning
-================================================================================
-
-INSERT INTO my_table
-VALUES('foo','bar', 3)
-RETURNING *;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (insert
-      (keyword_insert)
-      (keyword_into)
-      (object_reference
-        name: (identifier))
-      (keyword_values)
-      (list
-        (literal)
-        (literal)
-        (literal)))
-    (returning
-      (keyword_returning)
-      (select_expression
-        (term
-          value: (all_fields))))))
-
-================================================================================
-Insert returning single column
-================================================================================
-
-INSERT INTO my_table
-VALUES('foo','bar', 3)
-RETURNING id;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (insert
-      (keyword_insert)
-      (keyword_into)
-      (object_reference
-        name: (identifier))
-      (keyword_values)
-      (list
-        (literal)
-        (literal)
-        (literal)))
-    (returning
-      (keyword_returning)
-      (select_expression
-        (term
-          value: (field
-            name: (identifier)))))))
-
-================================================================================
-Insert returning multiple defined columns
-================================================================================
-
-INSERT INTO my_table
-VALUES('foo','bar', 3)
-RETURNING id, val1, val2;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (insert
-      (keyword_insert)
-      (keyword_into)
-      (object_reference
-        name: (identifier))
-      (keyword_values)
-      (list
-        (literal)
-        (literal)
-        (literal)))
-    (returning
-      (keyword_returning)
-      (select_expression
-        (term
-          value: (field
-            name: (identifier)))
-        (term
-          value: (field
-            name: (identifier)))
-        (term
-          value: (field
-            name: (identifier)))))))
-
-================================================================================
 Insert with multple values
 ================================================================================
 
@@ -239,7 +123,7 @@ VALUES
 Insert overwrite
 ================================================================================
 
-INSERT OVERWRITE tab1
+INSERT OVERWRITE INTO tab1
 SELECT
   col1,
   col2
@@ -260,6 +144,7 @@ FROM
     (insert
       (keyword_insert)
       (keyword_overwrite)
+      (keyword_into)
       (object_reference
         (identifier))
       (select

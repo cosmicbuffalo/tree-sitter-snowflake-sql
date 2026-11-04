@@ -22,10 +22,7 @@ export default {
       $.create_dynamic_table,
       $.create_snowflake_object,
       $.create_data_metric_function,
-      prec.left(seq(
-        $.create_schema,
-        repeat($._create_statement),
-      )),
+      $.create_schema,
     ),
   ),
 
@@ -139,88 +136,42 @@ export default {
   ...create_function_rules,
   ...create_procedure_rules,
 
+  // Snowflake: CREATE [OR REPLACE] [TRANSIENT] SCHEMA | DATABASE [IF NOT EXISTS] name
+  //            [CLONE source] [properties]
   create_schema: $ => prec.left(seq(
     $.keyword_create,
+    optional($._or_replace),
+    optional($.keyword_transient),
     $.keyword_schema,
-    choice(
-      seq(
-        optional($._if_not_exists),
-        $.identifier,
-        optional(seq($.keyword_authorization, $.identifier)),
-      ),
-      seq(
-        $.keyword_authorization,
-        $.identifier,
-      ),
-    ),
+    optional($._if_not_exists),
+    $.object_reference,
+    optional(seq($.keyword_clone, $.object_reference)),
+    optional($._snowflake_options),
   )),
-
-  _with_settings: $ => seq(
-        field('name', $.identifier),
-        optional('='),
-        field('value', choice($.identifier, alias($._single_quote_string, $.literal))),
-  ),
 
   create_database: $ => prec.left(seq(
     $.keyword_create,
+    optional($._or_replace),
+    optional($.keyword_transient),
     $.keyword_database,
     optional($._if_not_exists),
-    $.identifier,
-    optional($.keyword_with),
-    repeat(
-      $._with_settings
-    ),
+    $.object_reference,
+    optional(seq($.keyword_clone, $.object_reference)),
+    optional($._snowflake_options),
   )),
 
+  // Snowflake: CREATE [OR REPLACE] ROLE | USER | DATABASE ROLE [IF NOT EXISTS] name [properties]
   create_role: $ => prec.left(seq(
     $.keyword_create,
-    choice(
-      $.keyword_user,
-      $.keyword_role,
-      $.keyword_group,
-    ),
-    $.identifier,
-    optional($.keyword_with),
-    repeat(
-      choice(
-        $._user_access_role_config,
-        $._role_options,
-      ),
-    ),
+    optional($._or_replace),
+    choice($.keyword_user, $.keyword_role, seq($.keyword_database, $.keyword_role)),
+    optional($._if_not_exists),
+    $.object_reference,
+    optional($._snowflake_options),
   )),
 
-  _role_options: $ => choice(
-    field("option", $.identifier),
-    seq(
-      $.keyword_valid,
-      $.keyword_until,
-      field("valid_until", alias($._literal_string, $.literal))
-    ),
-    seq(
-      $.keyword_connection,
-      $.keyword_limit,
-      field("connection_limit", alias($._integer, $.literal))
-    ),
-    seq(
-      optional($.keyword_encrypted),
-      $.keyword_password,
-      choice(
-        field("password", alias($._literal_string, $.literal)),
-        $.keyword_null,
-      ),
-    ),
-  ),
-
-  _user_access_role_config: $ => seq(
-    choice(
-      seq(optional($.keyword_in), $.keyword_role),
-      seq($.keyword_in, $.keyword_group),
-      $.keyword_admin,
-      $.keyword_user,
-    ),
-    comma_list($.identifier, true),
-  ),
-
+  // Snowflake: CREATE [OR REPLACE] SEQUENCE [IF NOT EXISTS] name
+  //            [START [WITH] [=] n] [INCREMENT [BY] [=] n] [ORDER | NOORDER] [COMMENT = '..']
   create_sequence: $ => seq(
     $.keyword_create,
     optional($._or_replace),
@@ -231,9 +182,8 @@ export default {
       choice(
         seq($.keyword_increment, optional(choice($.keyword_by, '=')), field("increment", alias($._integer, $.literal))),
         seq($.keyword_start, optional(choice($.keyword_with, '=')), field("start", alias($._integer, $.literal))),
-        seq($.keyword_cache, field("cache", alias($._integer, $.literal))),
-        seq($.keyword_order),
-        seq($.keyword_no, $.keyword_order),
+        $.keyword_order,
+        $.keyword_noorder,
         $.table_option,
       )
     ),

@@ -2,30 +2,14 @@ import { comma_list } from "../helpers.js";
 
 export default {
 
-  _insert_statement: $ => seq(
-    $.insert,
-    optional($.returning),
-  ),
+  _insert_statement: $ => $.insert,
 
+  // Snowflake: INSERT [OVERWRITE] INTO t [(cols)] { VALUES (..), .. | query }
   insert: $ => seq(
-    choice(
-      $.keyword_insert,
-      $.keyword_replace
-    ),
-    optional(
-      choice(
-        $.keyword_into,
-        $.keyword_overwrite, // Spark SQL
-        seq($.keyword_overwrite, $.keyword_into), // Snowflake: INSERT OVERWRITE INTO
-      ),
-    ),
+    $.keyword_insert,
+    optional($.keyword_overwrite),
+    $.keyword_into,
     $.object_reference,
-    optional(
-      seq(
-        $.keyword_as,
-        field('alias', $.identifier)
-      ),
-    ),
     $._insert_values,
   ),
 
