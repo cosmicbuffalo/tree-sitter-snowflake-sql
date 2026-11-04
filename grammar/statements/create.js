@@ -78,7 +78,7 @@ export default {
           $.create_query,
         ),
         // CREATE TABLE ... CLONE source_table [AT | BEFORE (..)]
-        $.clone_clause,
+        seq($.clone_clause, repeat($._table_settings)),
         // CREATE TABLE ... LIKE other_table (Snowflake clone-structure)
         seq(
           $.keyword_like,

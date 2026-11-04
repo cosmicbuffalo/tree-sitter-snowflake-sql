@@ -60,6 +60,9 @@ export default {
     // Snowflake: ALTER TABLE t ADD SEARCH OPTIMIZATION [ON method(cols), ...]
     prec.right(seq($.keyword_add, $.keyword_search, $.keyword_optimization,
       optional(seq($.keyword_on, comma_list($.invocation, true))))),
+    // Snowflake Iceberg: CONVERT TO MANAGED, UPGRADE TO ICEBERG VERSION 3, OPTIMIZE (opts)
+    seq(choice($.keyword_convert, $.keyword_upgrade), $.keyword_to, alias($._action_clause, $.generic_clause)),
+    seq($.keyword_optimize, paren_list($.identifier, true)),
     // Snowflake: REFRESH ['metadata path']
     seq($.keyword_refresh, optional($.literal)),
     // Snowflake Iceberg: ADD | DROP | REPLACE PARTITION BY (exprs) [WITH (exprs)]
@@ -253,12 +256,12 @@ export default {
   ),
 
   _dmf_action: $ => seq(
-    choice($.keyword_add, $.keyword_drop),
+    choice($.keyword_add, $.keyword_drop, $.keyword_modify),
     $.keyword_data, $.keyword_metric, $.keyword_function,
     $.object_reference,
     $.keyword_on,
     paren_list(choice($.lambda_expression, $.identifier, seq($.keyword_table, '(', $.object_reference, paren_list($.identifier), ')'))),
-    repeat($.dmf_expectation),
+    repeat(seq(optional(choice($.keyword_add, $.keyword_drop)), $.dmf_expectation)),
   ),
 
   // EXPECTATION name (VALUE >= 90)

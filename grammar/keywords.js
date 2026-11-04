@@ -436,5 +436,8 @@ export default {
   keyword_relationships: _ => make_keyword("relationships"),
   keyword_synonyms: _ => make_keyword("synonyms"),
   keyword_private: _ => make_keyword("private"),
+  keyword_convert: _ => make_keyword("convert"),
+  keyword_upgrade: _ => make_keyword("upgrade"),
+  keyword_optimize: _ => make_keyword("optimize"),
 
 }

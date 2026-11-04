@@ -517,5 +517,8 @@
  (keyword_relationships)
  (keyword_synonyms)
  (keyword_private)
+ (keyword_convert)
+ (keyword_upgrade)
+ (keyword_optimize)
 ] @keyword
 ;; AUTO-KEYWORDS-END

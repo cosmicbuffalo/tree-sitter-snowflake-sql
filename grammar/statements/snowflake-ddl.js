@@ -278,7 +278,12 @@ export default {
   // ADD / DROP / MODIFY / REMOVE <words and properties>, used by the long tail of ALTER forms
   generic_action: $ => prec.left(seq(
     choice($.keyword_add, $.keyword_drop, $.keyword_modify, $.keyword_remove, $.keyword_create, $.keyword_enable, $.keyword_disable, $.keyword_replace),
-    repeat1(choice(alias($._action_clause, $.generic_clause), $.with_tag_clause)),
+    repeat1(choice(
+      alias($._action_clause, $.generic_clause),
+      $.with_tag_clause,
+      // ADD PARTITION (col = 'v', ..) LOCATION 'path'
+      seq($.keyword_partition, optional(seq('(', $._snowflake_options, ')'))),
+    )),
   )),
 
   // bare-word actions: ALTER .. FORCE, ALTER .. UPGRADE TO .. (no leading keyword token)
@@ -485,7 +490,7 @@ export default {
   execute_statement: $ => seq(
     $.keyword_execute,
     choice(
-      seq($.keyword_task, $.object_reference, optional($.generic_clause)),
+      seq($.keyword_task, $.object_reference, optional($.generic_clause), optional(seq($.keyword_using, $._snowflake_property))),
       // EXECUTE USING POLICY_CONTEXT(k => v, ..) AS <query>
       seq($.keyword_using, $.keyword_policy_context, paren_list($.named_parameter, true), $.keyword_as, $._dml_read),
       // EXECUTE IMMEDIATE FROM @stage/file.sql [USING (name => value, ..)]
@@ -569,6 +574,8 @@ export default {
     alias($._dotted_reference, $.object_reference),
     $.stage_reference,
     $.snowflake_variable_reference,
+    // PARTITION (col = 'v', ..)
+    seq('(', $._snowflake_options, ')'),
   ),
 
   // one option of a generic CREATE / ALTER statement

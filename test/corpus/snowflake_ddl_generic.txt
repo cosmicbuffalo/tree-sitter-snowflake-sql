@@ -3569,3 +3569,320 @@ SELECT * FROM SEMANTIC VIEW(sv1 METRICS (o.total) DIMENSIONS (c.cname, o.oday AS
               name: (identifier))
             right: (literal)))))))
 
+================================================================================
+Iceberg and external table alters, DMF expectations, pipe operator, EXPLAIN USING, MERGE BY NAME
+================================================================================
+
+CREATE ICEBERG TABLE it2 CLONE it1 AT (TIMESTAMP => '2026-10-16 09:00:00'::TIMESTAMP_LTZ) COPY GRANTS;
+ALTER ICEBERG TABLE it1 CONVERT TO MANAGED BASE_LOCATION = 'rel/path';
+ALTER ICEBERG TABLE it1 UPGRADE TO ICEBERG VERSION 3;
+ALTER ICEBERG TABLE it1 OPTIMIZE (REMOVE_POSITION_DELETES);
+ALTER ICEBERG TABLE it1 ADD PARTITION BY (BUCKET(10, c1));
+ALTER ICEBERG TABLE it1 REPLACE PARTITION BY (BUCKET(10, c1)) WITH (BUCKET(20, c1));
+ALTER ICEBERG TABLE it1 REFRESH '/region=us/';
+ALTER ICEBERG TABLE it1 CREATE VERSION_TAG nightly AS OF VERSION 123 RETAIN 48 HOURS;
+ALTER ICEBERG TABLE it1 DROP VERSION_TAG IF EXISTS nightly;
+ALTER EXTERNAL TABLE et1 ADD PARTITION (c1 = '2022-01-24', c2 = 'a') LOCATION '2022/01';
+ALTER EXTERNAL TABLE et1 DROP PARTITION LOCATION '2022/01';
+ALTER TABLE t1 MODIFY DATA METRIC FUNCTION SNOWFLAKE.CORE.REFERENTIAL_INTEGRITY_COUNT ON (k, TABLE(d1.s1.other(k))) ADD EXPECTATION no_orphans (VALUE = 0);
+EXECUTE TASK graph_root USING CONFIG = $${"env": "test"}$$;
+SHOW TERSE TABLES ->> SELECT "name", "bytes" FROM $1 ORDER BY "bytes" DESC;
+EXPLAIN USING JSON SELECT 1;
+UNSET (v1, v2);
+USE d1.s1;
+MERGE INTO t USING s ON t.id = s.id WHEN MATCHED THEN UPDATE ALL BY NAME WHEN NOT MATCHED THEN INSERT ALL BY NAME;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_table
+      (keyword_create)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (clone_clause
+        (keyword_clone)
+        (object_reference
+          name: (identifier))
+        (at_before
+          (keyword_at)
+          (time_travel_parameter
+            name: (keyword_timestamp)
+            value: (cast
+              (literal)
+              (timestamp_ltz
+                (keyword_timestamp_ltz))))))
+      (copy_clause
+        (keyword_copy)
+        (keyword_grants))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_convert)
+      (keyword_to)
+      (generic_clause
+        (identifier)
+        (identifier)
+        (literal))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_upgrade)
+      (keyword_to)
+      (generic_clause
+        (identifier)
+        (identifier)
+        (literal))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_optimize)
+      (identifier)))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_add)
+      (keyword_partition)
+      (keyword_by)
+      (invocation
+        (object_reference
+          name: (identifier))
+        parameter: (term
+          value: (literal))
+        parameter: (term
+          value: (field
+            name: (identifier))))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_replace)
+      (keyword_partition)
+      (keyword_by)
+      (invocation
+        (object_reference
+          name: (identifier))
+        parameter: (term
+          value: (literal))
+        parameter: (term
+          value: (field
+            name: (identifier))))
+      (keyword_with)
+      (invocation
+        (object_reference
+          name: (identifier))
+        parameter: (term
+          value: (literal))
+        parameter: (term
+          value: (field
+            name: (identifier))))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_refresh)
+      (literal)))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_create)
+      (keyword_version_tag)
+      (identifier)
+      (keyword_as)
+      (identifier)
+      (identifier)
+      (literal)
+      (identifier)
+      (literal)
+      (identifier)))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_iceberg)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_drop)
+      (keyword_version_tag)
+      (keyword_if)
+      (keyword_exists)
+      (identifier)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (generic_action
+        (keyword_add)
+        (keyword_partition)
+        name: (identifier)
+        value: (literal)
+        name: (identifier)
+        value: (literal)
+        (generic_clause
+          (identifier)
+          (literal)))))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (generic_action
+        (keyword_drop)
+        (keyword_partition)
+        (generic_clause
+          (identifier)
+          (literal)))))
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (keyword_modify)
+      (keyword_data)
+      (keyword_metric)
+      (keyword_function)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_on)
+      (identifier)
+      (keyword_table)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (identifier)
+      (keyword_add)
+      (dmf_expectation
+        (keyword_expectation)
+        (identifier)
+        (binary_expression
+          left: (field
+            name: (identifier))
+          right: (literal)))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier))
+        (keyword_using)
+        name: (identifier)
+        value: (literal))))
+  (statement
+    (snowflake_statement
+      (pipe_query
+        (keyword_show)
+        (keyword_terse)
+        (snowflake_show_target)
+        (pipe_operator)
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (literal))
+            (term
+              value: (literal))))
+        (from
+          (keyword_from)
+          (relation
+            (parameter)))
+        (order_by
+          (keyword_order)
+          (keyword_by)
+          (order_target
+            (literal)
+            (direction
+              (keyword_desc)))))))
+  (statement
+    (keyword_explain)
+    (keyword_using)
+    (identifier)
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (literal)))))
+  (statement
+    (snowflake_statement
+      (unset_statement
+        (keyword_unset)
+        (identifier)
+        (identifier))))
+  (statement
+    (snowflake_statement
+      (use_statement
+        (keyword_use)
+        (object_reference
+          schema: (identifier)
+          name: (identifier)))))
+  (statement
+    (keyword_merge)
+    (keyword_into)
+    (object_reference
+      name: (identifier))
+    (keyword_using)
+    (object_reference
+      name: (identifier))
+    (keyword_on)
+    predicate: (binary_expression
+      left: (field
+        (object_reference
+          name: (identifier))
+        name: (identifier))
+      right: (field
+        (object_reference
+          name: (identifier))
+        name: (identifier)))
+    (when_clause
+      (keyword_when)
+      (keyword_matched)
+      (keyword_then)
+      (keyword_update)
+      (keyword_all)
+      (keyword_by)
+      (keyword_name))
+    (when_clause
+      (keyword_when)
+      (keyword_not)
+      (keyword_matched)
+      (keyword_then)
+      (keyword_insert)
+      (keyword_all)
+      (keyword_by)
+      (keyword_name))))
+
