@@ -14,3 +14,32 @@ SET client_encoding = 'UTF8';
         (identifier))
       (literal))))
 
+================================================================================
+SET multiple session variables
+================================================================================
+
+SET (v1, v2) = (10, 'example');
+SET v3 = v1 + 1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (set_statement
+      (keyword_set)
+      (object_reference
+        name: (identifier))
+      (object_reference
+        name: (identifier))
+      (literal)
+      (literal)))
+  (statement
+    (set_statement
+      (keyword_set)
+      (object_reference
+        name: (identifier))
+      (binary_expression
+        left: (field
+          name: (identifier))
+        right: (literal)))))
+

@@ -125,7 +125,16 @@ export default {
   nvarchar: $ => parametric_type($, $.keyword_nvarchar),
 
   time: $ => parametric_type($, $.keyword_time),
-  timestamp: $ => parametric_type($, $.keyword_timestamp),
+  // TIMESTAMP[(p)], plus the Snowflake synonyms TIMESTAMP WITH TIME ZONE (TIMESTAMP_TZ),
+  // TIMESTAMP WITH LOCAL TIME ZONE (TIMESTAMP_LTZ) and TIMESTAMP WITHOUT TIME ZONE (TIMESTAMP_NTZ)
+  timestamp: $ => seq(
+    parametric_type($, $.keyword_timestamp),
+    optional(field('time_zone', $.time_zone_suffix)),
+  ),
+  time_zone_suffix: $ => choice(
+    seq($.keyword_with, optional($.keyword_local), $.keyword_time, $.keyword_zone),
+    seq($.keyword_without, $.keyword_time, $.keyword_zone),
+  ),
 
   // Snowflake types
   number: $ => choice(

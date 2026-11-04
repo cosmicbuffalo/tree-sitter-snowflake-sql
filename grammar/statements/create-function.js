@@ -105,7 +105,11 @@ export default {
   ),
 
   function_argument: $ => seq(
-    optional($.identifier),
+    optional(seq(
+      $.identifier,
+      // Snowflake procedure argument modes: name { IN | INPUT | OUT | OUTPUT } type
+      optional(field('mode', choice($.keyword_in, $.keyword_input, $.keyword_out, $.keyword_output))),
+    )),
     $._type,
     optional(
       seq(

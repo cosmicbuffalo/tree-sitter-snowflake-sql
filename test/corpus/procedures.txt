@@ -342,3 +342,67 @@ DROP PROCEDURE IF EXISTS public.my_procedure CASCADE;
         (identifier)
         (identifier))
       (keyword_cascade))))
+================================================================================
+Procedure argument modes IN, INPUT, OUT, OUTPUT
+================================================================================
+
+CREATE PROCEDURE p(a IN NUMBER, b INPUT VARCHAR, c OUT INT, d OUTPUT INT DEFAULT 0)
+RETURNS NUMBER
+LANGUAGE SQL
+AS
+$$
+BEGIN
+  RETURN 1;
+END
+$$;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_procedure
+      (keyword_create)
+      (keyword_procedure)
+      (object_reference
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (identifier)
+          mode: (keyword_in)
+          (number
+            (keyword_number)))
+        (function_argument
+          (identifier)
+          mode: (keyword_input)
+          (varchar
+            (keyword_varchar)))
+        (function_argument
+          (identifier)
+          mode: (keyword_out)
+          (int
+            (keyword_int)))
+        (function_argument
+          (identifier)
+          mode: (keyword_output)
+          (int
+            (keyword_int))
+          (keyword_default)
+          (literal)))
+      (procedure_returns
+        (keyword_returns)
+        (number
+          (keyword_number)))
+      (function_language
+        (keyword_language)
+        (identifier))
+      (procedure_body
+        (keyword_as)
+        (dollar_quote)
+        (snowflake_scripting_block
+          (keyword_begin)
+          (return_statement
+            (keyword_return)
+            value: (literal))
+          (keyword_end))
+        (dollar_quote)))))
+
