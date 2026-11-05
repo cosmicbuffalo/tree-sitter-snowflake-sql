@@ -109,11 +109,13 @@ export default {
   match_recognize: $ => seq(
     $.keyword_match_recognize,
     '(',
-    optional($.partition_by),
-    optional($.order_by),
-    optional(seq($.keyword_measures, comma_list($.measure, true))),
-    optional($.rows_per_match),
-    optional(seq($.keyword_after, $.keyword_match, $.keyword_skip, $.skip_target)),
+    repeat(choice(
+      $.partition_by,
+      $.order_by,
+      seq($.keyword_measures, comma_list($.measure, true)),
+      $.rows_per_match,
+      seq($.keyword_after, $.keyword_match, $.keyword_skip, $.skip_target),
+    )),
     $.keyword_pattern,
     '(',
     $.match_pattern,
@@ -177,11 +179,7 @@ export default {
 
   // ASOF JOIN t MATCH_CONDITION (l >= r) [ON ..]
   asof_join: $ => seq(
-    optional(choice(
-      $.keyword_left,
-      seq($.keyword_left, $.keyword_outer),
-      $.keyword_inner,
-    )),
+    optional($._join_side),
     $.keyword_asof,
     $.keyword_join,
     choice($.relation, $.lateral_relation),

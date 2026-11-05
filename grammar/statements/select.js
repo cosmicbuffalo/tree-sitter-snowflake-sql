@@ -112,34 +112,15 @@ export default {
     // Snowflake: SELECT * ILIKE 'pattern' EXCLUDE (a, b) REPLACE (expr AS c) RENAME (a AS b)
     // EXCLUDE and RENAME take a single bare item or a parenthesized list.
     optional(seq($.keyword_like, $._literal_string)),
-    optional(seq(
-      $.keyword_exclude,
-      choice(
-        paren_list($.identifier, true),
-        $.identifier,
-      ),
-    )),
-    optional(seq(
-      $.keyword_replace,
-      choice(
-        paren_list(
-          seq($._expression, $.keyword_as, $.identifier),
-          true,
-        ),
-        seq($._expression, $.keyword_as, $.identifier),
-      ),
-    )),
-    optional(seq(
-      $.keyword_rename,
-      choice(
-        paren_list(
-          seq($.identifier, $.keyword_as, $.identifier),
-          true,
-        ),
-        seq($.identifier, $.keyword_as, $.identifier),
-      ),
+    repeat(choice(
+      seq($.keyword_exclude, choice(paren_list($.identifier, true), $.identifier)),
+      seq($.keyword_replace, choice(paren_list($._star_replacement, true), $._star_replacement)),
+      seq($.keyword_rename, choice(paren_list($._star_rename, true), $._star_rename)),
     )),
   )),
+
+  _star_replacement: $ => seq($._expression, $.keyword_as, $.identifier),
+  _star_rename: $ => seq($.identifier, $.keyword_as, $.identifier),
 
   partition_by: $ => seq(
       $.keyword_partition,
@@ -326,17 +307,7 @@ export default {
 
   join: $ => seq(
     optional($.keyword_natural),
-    optional(
-      choice(
-        $.keyword_left,
-        seq($.keyword_full, $.keyword_outer),
-        seq($.keyword_left, $.keyword_outer),
-        $.keyword_right,
-        seq($.keyword_right, $.keyword_outer),
-        $.keyword_inner,
-        $.keyword_full,
-      ),
-    ),
+    optional($._join_side),
     optional($.keyword_directed),
     $.keyword_join,
     $.relation,
@@ -354,6 +325,12 @@ export default {
     optional(seq(choice($.keyword_first, $.keyword_last), wrapped_in_parenthesis($.identifier))),
   ),
 
+  // INNER | {LEFT | RIGHT | FULL} [OUTER]
+  _join_side: $ => choice(
+    $.keyword_inner,
+    seq(choice($.keyword_left, $.keyword_right, $.keyword_full), optional($.keyword_outer)),
+  ),
+
   cross_join: $ => prec.right(
     seq(
       $.keyword_cross,
@@ -364,14 +341,7 @@ export default {
   ),
 
   lateral_join: $ => seq(
-    optional(
-      choice(
-        // lateral joins cannot be right!
-        $.keyword_left,
-        seq($.keyword_left, $.keyword_outer),
-        $.keyword_inner,
-      ),
-    ),
+    optional($._join_side),
     $.keyword_join,
     $.keyword_lateral,
     choice(

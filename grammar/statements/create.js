@@ -149,10 +149,14 @@ export default {
     ),
     $.keyword_policy,
     $.object_reference,
-    optional(seq($.keyword_on, paren_list($.identifier, true))),
-    optional(seq($.keyword_entity, $.keyword_key, paren_list($.identifier, true))),
-    optional(seq($.keyword_allowed, $.keyword_join, $.keyword_keys, paren_list($.identifier, true))),
+    repeat(choice(
+      seq($.keyword_on, $._policy_columns),
+      seq($.keyword_entity, $.keyword_key, $._policy_columns),
+      seq($.keyword_allowed, $.keyword_join, $.keyword_keys, $._policy_columns),
+    )),
   )),
+
+  _policy_columns: $ => paren_list($.identifier, true),
 
   // WITH CONTACT (purpose = contact_name, ..)
   contact_clause: $ => seq(

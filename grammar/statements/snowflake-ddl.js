@@ -10,10 +10,6 @@ const NAMED_ALTER = ["STAGE", "PIPE", "STREAM", "TASK", "DYNAMIC TABLE", "DYNAMI
   "MATERIALIZED VIEW"];
 const NAMED_DROP = ["STAGE", "FILE FORMAT", "PIPE", "STREAM", "TASK", "SEQUENCE", "MATERIALIZED VIEW",
   "DYNAMIC TABLE", "DYNAMIC ICEBERG TABLE"];
-// keyword tokens that may also be used as property names (TYPE = CSV, DEFAULT_DDL_COLLATION = ..)
-const KEYWORD_WORDS = ["key", "access", "policy", "row", "identity", "default", "data",
-  "type", "session", "schema", "database", "table", "view", "stage", "secure",
-  "function", "procedure", "option", "search", "grants", "pattern"];
 const KEYWORD_DESCRIBE = ["STAGE", "PIPE", "STREAM", "TASK", "DATA METRIC FUNCTION"];
 
 
@@ -53,7 +49,7 @@ export default {
   // --- Snowflake property helpers ---
   // A single key=value property (used in CREATE/ALTER options)
   _snowflake_property: $ => seq(
-    field('name', choice($.identifier, $.keyword_comment, ...KEYWORD_WORDS.map(w => alias($['keyword_' + w], $.identifier)))),
+    field('name', choice($.identifier, $.keyword_comment)),
     '=',
     field('value', $._property_value),
   ),
@@ -157,14 +153,10 @@ export default {
     $.keyword_task,
     optional($._if_not_exists),
     $.object_reference,
-    optional($._snowflake_options),
-    optional(seq(
-      $.keyword_after,
-      comma_list($.object_reference, true),
-    )),
-    optional(seq(
-      $.keyword_when,
-      $._expression,
+    repeat(choice(
+      $._snowflake_options,
+      seq($.keyword_after, comma_list($.object_reference, true)),
+      seq($.keyword_when, $._expression),
     )),
     $.keyword_as,
     choice(
