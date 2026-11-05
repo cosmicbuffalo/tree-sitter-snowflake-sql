@@ -582,57 +582,6 @@ ALTER DATABASE test UNSET COMMENT;
       (identifier))))
 
 ================================================================================
-Alter role rename
-================================================================================
-
-ALTER ROLE rapunzel RENAME TO snow_white;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (alter_role
-      (keyword_alter)
-      (keyword_role)
-      (object_reference
-        (identifier))
-      (rename_object
-        (keyword_rename)
-        (keyword_to)
-        (object_reference
-          (identifier))))))
-
-================================================================================
-Alter role set
-================================================================================
-
-ALTER ROLE worker_bee SET COMMENT = 'worker role';
-ALTER ROLE IF EXISTS worker_bee UNSET COMMENT;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (alter_role
-      (keyword_alter)
-      (keyword_role)
-      (object_reference
-        (identifier))
-      (keyword_set)
-      (keyword_comment)
-      (literal)))
-  (statement
-    (alter_role
-      (keyword_alter)
-      (keyword_role)
-      (keyword_if)
-      (keyword_exists)
-      (object_reference
-        (identifier))
-      (keyword_unset)
-      (identifier))))
-
-================================================================================
 Add foreign key constraint
 ================================================================================
 

@@ -152,24 +152,3 @@ DROP DATABASE IF EXISTS hollywood CASCADE;
       (keyword_exists)
       (identifier)
       (keyword_cascade))))
-
-================================================================================
-Drop Role
-================================================================================
-
-DROP ROLE hansel;
-DROP USER rapunzel;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (drop_role
-      (keyword_drop)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (drop_role
-      (keyword_drop)
-      (keyword_user)
-      (identifier))))

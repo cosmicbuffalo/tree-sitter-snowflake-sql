@@ -1,853 +1,4 @@
 ================================================================================
-Generic CREATE for administrative object types
-================================================================================
-
-CREATE OR REPLACE RESOURCE MONITOR rm1 WITH CREDIT_QUOTA = 100 NOTIFY_USERS = (alice, "Bob Q") FREQUENCY = MONTHLY;
-CREATE NETWORK RULE nr1 TYPE = IPV4 MODE = INGRESS VALUE_LIST = ('10.0.0.1', '10.0.0.2');
-CREATE OR ALTER SECRET s1 TYPE = GENERIC_STRING SECRET_STRING = 'x' COMMENT = 'k';
-CREATE CATALOG INTEGRATION ci1 CATALOG_SOURCE = POLARIS REST_CONFIG = (CATALOG_URI = 'https://x.example/api' CATALOG_NAME = 'c');
-CREATE POSTGRES INSTANCE pg1 COMPUTE_FAMILY = 'STANDARD_S' STORAGE_SIZE_GB = 50;
-CREATE ONLINE FEATURE TABLE oft1 TARGET_LAG = '30 seconds' WAREHOUSE = wh1 FROM src_dt;
-CREATE INTERACTIVE TABLE it1 TARGET_LAG = '10 minutes' AS SELECT a FROM t;
-CREATE SNOWFLAKE.CORE.BUDGET b1();
-CREATE SNOWFLAKE.DATA_PRIVACY.CUSTOM_CLASSIFIER cc1();
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (keyword_or)
-      (keyword_replace)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_with)
-      name: (identifier)
-      value: (literal)
-      name: (identifier)
-      value: (list
-        (identifier)
-        (literal))
-      name: (identifier)
-      value: (identifier)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      name: (identifier)
-      value: (identifier)
-      name: (identifier)
-      value: (identifier)
-      name: (identifier)
-      value: (list
-        (literal)
-        (literal))))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (keyword_or)
-      (keyword_alter)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      name: (identifier)
-      value: (identifier)
-      name: (identifier)
-      value: (literal)
-      name: (keyword_comment)
-      value: (literal)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      name: (identifier)
-      value: (identifier)
-      name: (identifier)
-      name: (identifier)
-      value: (literal)
-      name: (identifier)
-      value: (literal)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      name: (identifier)
-      value: (literal)
-      name: (identifier)
-      value: (literal)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      name: (identifier)
-      value: (literal)
-      name: (identifier)
-      value: (identifier)
-      (keyword_from)
-      (object_reference
-        name: (identifier))))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      name: (identifier)
-      value: (literal)
-      (keyword_as)
-      (statement
-        (select
-          (keyword_select)
-          (select_expression
-            (term
-              value: (field
-                name: (identifier)))))
-        (from
-          (keyword_from)
-          (relation
-            (object_reference
-              name: (identifier)))))))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (class_instance_arguments)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (class_instance_arguments))))
-
-================================================================================
-Generic DROP, DESCRIBE and UNDROP
-================================================================================
-
-DROP SECRET IF EXISTS s1;
-DROP CATALOG INTEGRATION ci1;
-DROP ICEBERG TABLE db1.sch1.ice1;
-DROP SNOWFLAKE.ML.CLASSIFICATION m1;
-DESC SECRET s1;
-DESCRIBE NETWORK RULE nr1;
-DESC USER u1;
-DESC INTEGRATION i1;
-UNDROP ICEBERG TABLE ice1;
-UNDROP SECRET s1;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (drop_snowflake_object
-      (keyword_drop)
-      (snowflake_object_type)
-      (keyword_if)
-      (keyword_exists)
-      (object_reference
-        name: (identifier))))
-  (statement
-    (drop_snowflake_object
-      (keyword_drop)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))))
-  (statement
-    (drop_snowflake_object
-      (keyword_drop)
-      (snowflake_object_type)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))))
-  (statement
-    (drop_snowflake_object
-      (keyword_drop)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))))
-  (statement
-    (snowflake_statement
-      (describe_statement
-        (keyword_describe)
-        (snowflake_object_type)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (describe_statement
-        (keyword_describe)
-        (snowflake_object_type)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (describe_statement
-        (keyword_describe)
-        (keyword_user)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (describe_statement
-        (keyword_describe)
-        (snowflake_object_type)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (undrop_statement
-        (keyword_undrop)
-        (snowflake_object_type)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (undrop_statement
-        (keyword_undrop)
-        (snowflake_object_type)
-        (object_reference
-          name: (identifier))))))
-
-================================================================================
-SHOW with LIKE, IN, STARTS WITH, LIMIT, ON/TO/OF
-================================================================================
-
-SHOW SECRETS;
-SHOW TERSE AGENTS LIKE '%x%' IN SCHEMA db1.sch1;
-SHOW COMPUTE POOLS LIKE '%p%' STARTS WITH 'a' LIMIT 2 FROM 'b';
-SHOW GRANTS TO ROLE r1;
-SHOW GRANTS OF ROLE r1;
-SHOW GRANTS ON TABLE t1;
-SHOW COLUMNS IN TABLE t1;
-SHOW PARAMETERS LIKE 'x' IN SESSION;
-SHOW SNOWFLAKE.CORE.BUDGET INSTANCES IN SCHEMA db1.sch1;
-SHOW SERVICES IN COMPUTE POOL cp1;
-SHOW IMAGES IN IMAGE REPOSITORY ir1;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (keyword_show)
-    (snowflake_show_target))
-  (statement
-    (snowflake_statement
-      (snowflake_show_statement
-        (keyword_show)
-        (keyword_terse)
-        (snowflake_show_target)
-        (keyword_like)
-        (literal)
-        (keyword_in)
-        (keyword_schema)
-        (object_reference
-          schema: (identifier)
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (snowflake_show_statement
-        (keyword_show)
-        (snowflake_show_target)
-        (keyword_like)
-        (literal)
-        (keyword_starts)
-        (keyword_with)
-        (literal)
-        (keyword_limit)
-        (literal)
-        (keyword_from)
-        (literal))))
-  (statement
-    (snowflake_statement
-      (snowflake_show_statement
-        (keyword_show)
-        (snowflake_show_target)
-        (keyword_to)
-        (keyword_role)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (snowflake_show_statement
-        (keyword_show)
-        (snowflake_show_target)
-        (keyword_of)
-        (keyword_role)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (snowflake_show_statement
-        (keyword_show)
-        (snowflake_show_target)
-        (keyword_on)
-        (keyword_table)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (snowflake_show_statement
-        (keyword_show)
-        (snowflake_show_target)
-        (keyword_in)
-        (keyword_table)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (snowflake_show_statement
-        (keyword_show)
-        (snowflake_show_target)
-        (keyword_like)
-        (literal)
-        (keyword_in)
-        (keyword_session))))
-  (statement
-    (snowflake_statement
-      (snowflake_show_statement
-        (keyword_show)
-        (snowflake_show_target)
-        (keyword_instances)
-        (keyword_in)
-        (keyword_schema)
-        (object_reference
-          schema: (identifier)
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (snowflake_show_statement
-        (keyword_show)
-        (snowflake_show_target)
-        (keyword_in)
-        (snowflake_scope_type)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (snowflake_show_statement
-        (keyword_show)
-        (snowflake_show_target)
-        (keyword_in)
-        (snowflake_scope_type)
-        (object_reference
-          name: (identifier))))))
-
-================================================================================
-GRANT roles, ownership and caller grants
-================================================================================
-
-GRANT ROLE analyst TO ROLE sysadmin;
-GRANT ROLE analyst TO USER bob WITH GRANT OPTION;
-GRANT DATABASE ROLE d1.dr1 TO SHARE sh1;
-GRANT DATABASE ROLE dr1 TO APPLICATION app1;
-GRANT APPLICATION ROLE app1.reader TO ROLE r1;
-GRANT SERVICE ROLE svc1!ep_role TO ROLE r1;
-GRANT OWNERSHIP ON TABLE d1.s1.t1 TO ROLE r2 COPY CURRENT GRANTS;
-GRANT OWNERSHIP ON ALL TABLES IN SCHEMA d1.s1 TO DATABASE ROLE d1.dr1 REVOKE CURRENT GRANTS;
-GRANT OWNERSHIP ON DATA EXCHANGE LISTING lst1 TO ROLE r2;
-GRANT CALLER SELECT ON VIEW v1 TO ROLE owner_role;
-GRANT INHERITED CALLER SELECT, INSERT ON ALL TABLES IN SCHEMA d1.s1 TO ROLE owner_role;
-GRANT ALL INHERITED CALLER PRIVILEGES ON ALL SCHEMAS IN ACCOUNT TO ROLE owner_role;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (keyword_role)
-      (identifier)
-      (keyword_to)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (keyword_role)
-      (identifier)
-      (keyword_to)
-      (keyword_user)
-      (identifier)
-      (keyword_with)
-      (keyword_grant)
-      (keyword_option)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (keyword_database)
-      (keyword_role)
-      (object_reference
-        (identifier)
-        (identifier))
-      (keyword_to)
-      (keyword_share)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (keyword_database)
-      (keyword_role)
-      (identifier)
-      (keyword_to)
-      (keyword_application)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (keyword_application)
-      (keyword_role)
-      (object_reference
-        (identifier)
-        (identifier))
-      (keyword_to)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (keyword_service)
-      (keyword_role)
-      (object_reference)
-      (object_reference)
-      (object_reference)
-      (keyword_to)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (keyword_table)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))
-      (keyword_to)
-      (keyword_role)
-      (identifier)
-      (keyword_copy)
-      (keyword_current)
-      (keyword_grants)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (keyword_all)
-      (snowflake_object_type)
-      (keyword_in)
-      (keyword_schema)
-      (object_reference
-        schema: (identifier)
-        name: (identifier))
-      (keyword_to)
-      (keyword_database)
-      (keyword_role)
-      (object_reference
-        (identifier)
-        (identifier))
-      (keyword_revoke)
-      (keyword_current)
-      (keyword_grants)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_to)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (keyword_caller)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (keyword_view)
-      (object_reference
-        name: (identifier))
-      (keyword_to)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (keyword_inherited)
-      (keyword_caller)
-      (privilege
-        (identifier))
-      (privilege
-        (identifier))
-      (keyword_on)
-      (keyword_all)
-      (snowflake_object_type)
-      (keyword_in)
-      (keyword_schema)
-      (object_reference
-        schema: (identifier)
-        name: (identifier))
-      (keyword_to)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (keyword_all)
-      (keyword_inherited)
-      (keyword_caller)
-      (keyword_privileges)
-      (keyword_on)
-      (keyword_all)
-      (snowflake_object_type)
-      (keyword_in)
-      (keyword_account)
-      (keyword_to)
-      (keyword_role)
-      (identifier))))
-
-================================================================================
-GRANT privileges on assorted object types and grantees
-================================================================================
-
-GRANT USAGE, CREATE TABLE ON SCHEMA d1.s1 TO ROLE r1;
-GRANT APPLY MASKING POLICY, MANAGE GRANTS ON ACCOUNT TO ROLE sec_admin WITH GRANT OPTION;
-GRANT SELECT ON ALL TABLES IN SCHEMA d1.s1 TO DATABASE ROLE d1.dr1;
-GRANT SELECT, INSERT ON FUTURE TABLES IN DATABASE d1 TO ROLE r1;
-GRANT ALL PRIVILEGES ON FUNCTION d1.s1.f1(number) TO ROLE r1;
-GRANT USAGE ON NOTEBOOK d1.s1.nb TO ROLE r1;
-GRANT READ ON MODEL d1.s1.m1 TO SHARE sh1;
-GRANT SELECT ON VIEW d1.s1.v1 TO APPLICATION ROLE app1.reader;
-GRANT SELECT ON VIEW d1.s1.v1 TO APPLICATION app2;
-GRANT USAGE ON STREAMLIT d1.s1.app1 TO USER bob;
-GRANT CREATE SNOWFLAKE.CORE.BUDGET ON SCHEMA d1.s1 TO ROLE r1;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier))
-      (privilege
-        (identifier)
-        (identifier))
-      (keyword_on)
-      (keyword_schema)
-      (object_reference
-        schema: (identifier)
-        name: (identifier))
-      (keyword_to)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier)
-        (identifier)
-        (identifier))
-      (privilege
-        (identifier)
-        (identifier))
-      (keyword_on)
-      (object_reference
-        name: (identifier))
-      (keyword_to)
-      (keyword_role)
-      (identifier)
-      (keyword_with)
-      (keyword_grant)
-      (keyword_option)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (keyword_all)
-      (snowflake_object_type)
-      (keyword_in)
-      (keyword_schema)
-      (object_reference
-        schema: (identifier)
-        name: (identifier))
-      (keyword_to)
-      (keyword_database)
-      (keyword_role)
-      (object_reference
-        (identifier)
-        (identifier))))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier))
-      (privilege
-        (identifier))
-      (keyword_on)
-      (keyword_future)
-      (snowflake_object_type)
-      (keyword_in)
-      (keyword_database)
-      (object_reference
-        name: (identifier))
-      (keyword_to)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (keyword_all)
-      (keyword_privileges)
-      (keyword_on)
-      (keyword_function)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))
-      (function_arguments
-        (function_argument
-          (number
-            (keyword_number))))
-      (keyword_to)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (snowflake_object_type)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))
-      (keyword_to)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (snowflake_object_type)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))
-      (keyword_to)
-      (keyword_share)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (keyword_view)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))
-      (keyword_to)
-      (keyword_application)
-      (keyword_role)
-      (object_reference
-        (identifier)
-        (identifier))))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (keyword_view)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))
-      (keyword_to)
-      (keyword_application)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (snowflake_object_type)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))
-      (keyword_to)
-      (keyword_user)
-      (identifier)))
-  (statement
-    (grant_statement
-      (keyword_grant)
-      (privilege
-        (identifier)
-        (object_reference
-          (identifier)
-          (identifier)
-          (identifier)))
-      (keyword_on)
-      (keyword_schema)
-      (object_reference
-        schema: (identifier)
-        name: (identifier))
-      (keyword_to)
-      (keyword_role)
-      (identifier))))
-
-================================================================================
-REVOKE privileges, roles and caller grants
-================================================================================
-
-REVOKE GRANT OPTION FOR OPERATE ON WAREHOUSE wh1 FROM ROLE analyst;
-REVOKE CREATE WAREHOUSE ON ACCOUNT FROM ROLE analyst CASCADE;
-REVOKE USAGE ON MODEL d1.s1.m1 FROM SHARE sh1;
-REVOKE ROLE analyst FROM USER bob;
-REVOKE GRANT OPTION FOR DATABASE ROLE d1.dr1 FROM ROLE r1 CASCADE;
-REVOKE APPLICATION ROLE app1.reader FROM APPLICATION ROLE app1.other;
-REVOKE ALL INHERITED CALLER PRIVILEGES ON ALL VIEWS IN ACCOUNT FROM ROLE owner_role;
-REVOKE SERVICE ROLE svc1!ep_role FROM ROLE r1;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (revoke_statement
-      (keyword_revoke)
-      (keyword_grant)
-      (keyword_option)
-      (keyword_for)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (keyword_warehouse)
-      (object_reference
-        name: (identifier))
-      (keyword_from)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (revoke_statement
-      (keyword_revoke)
-      (privilege
-        (identifier)
-        (identifier))
-      (keyword_on)
-      (object_reference
-        name: (identifier))
-      (keyword_from)
-      (keyword_role)
-      (identifier)
-      (keyword_cascade)))
-  (statement
-    (revoke_statement
-      (keyword_revoke)
-      (privilege
-        (identifier))
-      (keyword_on)
-      (snowflake_object_type)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))
-      (keyword_from)
-      (keyword_share)
-      (identifier)))
-  (statement
-    (revoke_statement
-      (keyword_revoke)
-      (keyword_role)
-      (identifier)
-      (keyword_from)
-      (keyword_user)
-      (identifier)))
-  (statement
-    (revoke_statement
-      (keyword_revoke)
-      (keyword_grant)
-      (keyword_option)
-      (keyword_for)
-      (keyword_database)
-      (keyword_role)
-      (object_reference
-        (identifier)
-        (identifier))
-      (keyword_from)
-      (keyword_role)
-      (identifier)
-      (keyword_cascade)))
-  (statement
-    (revoke_statement
-      (keyword_revoke)
-      (keyword_application)
-      (keyword_role)
-      (object_reference
-        (identifier)
-        (identifier))
-      (keyword_from)
-      (keyword_application)
-      (keyword_role)
-      (object_reference
-        (identifier)
-        (identifier))))
-  (statement
-    (revoke_statement
-      (keyword_revoke)
-      (keyword_all)
-      (keyword_inherited)
-      (keyword_caller)
-      (keyword_privileges)
-      (keyword_on)
-      (keyword_all)
-      (snowflake_object_type)
-      (keyword_in)
-      (keyword_account)
-      (keyword_from)
-      (keyword_role)
-      (identifier)))
-  (statement
-    (revoke_statement
-      (keyword_revoke)
-      (keyword_service)
-      (keyword_role)
-      (object_reference)
-      (object_reference)
-      (object_reference)
-      (keyword_from)
-      (keyword_role)
-      (identifier))))
-
-================================================================================
 CREATE TABLE variants, constraints and column features
 ================================================================================
 
@@ -1371,260 +522,6 @@ ALTER VIEW v1 SET TAG t1 = 'x';
           name: (object_reference
             name: (identifier))
           value: (literal))))))
-
-================================================================================
-CREATE VIEW, DYNAMIC TABLE, STREAM, SCHEMA, DATABASE variants
-================================================================================
-
-CREATE OR ALTER VIEW v2 (one COMMENT 'bar') COMMENT = 'foo' CHANGE_TRACKING = TRUE AS SELECT a FROM t;
-CREATE OR REPLACE VIEW v3 COPY TAGS WITH TAG (a = 'b') AS SELECT 1;
-CREATE OR REPLACE DYNAMIC TABLE dt1 (c1 COMMENT 'x', c2) TARGET_LAG = '1 hour' WAREHOUSE = w1 CLUSTER BY (c1) COPY GRANTS REQUIRE USER FROZEN WHERE (ts < CURRENT_TIMESTAMP()) WITH STORAGE LIFECYCLE POLICY slp1 ON (ts) AS SELECT a, b FROM t;
-CREATE DYNAMIC TABLE dt2 CLONE dt1 AT (OFFSET => -60);
-CREATE OR ALTER STREAM s1 ON TABLE t1 AT (OFFSET => -300) APPEND_ONLY = TRUE;
-CREATE STREAM s2 ON VIEW v1 BEFORE (STATEMENT => 'q');
-CREATE STREAM s3 ON STAGE st1;
-CREATE SCHEMA sc2 CLONE sc1 AT (TIMESTAMP => '2025-04-01 12:00:00'::TIMESTAMP);
-CREATE SCHEMA sc3 WITH MANAGED ACCESS DATA_RETENTION_TIME_IN_DAYS = 5;
-CREATE DATABASE d2 FROM SHARE prov.sh1;
-CREATE DATABASE d3 AS REPLICA OF org1.acct1.d1;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_view
-      (keyword_create)
-      (keyword_or)
-      (keyword_alter)
-      (keyword_view)
-      (object_reference
-        name: (identifier))
-      (view_columns
-        (view_column
-          name: (identifier)
-          (keyword_comment)
-          (literal)))
-      (procedure_comment
-        (keyword_comment)
-        (literal))
-      (table_option
-        name: (identifier)
-        value: (literal
-          (keyword_true)))
-      (keyword_as)
-      (create_query
-        (select
-          (keyword_select)
-          (select_expression
-            (term
-              value: (field
-                name: (identifier)))))
-        (from
-          (keyword_from)
-          (relation
-            (object_reference
-              name: (identifier)))))))
-  (statement
-    (create_view
-      (keyword_create)
-      (keyword_or)
-      (keyword_replace)
-      (keyword_view)
-      (object_reference
-        name: (identifier))
-      (copy_clause
-        (keyword_copy)
-        (keyword_tags))
-      (with_tag_clause
-        (keyword_with)
-        (keyword_tag)
-        (tag_assignment
-          name: (object_reference
-            name: (identifier))
-          value: (literal)))
-      (keyword_as)
-      (create_query
-        (select
-          (keyword_select)
-          (select_expression
-            (term
-              value: (literal)))))))
-  (statement
-    (create_dynamic_table
-      (keyword_create)
-      (keyword_or)
-      (keyword_replace)
-      (keyword_dynamic)
-      (keyword_table)
-      (object_reference
-        name: (identifier))
-      (view_columns
-        (view_column
-          name: (identifier)
-          (keyword_comment)
-          (literal))
-        (view_column
-          name: (identifier)))
-      name: (identifier)
-      value: (literal)
-      name: (identifier)
-      value: (identifier)
-      (cluster_by
-        (keyword_cluster)
-        (keyword_by)
-        (field
-          name: (identifier)))
-      (copy_clause
-        (keyword_copy)
-        (keyword_grants))
-      (keyword_require)
-      (keyword_user)
-      (keyword_frozen)
-      (keyword_where)
-      (binary_expression
-        left: (field
-          name: (identifier))
-        right: (invocation
-          (object_reference
-            name: (identifier))))
-      (policy_clause
-        (keyword_with)
-        (keyword_storage)
-        (keyword_lifecycle)
-        (keyword_policy)
-        (object_reference
-          name: (identifier))
-        (keyword_on)
-        (identifier))
-      (keyword_as)
-      (select
-        (keyword_select)
-        (select_expression
-          (term
-            value: (field
-              name: (identifier)))
-          (term
-            value: (field
-              name: (identifier)))))
-      (from
-        (keyword_from)
-        (relation
-          (object_reference
-            name: (identifier))))))
-  (statement
-    (create_dynamic_table
-      (keyword_create)
-      (keyword_dynamic)
-      (keyword_table)
-      (object_reference
-        name: (identifier))
-      (clone_clause
-        (keyword_clone)
-        (object_reference
-          name: (identifier))
-        (at_before
-          (keyword_at)
-          (time_travel_parameter
-            name: (keyword_offset)
-            value: (literal))))))
-  (statement
-    (create_stream
-      (keyword_create)
-      (keyword_or)
-      (keyword_alter)
-      (keyword_stream)
-      (object_reference
-        name: (identifier))
-      (keyword_on)
-      (keyword_table)
-      (object_reference
-        name: (identifier))
-      (at_before
-        (keyword_at)
-        (time_travel_parameter
-          name: (keyword_offset)
-          value: (literal)))
-      name: (identifier)
-      value: (literal
-        (keyword_true))))
-  (statement
-    (create_stream
-      (keyword_create)
-      (keyword_stream)
-      (object_reference
-        name: (identifier))
-      (keyword_on)
-      (keyword_view)
-      (object_reference
-        name: (identifier))
-      (at_before
-        (keyword_before)
-        (time_travel_parameter
-          name: (keyword_statement)
-          value: (literal)))))
-  (statement
-    (create_stream
-      (keyword_create)
-      (keyword_stream)
-      (object_reference
-        name: (identifier))
-      (keyword_on)
-      (keyword_stage)
-      (object_reference
-        name: (identifier))))
-  (statement
-    (create_schema
-      (keyword_create)
-      (keyword_schema)
-      (object_reference
-        name: (identifier))
-      (clone_clause
-        (keyword_clone)
-        (object_reference
-          name: (identifier))
-        (at_before
-          (keyword_at)
-          (time_travel_parameter
-            name: (keyword_timestamp)
-            value: (cast
-              (literal)
-              (timestamp
-                (keyword_timestamp))))))))
-  (statement
-    (create_schema
-      (keyword_create)
-      (keyword_schema)
-      (object_reference
-        name: (identifier))
-      (keyword_with)
-      (keyword_managed)
-      (keyword_access)
-      name: (identifier)
-      value: (literal)))
-  (statement
-    (create_database
-      (keyword_create)
-      (keyword_database)
-      (object_reference
-        name: (identifier))
-      (keyword_from)
-      (keyword_share)
-      (object_reference
-        schema: (identifier)
-        name: (identifier))))
-  (statement
-    (create_database
-      (keyword_create)
-      (keyword_database)
-      (object_reference
-        name: (identifier))
-      (keyword_as)
-      (keyword_replica)
-      (keyword_of)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier)))))
 
 ================================================================================
 COPY INTO table and location, COPY FILES
@@ -3179,7 +2076,7 @@ MERGE INTO t USING s ON t.id = s.id WHEN MATCHED THEN UPDATE ALL BY NAME WHEN NO
     (snowflake_statement
       (execute_statement
         (keyword_execute)
-        (snowflake_object_type)
+        (keyword_task)
         (object_reference
           name: (identifier))
         (keyword_using)
@@ -3815,3 +2712,896 @@ CREATE OR REPLACE ROW ACCESS POLICY rap1 AS (region VARCHAR) RETURNS BOOLEAN -> 
         left: (field
           name: (identifier))
         right: (literal)))))
+
+================================================================================
+Generic CREATE, DROP, DESCRIBE and UNDROP of in-scope object types
+================================================================================
+
+CREATE INTERACTIVE TABLE it1 TARGET_LAG = '10 minutes' AS SELECT a FROM t;
+CREATE OR REPLACE SEMANTIC VIEW sv0 TABLES (o AS d1.s1.orders);
+DROP ICEBERG TABLE d1.s1.ice1;
+DROP ALERT IF EXISTS al1;
+DROP TAG tg1;
+DROP DATABASE ROLE d1.dr1;
+DROP EXTERNAL TABLE et1 CASCADE;
+DESC ALERT al1;
+DESCRIBE MASKING POLICY mp1;
+DESC SEMANTIC VIEW sv1;
+UNDROP ICEBERG TABLE ice1;
+UNDROP TAG tg1;
+UNDROP DYNAMIC TABLE dt1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (literal)
+      (keyword_as)
+      (statement
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (field
+                name: (identifier)))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier)))))))
+  (statement
+    (create_semantic_view
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_semantic_view)
+      (object_reference
+        name: (identifier))
+      (semantic_section
+        (keyword_tables)
+        (semantic_table
+          name: (identifier)
+          (keyword_as)
+          (object_reference
+            database: (identifier)
+            schema: (identifier)
+            name: (identifier))))))
+  (statement
+    (drop_snowflake_object
+      (keyword_drop)
+      (snowflake_object_type)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))))
+  (statement
+    (drop_snowflake_object
+      (keyword_drop)
+      (snowflake_object_type)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (drop_snowflake_object
+      (keyword_drop)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (drop_snowflake_object
+      (keyword_drop)
+      (snowflake_object_type)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))))
+  (statement
+    (drop_snowflake_object
+      (keyword_drop)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_cascade)))
+  (statement
+    (snowflake_statement
+      (describe_statement
+        (keyword_describe)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (describe_statement
+        (keyword_describe)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (describe_statement
+        (keyword_describe)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (undrop_statement
+        (keyword_undrop)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (undrop_statement
+        (keyword_undrop)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (undrop_statement
+        (keyword_undrop)
+        (snowflake_object_type)
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+SHOW with LIKE, IN, STARTS WITH, LIMIT, ON/TO/OF
+================================================================================
+
+SHOW TAGS;
+SHOW TERSE DYNAMIC TABLES LIKE '%x%' IN SCHEMA d1.s1;
+SHOW TABLES LIKE '%p%' STARTS WITH 'a' LIMIT 2 FROM 'b';
+SHOW GRANTS TO ROLE r1;
+SHOW GRANTS OF ROLE r1;
+SHOW GRANTS ON TABLE t1;
+SHOW FUTURE GRANTS IN SCHEMA d1.s1;
+SHOW COLUMNS IN TABLE t1;
+SHOW PARAMETERS LIKE 'x' IN SESSION;
+SHOW TASKS IN ACCOUNT;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (keyword_show)
+    (snowflake_show_target))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (keyword_terse)
+        (snowflake_show_target)
+        (keyword_like)
+        (literal)
+        (keyword_in)
+        (keyword_schema)
+        (object_reference
+          schema: (identifier)
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_like)
+        (literal)
+        (keyword_starts)
+        (keyword_with)
+        (literal)
+        (keyword_limit)
+        (literal)
+        (keyword_from)
+        (literal))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_to)
+        (keyword_role)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_of)
+        (keyword_role)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_on)
+        (keyword_table)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_in)
+        (keyword_schema)
+        (object_reference
+          schema: (identifier)
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_in)
+        (keyword_table)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_like)
+        (literal)
+        (keyword_in)
+        (keyword_session))))
+  (statement
+    (snowflake_statement
+      (snowflake_show_statement
+        (keyword_show)
+        (snowflake_show_target)
+        (keyword_in)
+        (object_reference
+          name: (identifier))))))
+
+================================================================================
+GRANT roles, ownership and caller grants
+================================================================================
+
+GRANT ROLE analyst TO ROLE etl_admin;
+GRANT DATABASE ROLE d1.dr1 TO ROLE r1 WITH GRANT OPTION;
+GRANT DATABASE ROLE dr1 TO DATABASE ROLE dr2;
+GRANT OWNERSHIP ON TABLE d1.s1.t1 TO ROLE r2 COPY CURRENT GRANTS;
+GRANT OWNERSHIP ON ALL TABLES IN SCHEMA d1.s1 TO DATABASE ROLE d1.dr1 REVOKE CURRENT GRANTS;
+GRANT CALLER SELECT ON VIEW v1 TO ROLE owner_role;
+GRANT INHERITED CALLER SELECT, INSERT ON ALL TABLES IN SCHEMA d1.s1 TO ROLE owner_role;
+GRANT ALL INHERITED CALLER PRIVILEGES ON ALL SCHEMAS IN ACCOUNT TO ROLE owner_role;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_role)
+      (identifier)
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_database)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)
+      (keyword_with)
+      (keyword_grant)
+      (keyword_option)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_database)
+      (keyword_role)
+      (identifier)
+      (keyword_to)
+      (keyword_database)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_table)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)
+      (keyword_copy)
+      (keyword_current)
+      (keyword_grants)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_schema)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_database)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))
+      (keyword_revoke)
+      (keyword_current)
+      (keyword_grants)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_caller)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_inherited)
+      (keyword_caller)
+      (privilege
+        (identifier))
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_schema)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_all)
+      (keyword_inherited)
+      (keyword_caller)
+      (keyword_privileges)
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_account)
+      (keyword_to)
+      (keyword_role)
+      (identifier))))
+
+================================================================================
+GRANT privileges on data objects
+================================================================================
+
+GRANT USAGE, CREATE TABLE ON SCHEMA d1.s1 TO ROLE r1;
+GRANT APPLY MASKING POLICY ON SCHEMA d1.s1 TO ROLE sec_admin WITH GRANT OPTION;
+GRANT SELECT ON ALL TABLES IN SCHEMA d1.s1 TO DATABASE ROLE d1.dr1;
+GRANT SELECT, INSERT ON FUTURE TABLES IN DATABASE d1 TO ROLE r1;
+GRANT ALL PRIVILEGES ON FUNCTION d1.s1.f1(number) TO ROLE r1;
+GRANT USAGE ON PROCEDURE d1.s1.p1(VARCHAR) TO ROLE r1;
+GRANT SELECT ON ICEBERG TABLE d1.s1.it1 TO ROLE r1;
+GRANT OPERATE ON DYNAMIC TABLE d1.s1.dt1 TO ROLE r1;
+GRANT READ ON STAGE d1.s1.sg1 TO ROLE r1;
+GRANT APPLY ON TAG d1.s1.tg1 TO ROLE r1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (privilege
+        (identifier)
+        (identifier))
+      (keyword_on)
+      (keyword_schema)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier)
+        (identifier)
+        (identifier))
+      (keyword_on)
+      (keyword_schema)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)
+      (keyword_with)
+      (keyword_grant)
+      (keyword_option)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_schema)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_database)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_future)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_database)
+      (object_reference
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (keyword_all)
+      (keyword_privileges)
+      (keyword_on)
+      (keyword_function)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (number
+            (keyword_number))))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_procedure)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (function_arguments
+        (function_argument
+          (varchar
+            (keyword_varchar))))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (snowflake_object_type)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_dynamic)
+      (keyword_table)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_stage)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (snowflake_object_type)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_to)
+      (keyword_role)
+      (identifier))))
+
+================================================================================
+REVOKE privileges, roles and caller grants
+================================================================================
+
+REVOKE GRANT OPTION FOR OPERATE ON TASK tk1 FROM ROLE analyst;
+REVOKE SELECT ON VIEW d1.s1.v1 FROM ROLE analyst CASCADE;
+REVOKE ROLE analyst FROM ROLE etl_admin;
+REVOKE GRANT OPTION FOR DATABASE ROLE d1.dr1 FROM ROLE r1 CASCADE;
+REVOKE ALL INHERITED CALLER PRIVILEGES ON ALL VIEWS IN ACCOUNT FROM ROLE owner_role;
+REVOKE CALLER USAGE ON SCHEMA d1.s1 FROM ROLE owner_role;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_grant)
+      (keyword_option)
+      (keyword_for)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_task)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_view)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_from)
+      (keyword_role)
+      (identifier)
+      (keyword_cascade)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_role)
+      (identifier)
+      (keyword_from)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_grant)
+      (keyword_option)
+      (keyword_for)
+      (keyword_database)
+      (keyword_role)
+      (object_reference
+        (identifier)
+        (identifier))
+      (keyword_from)
+      (keyword_role)
+      (identifier)
+      (keyword_cascade)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_all)
+      (keyword_inherited)
+      (keyword_caller)
+      (keyword_privileges)
+      (keyword_on)
+      (keyword_all)
+      (snowflake_object_type)
+      (keyword_in)
+      (keyword_account)
+      (keyword_from)
+      (keyword_role)
+      (identifier)))
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_caller)
+      (privilege
+        (identifier))
+      (keyword_on)
+      (keyword_schema)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_from)
+      (keyword_role)
+      (identifier))))
+
+================================================================================
+CREATE VIEW, DYNAMIC TABLE, STREAM, SCHEMA variants
+================================================================================
+
+CREATE OR ALTER VIEW v2 (one COMMENT 'bar') COMMENT = 'foo' CHANGE_TRACKING = TRUE AS SELECT a FROM t;
+CREATE OR REPLACE VIEW v3 COPY TAGS WITH TAG (a = 'b') AS SELECT 1;
+CREATE OR REPLACE DYNAMIC TABLE dt1 (c1 COMMENT 'x', c2) TARGET_LAG = '1 hour' WAREHOUSE = w1 CLUSTER BY (c1) COPY GRANTS REQUIRE USER FROZEN WHERE (ts < CURRENT_TIMESTAMP()) WITH STORAGE LIFECYCLE POLICY slp1 ON (ts) AS SELECT a, b FROM t;
+CREATE DYNAMIC TABLE dt2 CLONE dt1 AT (OFFSET => -60);
+CREATE OR ALTER STREAM s1 ON TABLE t1 AT (OFFSET => -300) APPEND_ONLY = TRUE;
+CREATE STREAM s2 ON VIEW v1 BEFORE (STATEMENT => 'q');
+CREATE STREAM s3 ON STAGE st1;
+CREATE SCHEMA sc2 CLONE sc1 AT (TIMESTAMP => '2025-04-01 12:00:00'::TIMESTAMP);
+CREATE SCHEMA sc3 WITH MANAGED ACCESS DATA_RETENTION_TIME_IN_DAYS = 5;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_view
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (view_columns
+        (view_column
+          name: (identifier)
+          (keyword_comment)
+          (literal)))
+      (procedure_comment
+        (keyword_comment)
+        (literal))
+      (table_option
+        name: (identifier)
+        value: (literal
+          (keyword_true)))
+      (keyword_as)
+      (create_query
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (field
+                name: (identifier)))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier)))))))
+  (statement
+    (create_view
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (copy_clause
+        (keyword_copy)
+        (keyword_tags))
+      (with_tag_clause
+        (keyword_with)
+        (keyword_tag)
+        (tag_assignment
+          name: (object_reference
+            name: (identifier))
+          value: (literal)))
+      (keyword_as)
+      (create_query
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (literal)))))))
+  (statement
+    (create_dynamic_table
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_dynamic)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (view_columns
+        (view_column
+          name: (identifier)
+          (keyword_comment)
+          (literal))
+        (view_column
+          name: (identifier)))
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (identifier)
+      (cluster_by
+        (keyword_cluster)
+        (keyword_by)
+        (field
+          name: (identifier)))
+      (copy_clause
+        (keyword_copy)
+        (keyword_grants))
+      (keyword_require)
+      (keyword_user)
+      (keyword_frozen)
+      (keyword_where)
+      (binary_expression
+        left: (field
+          name: (identifier))
+        right: (invocation
+          (object_reference
+            name: (identifier))))
+      (policy_clause
+        (keyword_with)
+        (keyword_storage)
+        (keyword_lifecycle)
+        (keyword_policy)
+        (object_reference
+          name: (identifier))
+        (keyword_on)
+        (identifier))
+      (keyword_as)
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (field
+              name: (identifier)))
+          (term
+            value: (field
+              name: (identifier)))))
+      (from
+        (keyword_from)
+        (relation
+          (object_reference
+            name: (identifier))))))
+  (statement
+    (create_dynamic_table
+      (keyword_create)
+      (keyword_dynamic)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (clone_clause
+        (keyword_clone)
+        (object_reference
+          name: (identifier))
+        (at_before
+          (keyword_at)
+          (time_travel_parameter
+            name: (keyword_offset)
+            value: (literal))))))
+  (statement
+    (create_stream
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (keyword_stream)
+      (object_reference
+        name: (identifier))
+      (keyword_on)
+      (keyword_table)
+      (object_reference
+        name: (identifier))
+      (at_before
+        (keyword_at)
+        (time_travel_parameter
+          name: (keyword_offset)
+          value: (literal)))
+      name: (identifier)
+      value: (literal
+        (keyword_true))))
+  (statement
+    (create_stream
+      (keyword_create)
+      (keyword_stream)
+      (object_reference
+        name: (identifier))
+      (keyword_on)
+      (keyword_view)
+      (object_reference
+        name: (identifier))
+      (at_before
+        (keyword_before)
+        (time_travel_parameter
+          name: (keyword_statement)
+          value: (literal)))))
+  (statement
+    (create_stream
+      (keyword_create)
+      (keyword_stream)
+      (object_reference
+        name: (identifier))
+      (keyword_on)
+      (keyword_stage)
+      (object_reference
+        name: (identifier))))
+  (statement
+    (create_schema
+      (keyword_create)
+      (keyword_schema)
+      (object_reference
+        name: (identifier))
+      (clone_clause
+        (keyword_clone)
+        (object_reference
+          name: (identifier))
+        (at_before
+          (keyword_at)
+          (time_travel_parameter
+            name: (keyword_timestamp)
+            value: (cast
+              (literal)
+              (timestamp
+                (keyword_timestamp))))))))
+  (statement
+    (create_schema
+      (keyword_create)
+      (keyword_schema)
+      (object_reference
+        name: (identifier))
+      (keyword_with)
+      (keyword_managed)
+      (keyword_access)
+      name: (identifier)
+      value: (literal))))

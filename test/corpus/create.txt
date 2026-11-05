@@ -1105,46 +1105,18 @@ CREATE OR REPLACE TRANSIENT DATABASE sales CLONE prod_sales DATA_RETENTION_TIME_
       (literal)
       (keyword_comment)
       (literal))))
-
 ================================================================================
-Create user
+Create database role
 ================================================================================
 
-CREATE USER IF NOT EXISTS rapunzel
-PASSWORD = 'secret'
-DEFAULT_ROLE = hansel
-COMMENT = 'tower';
-CREATE OR REPLACE ROLE gretel;
 CREATE DATABASE ROLE IF NOT EXISTS reader;
+CREATE OR REPLACE DATABASE ROLE d1.writer COMMENT = 'writes';
 
 --------------------------------------------------------------------------------
 
 (program
   (statement
-    (create_role
-      (keyword_create)
-      (keyword_user)
-      (keyword_if)
-      (keyword_not)
-      (keyword_exists)
-      (object_reference
-        (identifier))
-      (identifier)
-      (literal)
-      (identifier)
-      (identifier)
-      (keyword_comment)
-      (literal)))
-  (statement
-    (create_role
-      (keyword_create)
-      (keyword_or)
-      (keyword_replace)
-      (keyword_role)
-      (object_reference
-        (identifier))))
-  (statement
-    (create_role
+    (create_database_role
       (keyword_create)
       (keyword_database)
       (keyword_role)
@@ -1152,62 +1124,17 @@ CREATE DATABASE ROLE IF NOT EXISTS reader;
       (keyword_not)
       (keyword_exists)
       (object_reference
-        (identifier)))))
-
-===============================================================================
-Create view rule conflict with time and timestamp rules (check create_view)
-===============================================================================
-
-create view toto as select '123'::timestamp;
-
---------------------------------------------------------------------------------
-
-(program
+        name: (identifier))))
   (statement
-    (create_view
+    (create_database_role
       (keyword_create)
-      (keyword_view)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_database)
+      (keyword_role)
       (object_reference
-        (identifier))
-      (keyword_as)
-      (create_query
-        (select
-          (keyword_select)
-          (select_expression
-            (term
-              (cast
-                (literal)
-                (timestamp
-                  (keyword_timestamp))))))))))
-
-===============================================================================
-Create table column REFERENCES constraint
-===============================================================================
-
-CREATE TABLE foo (
-	bar int NOT NULL REFERENCES bar(foo) ON DELETE CASCADE
-);
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_table
-      (keyword_create)
-      (keyword_table)
-      (object_reference
+        schema: (identifier)
         name: (identifier))
-      (column_definitions
-        (column_definition
-          name: (identifier)
-          type: (int
-            (keyword_int))
-          (keyword_not)
-          (keyword_null)
-          (keyword_references)
-          (object_reference
-            name: (identifier))
-          (identifier)
-          (keyword_on)
-          (keyword_delete)
-          (keyword_cascade))))))
+      name: (keyword_comment)
+      value: (literal))))
+

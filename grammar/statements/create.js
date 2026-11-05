@@ -12,7 +12,7 @@ export default {
       $.create_function,
       $.create_procedure,
       $.create_database,
-      $.create_role,
+      $.create_database_role,
       $.create_policy,
       $.create_index,
       $.create_sequence,
@@ -253,16 +253,8 @@ export default {
     optional($._if_not_exists),
     $.object_reference,
     optional($.clone_clause),
-    optional($._database_source),
     optional($._snowflake_options),
   )),
-
-  // CREATE DATABASE d FROM SHARE provider.share | FROM LISTING 'name' | AS REPLICA OF org.acct.db
-  _database_source: $ => choice(
-    seq($.keyword_from, $.keyword_share, $.object_reference),
-    seq($.keyword_from, $.keyword_listing, $.literal),
-    seq($.keyword_as, $.keyword_replica, $.keyword_of, $.object_reference),
-  ),
 
   // Snowflake hybrid tables: CREATE [OR REPLACE] INDEX [IF NOT EXISTS] name ON table (cols) [INCLUDE (cols)]
   create_index: $ => seq(
@@ -295,11 +287,11 @@ export default {
     optional($._snowflake_options),
   )),
 
-  // Snowflake: CREATE [OR REPLACE] ROLE | USER | DATABASE ROLE [IF NOT EXISTS] name [properties]
-  create_role: $ => prec.left(seq(
+  // Snowflake: CREATE [OR REPLACE] DATABASE ROLE [IF NOT EXISTS] name [COMMENT = ..]
+  create_database_role: $ => prec.left(seq(
     $.keyword_create,
     optional($._or_replace),
-    choice($.keyword_user, $.keyword_role, seq($.keyword_database, $.keyword_role)),
+    $.keyword_database, $.keyword_role,
     optional($._if_not_exists),
     $.object_reference,
     optional($._snowflake_options),

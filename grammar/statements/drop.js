@@ -8,7 +8,6 @@ export default {
       $.drop_view,
       $.drop_schema,
       $.drop_database,
-      $.drop_role,
       $.drop_index,
       $.drop_function,
       $.drop_procedure,
@@ -49,16 +48,6 @@ export default {
     $.identifier,
     optional($._drop_behavior),
   )),
-
-  drop_role: $ => seq(
-    $.keyword_drop,
-    choice(
-      $.keyword_role,
-      $.keyword_user,
-    ),
-    optional($._if_exists),
-    $.identifier,
-  ),
 
   // Snowflake hybrid tables: DROP INDEX [IF EXISTS] table.index
   drop_index: $ => seq(

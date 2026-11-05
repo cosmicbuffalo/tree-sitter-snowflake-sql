@@ -1,20 +1,20 @@
 import { comma_list, paren_list, wrapped_in_parenthesis } from "../helpers.js";
-import { OBJECT_TYPES, SHOW_TARGETS, SCOPE_TYPES, EXECUTE_TYPES, EXECUTE_NAMELESS_TYPES, words_regex } from "../object-types.js";
+import { OBJECT_TYPES, SHOW_TARGETS, SCOPE_TYPES, words_regex } from "../object-types.js";
 
 // Which object types have a dedicated token/rule for each verb (they are excluded from the generic token)
 const without = (list, drop) => list.filter(t => !drop.includes(t));
-const DEDICATED_CREATE = ["FILE FORMAT", "STAGE", "WAREHOUSE", "PIPE", "STREAM", "TASK", "SEQUENCE", "MATERIALIZED VIEW",
+const DEDICATED_CREATE = ["FILE FORMAT", "STAGE", "PIPE", "STREAM", "TASK", "SEQUENCE", "MATERIALIZED VIEW",
   "DYNAMIC TABLE", "DYNAMIC ICEBERG TABLE", "ICEBERG TABLE", "HYBRID TABLE", "DATA METRIC FUNCTION", "MASKING POLICY",
   "ROW ACCESS POLICY", "DATABASE ROLE", "SEMANTIC VIEW"];
-const NAMED_ALTER = ["WAREHOUSE", "STAGE", "PIPE", "STREAM", "TASK", "DYNAMIC TABLE", "DYNAMIC ICEBERG TABLE", "SEQUENCE",
+const NAMED_ALTER = ["STAGE", "PIPE", "STREAM", "TASK", "DYNAMIC TABLE", "DYNAMIC ICEBERG TABLE", "SEQUENCE",
   "MATERIALIZED VIEW"];
-const NAMED_DROP = ["STAGE", "FILE FORMAT", "PIPE", "STREAM", "TASK", "WAREHOUSE", "SEQUENCE", "MATERIALIZED VIEW",
+const NAMED_DROP = ["STAGE", "FILE FORMAT", "PIPE", "STREAM", "TASK", "SEQUENCE", "MATERIALIZED VIEW",
   "DYNAMIC TABLE", "DYNAMIC ICEBERG TABLE"];
 // keyword tokens that may also be used as property names (TYPE = CSV, DEFAULT_DDL_COLLATION = ..)
 const KEYWORD_WORDS = ["key", "access", "policy", "row", "identity", "default", "data",
-  "type", "session", "account", "schema", "database", "role", "user", "table", "view", "stage", "share", "secure",
-  "integration", "function", "procedure", "option", "search", "grants", "pattern"];
-const KEYWORD_DESCRIBE = ["STAGE", "PIPE", "STREAM", "TASK", "WAREHOUSE", "DATA METRIC FUNCTION"];
+  "type", "session", "schema", "database", "table", "view", "stage", "secure",
+  "function", "procedure", "option", "search", "grants", "pattern"];
+const KEYWORD_DESCRIBE = ["STAGE", "PIPE", "STREAM", "TASK", "DATA METRIC FUNCTION"];
 
 
 export default {
@@ -101,9 +101,9 @@ export default {
   )),
 
   // --- CREATE rules for simple Snowflake objects ---
-  // Consolidated create for STAGE, FILE FORMAT, WAREHOUSE
+  // Consolidated create for STAGE, FILE FORMAT
   // Uses regex token to avoid 3 separate rules in _create_statement
-  snowflake_create_object_type: _ => /[sS][tT][aA][gG][eE]|[fF][iI][lL][eE][\s_]+[fF][oO][rR][mM][aA][tT]|[wW][aA][rR][eE][hH][oO][uU][sS][eE]/,
+  snowflake_create_object_type: _ => /[sS][tT][aA][gG][eE]|[fF][iI][lL][eE][\s_]+[fF][oO][rR][mM][aA][tT]/,
 
   create_snowflake_named_object: $ => prec.left(seq(
     $.keyword_create,
@@ -204,9 +204,9 @@ export default {
   ),
 
   // --- DROP rules for Snowflake objects ---
-  // Consolidated drop for STAGE, FILE FORMAT, PIPE, STREAM, TASK, WAREHOUSE
+  // Consolidated drop for STAGE, FILE FORMAT, PIPE, STREAM, TASK, SEQUENCE, MATERIALIZED VIEW, DYNAMIC TABLE
   // Uses regex token to avoid 6 separate rules in _drop_statement
-  snowflake_drop_object_type: _ => /[dD][yY][nN][aA][mM][iI][cC]\s+([iI][cC][eE][bB][eE][rR][gG]\s+)?[tT][aA][bB][lL][eE]|[sS][tT][aA][gG][eE]|[fF][iI][lL][eE][\s_]+[fF][oO][rR][mM][aA][tT]|[pP][iI][pP][eE]|[sS][tT][rR][eE][aA][mM]|[tT][aA][sS][kK]|[wW][aA][rR][eE][hH][oO][uU][sS][eE]|[sS][eE][qQ][uU][eE][nN][cC][eE]|[mM][aA][tT][eE][rR][iI][aA][lL][iI][zZ][eE][dD]\s+[vV][iI][eE][wW]/,
+  snowflake_drop_object_type: _ => /[dD][yY][nN][aA][mM][iI][cC]\s+([iI][cC][eE][bB][eE][rR][gG]\s+)?[tT][aA][bB][lL][eE]|[sS][tT][aA][gG][eE]|[fF][iI][lL][eE][\s_]+[fF][oO][rR][mM][aA][tT]|[pP][iI][pP][eE]|[sS][tT][rR][eE][aA][mM]|[tT][aA][sS][kK]|[sS][eE][qQ][uU][eE][nN][cC][eE]|[mM][aA][tT][eE][rR][iI][aA][lL][iI][zZ][eE][dD]\s+[vV][iI][eE][wW]/,
 
   drop_snowflake_named_object: $ => seq(
     $.keyword_drop,
@@ -297,10 +297,10 @@ export default {
     comma_list($.object_reference, true),
   ),
 
-  // Consolidated alter for WAREHOUSE, STAGE, PIPE, STREAM, TASK, DYNAMIC [ICEBERG] TABLE,
+  // Consolidated alter for STAGE, PIPE, STREAM, TASK, DYNAMIC [ICEBERG] TABLE,
   // SEQUENCE, MATERIALIZED VIEW
   // Uses regex token to avoid 5 separate rules in _alter_statement
-  snowflake_alter_object_type: _ => /[wW][aA][rR][eE][hH][oO][uU][sS][eE]|[sS][tT][aA][gG][eE]|[pP][iI][pP][eE]|[sS][tT][rR][eE][aA][mM]|[tT][aA][sS][kK]|[dD][yY][nN][aA][mM][iI][cC]\s+([iI][cC][eE][bB][eE][rR][gG]\s+)?[tT][aA][bB][lL][eE]|[sS][eE][qQ][uU][eE][nN][cC][eE]|[mM][aA][tT][eE][rR][iI][aA][lL][iI][zZ][eE][dD]\s+[vV][iI][eE][wW]/,
+  snowflake_alter_object_type: _ => /[sS][tT][aA][gG][eE]|[pP][iI][pP][eE]|[sS][tT][rR][eE][aA][mM]|[tT][aA][sS][kK]|[dD][yY][nN][aA][mM][iI][cC]\s+([iI][cC][eE][bB][eE][rR][gG]\s+)?[tT][aA][bB][lL][eE]|[sS][eE][qQ][uU][eE][nN][cC][eE]|[mM][aA][tT][eE][rR][iI][aA][lL][iI][zZ][eE][dD]\s+[vV][iI][eE][wW]/,
 
   alter_snowflake_named_object: $ => prec.left(seq(
     $.keyword_alter,
@@ -310,16 +310,15 @@ export default {
     $._snowflake_alter_actions,
   )),
 
-  // --- Generic Snowflake object types (ALERT, TAG, SHARE, etc.) ---
-  // Uses a single regex token for the object type keyword to avoid state explosion
-  // Matches: ALERT, TAG, SHARE, EXTERNAL TABLE, EVENT TABLE, NETWORK POLICY, RESOURCE MONITOR, INTEGRATION
-  snowflake_object_type: _ => words_regex(without(OBJECT_TYPES, DEDICATED_CREATE), true),
+  // --- Generic Snowflake object types (ALERT, TAG, EVENT TABLE, EXTERNAL TABLE, TASK GRAPH, ...) ---
+  // Uses a single regex token for the object type keyword to avoid state explosion (grammar/object-types.js)
+  snowflake_object_type: _ => words_regex(without(OBJECT_TYPES, DEDICATED_CREATE)),
 
   // object-type tokens for the other verbs; presented as snowflake_object_type nodes
-  _alter_object_type: _ => words_regex(without(OBJECT_TYPES, [...NAMED_ALTER, "ICEBERG TABLE", "HYBRID TABLE", "ACCOUNT", "ORGANIZATION"]), true),
-  _undrop_object_type: _ => words_regex(OBJECT_TYPES, true),
-  _drop_object_type: _ => words_regex(without(OBJECT_TYPES, NAMED_DROP), true),
-  _describe_object_type_token: _ => token(prec(1, words_regex(without(OBJECT_TYPES, KEYWORD_DESCRIBE), true))),
+  _alter_object_type: _ => words_regex(without(OBJECT_TYPES, [...NAMED_ALTER, "ICEBERG TABLE", "HYBRID TABLE"])),
+  _undrop_object_type: _ => words_regex(OBJECT_TYPES),
+  _drop_object_type: _ => words_regex(without(OBJECT_TYPES, NAMED_DROP)),
+  _describe_object_type_token: _ => token(prec(1, words_regex(without(OBJECT_TYPES, KEYWORD_DESCRIBE)))),
 
   create_snowflake_object: $ => prec.left(seq(
     $.keyword_create,
@@ -328,14 +327,10 @@ export default {
     $.snowflake_object_type,
     optional($._if_not_exists),
     $.object_reference,
-    // class instances: CREATE SNOWFLAKE.CORE.BUDGET b(args)
-    optional($.class_instance_arguments),
     optional($.column_definitions),
     repeat(seq(optional(','), $._generic_option)),
     optional(choice($.alert_condition, $._generic_tail)),
   )),
-
-  class_instance_arguments: $ => paren_list(choice($.named_parameter, $._expression)),
 
   // FROM <source> | AS <body> after the property list of a generic object
   _generic_tail: $ => seq(
@@ -375,16 +370,6 @@ export default {
     $.object_reference,
     $._snowflake_alter_actions,
   )),
-
-  // ALTER ACCOUNT [name] ... / ALTER ORGANIZATION ... : the object name is optional
-  alter_snowflake_global: $ => prec.left(seq(
-    $.keyword_alter,
-    alias($._alter_global_type, $.snowflake_object_type),
-    optional($.object_reference),
-    $._snowflake_alter_actions,
-  )),
-
-  _alter_global_type: _ => token(prec(1, words_regex(["ACCOUNT", "ORGANIZATION"]))),
 
   // ALTER PROCEDURE|FUNCTION [IF EXISTS] name(arg_type, ...) SET|UNSET|RENAME ...
   alter_routine: $ => prec.left(seq(
@@ -457,8 +442,7 @@ export default {
   _describe_object_type: $ => choice(
     $.keyword_table, $.keyword_view, $.keyword_schema, $.keyword_database,
     $.keyword_stage, $.keyword_pipe, $.keyword_stream, $.keyword_task,
-    $.keyword_warehouse, $.keyword_function, $.keyword_procedure,
-    $.keyword_user, $.keyword_role,
+    $.keyword_function, $.keyword_procedure,
     alias($._describe_object_type_token, $.snowflake_object_type),
   ),
 
@@ -514,17 +498,8 @@ export default {
         $.keyword_immediate, $.keyword_from, choice($.stage_reference, $.literal, $.object_reference),
         optional(seq($.keyword_using, paren_list($.named_parameter, true))),
       ),
-      // EXECUTE DBT PROJECT p ARGS = '..' | EXECUTE DCM PROJECT p PLAN FROM '@stage/dir' | EXECUTE JOB SERVICE IN COMPUTE POOL ..
-      prec.left(seq(
-        alias($._execute_object_type, $.snowflake_object_type),
-        $.object_reference,
-        optional(paren_list($._expression)),
-        repeat($._execute_clause),
-      )),
-      prec.left(seq(
-        alias($._execute_nameless_type, $.snowflake_object_type),
-        repeat1($._execute_clause),
-      )),
+      // EXECUTE ALERT name
+      seq($.keyword_alert, $.object_reference),
       // Dollar-quoted scripting block: EXECUTE IMMEDIATE $$ BEGIN ... END $$
       // Higher precedence ensures this is preferred over the _expression fallback
       // which would consume $$...$$ as an opaque literal string
@@ -548,19 +523,6 @@ export default {
     ),
   ),
 
-  _execute_object_type: _ => token(prec(1, words_regex(EXECUTE_TYPES))),
-  _execute_nameless_type: _ => token(prec(1, words_regex(EXECUTE_NAMELESS_TYPES))),
-
-  _execute_clause: $ => choice(
-    $._snowflake_property,
-    $._generic_scope_clause,
-    // USING CONFIGURATION DEV (k => v)  /  USING CONFIG = ..
-    seq($.keyword_using, $._snowflake_property),
-    seq($.keyword_using, $.identifier, optional($.identifier), optional(paren_list($.named_parameter))),
-    // DEPLOY AS "name"
-    seq($.keyword_as, $.identifier),
-  ),
-
   // one option of a generic CREATE / ALTER statement
   _generic_option: $ => choice(
     $._snowflake_property,
@@ -573,20 +535,10 @@ export default {
     // ALERT: FROM TEMPLATE name
     seq($.keyword_from, $.keyword_template, $.identifier),
     seq($.keyword_using, $.keyword_template, wrapped_in_parenthesis($._select_statement)),
-    // AS REPLICA OF org.account.name
-    seq($.keyword_as, $.keyword_replica, $.keyword_of, $.object_reference),
     $.with_tag_clause,
     $.clone_clause,
     $.copy_clause,
     $.cluster_by,
-    $._generic_scope_clause,
-  ),
-
-  // IN COMPUTE POOL p | FROM [SPECIFICATION] src | WITH SPECIFICATION $$..$$ | USING ..
-  _generic_scope_clause: $ => choice(
-    seq($.keyword_in, optional($.snowflake_scope_type), $.object_reference),
-    seq($.keyword_from, optional($.keyword_specification), choice($.literal, $.stage_reference, $.object_reference, wrapped_in_parenthesis($._select_statement))),
-    seq($.keyword_with, $.keyword_specification, $.literal),
   ),
 
   // --- UNDROP ---
@@ -648,8 +600,8 @@ export default {
   )),
 
   // --- GRANT / REVOKE ---
-  // Privilege grants (incl. OWNERSHIP and CALLER), role grants (ROLE / DATABASE ROLE / APPLICATION ROLE /
-  // SERVICE ROLE) and the CURRENT GRANTS / GRANT OPTION modifiers.
+  // Privilege grants (incl. OWNERSHIP and CALLER) on data objects, role grants (ROLE / DATABASE ROLE)
+  // to ROLE / DATABASE ROLE grantees, and the CURRENT GRANTS / GRANT OPTION modifiers.
   grant_statement: $ => prec.left(seq(
     $.keyword_grant,
     choice(
@@ -677,9 +629,9 @@ export default {
     optional($.keyword_cascade),
   )),
 
-  // [DATABASE | APPLICATION | SERVICE] ROLE name
+  // [DATABASE] ROLE name
   _grant_role: $ => seq(
-    optional(choice($.keyword_database, $.keyword_application, $.keyword_service)),
+    optional($.keyword_database),
     $.keyword_role,
     $._grant_name,
   ),
@@ -687,27 +639,27 @@ export default {
   // COPY CURRENT GRANTS | REVOKE CURRENT GRANTS
   _current_grants: $ => seq(choice($.keyword_copy, $.keyword_revoke), $.keyword_current, $.keyword_grants),
 
-  // a role/user/share name: plain identifier, dotted (db.role) or service role (svc!role)
+  // a role name: plain identifier or dotted database role (db.role)
   _grant_name: $ => choice(
     $.identifier,
     alias($._dotted_reference, $.object_reference),
-    alias(seq($.identifier, '!', $.identifier), $.object_reference),
   ),
 
-  // GRANT/REVOKE target: [type] name[(arg types)] | ACCOUNT | { ALL | FUTURE } <objects> IN { SCHEMA | DATABASE | ACCOUNT } [name]
+  // GRANT/REVOKE target: [type] name[(arg types)] | { ALL | FUTURE } <objects> IN { SCHEMA | DATABASE name | ACCOUNT }
   _grant_target: $ => choice(
     seq(
       optional($._grant_object_type),
       $.object_reference,
       optional($.function_arguments),
     ),
-    $.keyword_account,
     seq(
       choice($.keyword_all, $.keyword_future),
       alias($.snowflake_show_target, $.snowflake_object_type),
       $.keyword_in,
-      choice($.keyword_schema, $.keyword_database, $.keyword_account),
-      optional($.object_reference),
+      choice(
+        seq(choice($.keyword_schema, $.keyword_database), $.object_reference),
+        $.keyword_account,
+      ),
     ),
   ),
 
@@ -720,8 +672,8 @@ export default {
     ),
   ),
 
-  // one privilege: its words (CREATE MATERIALIZED VIEW) and, for class instances, a dotted class name
-  privilege: $ => repeat1(choice($.identifier, alias($._dotted_reference, $.object_reference))),
+  // one privilege: its words (SELECT, CREATE MATERIALIZED VIEW, APPLY MASKING POLICY)
+  privilege: $ => repeat1($.identifier),
 
   // Grant object type: existing keywords, plus the generic type vocabulary for everything else
   _grant_object_type: $ => choice(
@@ -729,10 +681,7 @@ export default {
     $.keyword_view,
     $.keyword_schema,
     $.keyword_database,
-    $.keyword_role,
-    $.keyword_warehouse,
     $.keyword_stage,
-    $.keyword_integration,
     $.keyword_procedure,
     $.keyword_function,
     $.keyword_task,
@@ -744,17 +693,12 @@ export default {
   ),
 
   _grant_type_token: _ => token(prec(1, words_regex(
-    without(OBJECT_TYPES, ["STAGE", "WAREHOUSE", "PIPE", "STREAM", "TASK", "SEQUENCE", "DYNAMIC TABLE", "INTEGRATION", "SCHEMA", "DATABASE", "FILE FORMAT", "ACCOUNT"])
-      .concat(["DATA EXCHANGE LISTING", "WORKSPACE", "USER", "FILE FORMAT", "ORGANIZATION LISTING"]),
+    without(OBJECT_TYPES, ["STAGE", "PIPE", "STREAM", "TASK", "SEQUENCE", "DYNAMIC TABLE"]),
   ))),
 
   _grant_grantee: $ => choice(
     seq($.keyword_database, $.keyword_role, $._grant_name),
-    seq($.keyword_application, $.keyword_role, $._grant_name),
-    seq($.keyword_application, $._grant_name),
     seq($.keyword_role, $._grant_name),
-    seq($.keyword_user, $._grant_name),
-    seq($.keyword_share, $._grant_name),
     $.identifier,
   ),
 
@@ -762,9 +706,8 @@ export default {
   // snowflake_show_target is used directly in _show_statement (index.js) to
   // share the SHOW keyword prefix and avoid parse table explosion.
 
-  // Single token matching all SHOW-able Snowflake plural object types
-  // Added: ALERTS, TAGS, SHARES, INTEGRATIONS, TABLES
-  snowflake_show_target: _ => words_regex(SHOW_TARGETS, true),
+  // Single token matching all SHOW-able Snowflake plural object types (grammar/object-types.js)
+  snowflake_show_target: _ => words_regex(SHOW_TARGETS),
 
   snowflake_scope_type: _ => words_regex(SCOPE_TYPES),
 
@@ -777,7 +720,6 @@ export default {
     optional($.keyword_terse),
     $.snowflake_show_target,
     optional(seq($.keyword_root, $.keyword_only)),
-    optional($.keyword_instances),
     optional($.keyword_history),
     repeat1($._show_clause),
     optional(seq($.keyword_root, $.keyword_only)),
@@ -799,7 +741,7 @@ export default {
     // ON | TO | OF | FOR | BY [type] name[(arg types)]   (SHOW GRANTS ON TABLE t, SHOW GRANTS TO ROLE r, ...)
     seq(
       choice($.keyword_on, $.keyword_to, $.keyword_of, $.keyword_for, $.keyword_by),
-      optional(choice($._grant_object_type, $.snowflake_scope_type)),
+      optional(choice($._grant_object_type, $.keyword_role, $.snowflake_scope_type)),
       $.object_reference,
       optional($.function_arguments),
     ),

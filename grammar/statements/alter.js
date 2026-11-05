@@ -8,11 +8,9 @@ export default {
       $.alter_view,
       $.alter_schema,
       $.alter_database,
-      $.alter_role,
       // Snowflake
       $.alter_snowflake_named_object,
       $.alter_snowflake_object,
-      $.alter_snowflake_global,
       $.alter_routine,
     ),
   ),
@@ -304,15 +302,6 @@ export default {
   alter_database: $ => seq(
     $.keyword_alter,
     $.keyword_database,
-    optional($._if_exists),
-    $.object_reference,
-    $._alter_container_action,
-  ),
-
-  // ALTER ROLE | USER [IF EXISTS] name { RENAME TO new | SET props | UNSET prop }
-  alter_role: $ => seq(
-    $.keyword_alter,
-    choice($.keyword_role, $.keyword_user),
     optional($._if_exists),
     $.object_reference,
     $._alter_container_action,
