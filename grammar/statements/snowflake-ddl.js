@@ -10,8 +10,7 @@ const NAMED_ALTER = ["WAREHOUSE", "STAGE", "PIPE", "STREAM", "TASK", "DYNAMIC TA
   "MATERIALIZED VIEW"];
 const NAMED_DROP = ["STAGE", "FILE FORMAT", "PIPE", "STREAM", "TASK", "WAREHOUSE", "SEQUENCE", "MATERIALIZED VIEW",
   "DYNAMIC TABLE", "DYNAMIC ICEBERG TABLE"];
-// keyword tokens that can also be used as plain words / property names inside generic options
-const PREPOSITION_WORDS = ["to", "on", "for", "by", "of"];
+// keyword tokens that may also be used as property names (TYPE = CSV, DEFAULT_DDL_COLLATION = ..)
 const KEYWORD_WORDS = ["key", "access", "policy", "row", "identity", "default", "data",
   "type", "session", "account", "schema", "database", "role", "user", "table", "view", "stage", "share", "secure",
   "integration", "function", "procedure", "option", "search", "grants", "pattern"];
@@ -217,27 +216,26 @@ export default {
   ),
 
   // --- ALTER rules for Snowflake objects ---
-  // Common alter actions for Snowflake objects
+  // Structured ALTER actions shared by the named and generic ALTER statements
   _snowflake_alter_actions: $ => choice(
-    $._alter_keyword_actions,
-    $._generic_alter_words,
-  ),
-
-  _alter_keyword_actions: $ => choice(
     // ALTER ALERT a FROM TEMPLATE t SET ..
     seq($.keyword_from, $.keyword_template, $.identifier, $.keyword_set, $._snowflake_options),
     seq($.keyword_set, $._snowflake_options),
     seq($.keyword_set, $.tag_assignments),
     seq($.keyword_unset, $.tag_names),
-    // UNSET a, b  (two or more names)
-    seq($.keyword_unset, $.identifier, repeat1(seq(',', $.identifier))),
-    seq($.keyword_unset, $.generic_clause),
-    seq($.keyword_set, $.generic_clause),
-    // ALTER POLICY p SET BODY -> expr
+    // UNSET name [, name ..]
+    seq($.keyword_unset, comma_list($.identifier, true)),
+    // SET | UNSET SECURE (functions, materialized views)
+    seq(choice($.keyword_set, $.keyword_unset), $.keyword_secure),
+    // ALTER MASKING | ROW ACCESS POLICY p SET BODY -> expr
     seq($.keyword_set, $.keyword_body, '->', $._expression),
     $.rename_object,
-    seq(choice($.keyword_suspend, $.keyword_resume), optional($.generic_clause)),
-    seq($.keyword_refresh, repeat(choice($.generic_clause, $._snowflake_property, alias($._plain_literal, $.literal)))),
+    // SUSPEND | RESUME [RECLUSTER | MATERIALIZATION name]
+    seq(
+      choice($.keyword_suspend, $.keyword_resume),
+      optional(choice($.keyword_recluster, $.keyword_discovery, seq($.keyword_materialization, $.identifier))),
+    ),
+    $.refresh_action,
     // ALTER TASK ... MODIFY AS body | MODIFY WHEN expr
     seq($.keyword_modify, choice(
       seq($.keyword_as, choice($.snowflake_scripting_block, $.statement)),
@@ -246,8 +244,40 @@ export default {
     // ALTER TASK ... ADD AFTER task | REMOVE AFTER task
     seq($.keyword_add, $.keyword_after, comma_list($.object_reference, true)),
     seq($.keyword_remove, $.keyword_after, comma_list($.object_reference, true)),
-    $.generic_action,
+    // ALTER EXTERNAL TABLE t ADD | REMOVE FILES ('a', 'b')
+    seq(choice($.keyword_add, $.keyword_remove), $.keyword_files, paren_list(alias($._literal_string, $.literal), true)),
+    // ALTER EXTERNAL TABLE t ADD PARTITION (c = 'v', ..) LOCATION 'p' | DROP PARTITION LOCATION 'p'
+    seq($.keyword_add, $.keyword_partition, '(', $._snowflake_options, ')', $.keyword_location, alias($._literal_string, $.literal)),
+    seq($.keyword_drop, $.keyword_partition, $.keyword_location, alias($._literal_string, $.literal)),
+    // ALTER SEMANTIC VIEW v DROP MATERIALIZATION m
+    seq($.keyword_drop, $.keyword_materialization, $.identifier),
+    // table-like maintenance (dynamic tables, materialized views)
+    seq($.keyword_swap, $.keyword_with, $.object_reference),
+    $.cluster_by,
+    seq($.keyword_drop, $.keyword_clustering, $.keyword_key),
+    prec.right(seq(choice($.keyword_add, $.keyword_drop), $.keyword_search, $.keyword_optimization,
+      optional(seq($.keyword_on, comma_list($.invocation, true))))),
+    seq(choice($.keyword_add, $.keyword_drop), $.policy_clause),
+    seq($.keyword_drop, $.keyword_storage, $.keyword_lifecycle, $.keyword_policy),
+    // ALTER SCHEMA s ENABLE | DISABLE MANAGED ACCESS
+    seq(choice($.keyword_enable, $.keyword_disable), $.keyword_managed, $.keyword_access),
+    // ALTER TASK GRAPH g COMMIT
+    $.keyword_commit,
+    // ALTER DYNAMIC TABLE t UNSET FROZEN WHERE
+    seq($.keyword_unset, $.keyword_frozen, $.keyword_where),
   ),
+
+  // REFRESH ['path'] | REFRESH PREFIX = '..' MODIFIED_AFTER = '..' | REFRESH SUBPATH = '..'
+  // | REFRESH COPY SESSION | REFRESH MATERIALIZATION name
+  refresh_action: $ => prec.right(seq(
+    $.keyword_refresh,
+    optional(choice(
+      alias($._literal_string, $.literal),
+      $._snowflake_options,
+      seq($.keyword_copy, $.keyword_session),
+      seq($.keyword_materialization, $.identifier),
+    )),
+  )),
 
   // SET TAG a = 'x', b.c = 'y'
   tag_assignments: $ => seq(
@@ -266,28 +296,6 @@ export default {
     $.keyword_tag,
     comma_list($.object_reference, true),
   ),
-
-  // name = v1, v2, v3  (unparenthesized value list, e.g. ADD ACCOUNTS = a, b)
-  _action_property: $ => seq(
-    field('name', $.identifier),
-    '=',
-    field('value', $._property_value),
-    repeat(seq(',', field('value', $._property_value))),
-  ),
-
-  // ADD / DROP / MODIFY / REMOVE <words and properties>, used by the long tail of ALTER forms
-  generic_action: $ => prec.left(seq(
-    choice($.keyword_add, $.keyword_drop, $.keyword_modify, $.keyword_remove, $.keyword_create, $.keyword_enable, $.keyword_disable, $.keyword_replace),
-    repeat1(choice(
-      alias($._action_clause, $.generic_clause),
-      $.with_tag_clause,
-      // ADD PARTITION (col = 'v', ..) LOCATION 'path'
-      seq($.keyword_partition, optional(seq('(', $._snowflake_options, ')'))),
-    )),
-  )),
-
-  // bare-word actions: ALTER .. FORCE, ALTER .. UPGRADE TO .. (no leading keyword token)
-  _generic_alter_words: $ => $.generic_clause,
 
   // Consolidated alter for WAREHOUSE, STAGE, PIPE, STREAM, TASK, DYNAMIC [ICEBERG] TABLE,
   // SEQUENCE, MATERIALIZED VIEW
@@ -373,7 +381,7 @@ export default {
     $.keyword_alter,
     alias($._alter_global_type, $.snowflake_object_type),
     optional($.object_reference),
-    $._alter_keyword_actions,
+    $._snowflake_alter_actions,
   )),
 
   _alter_global_type: _ => token(prec(1, words_regex(["ACCOUNT", "ORGANIZATION"]))),
@@ -490,7 +498,15 @@ export default {
   execute_statement: $ => seq(
     $.keyword_execute,
     choice(
-      seq($.keyword_task, $.object_reference, optional($.generic_clause), optional(seq($.keyword_using, $._snowflake_property))),
+      seq(
+        $.keyword_task, $.object_reference,
+        optional(choice(
+          $.keyword_await,
+          seq($.keyword_retry, $.keyword_last),
+          seq($.keyword_retry, $.keyword_graph, $.keyword_run, $.keyword_group, alias($._literal_string, $.literal)),
+        )),
+        optional(seq($.keyword_using, $._snowflake_property)),
+      ),
       // EXECUTE USING POLICY_CONTEXT(k => v, ..) AS <query>
       seq($.keyword_using, $.keyword_policy_context, paren_list($.named_parameter, true), $.keyword_as, $._dml_read),
       // EXECUTE IMMEDIATE FROM @stage/file.sql [USING (name => value, ..)]
@@ -537,7 +553,6 @@ export default {
 
   _execute_clause: $ => choice(
     $._snowflake_property,
-    $.generic_clause,
     $._generic_scope_clause,
     // USING CONFIGURATION DEV (k => v)  /  USING CONFIG = ..
     seq($.keyword_using, $._snowflake_property),
@@ -546,43 +561,12 @@ export default {
     seq($.keyword_as, $.identifier),
   ),
 
-  // A run of plain words with an optional trailing value: PLAN DELTA, RETRY LAST, AWAIT, FORK src, UPGRADE TO ICEBERG VERSION 3,
-  // AS REPLICA OF org.acct.group. Used for the long tail of statement options that are not NAME = value pairs.
-  generic_clause: $ => prec.right(seq(
-    $._clause_word,
-    repeat(choice($._clause_word, $._clause_value)),
-  )),
-
-  // identifiers plus the keyword tokens that commonly occur inside option phrases
-  _clause_word: $ => choice(
-    $.identifier,
-    $._keyword_word,
-  ),
-
-  // keyword tokens that may also appear as bare words or property names in generic options
-  _keyword_word: $ => choice(...[...PREPOSITION_WORDS, ...KEYWORD_WORDS].map(w => $['keyword_' + w])),
-
-  // generic clause that may also contain NAME = value pairs (after ADD / DROP / MODIFY ..)
-  _action_clause: $ => prec.right(seq(
-    $._clause_word,
-    repeat(choice($._clause_word, $._clause_value, '=', ',')),
-  )),
-
-  _clause_value: $ => choice(
-    alias($._plain_literal, $.literal),
-    alias($._property_list, $.list),
-    alias($._dotted_reference, $.object_reference),
-    $.stage_reference,
-    $.snowflake_variable_reference,
-    // PARTITION (col = 'v', ..)
-    seq('(', $._snowflake_options, ')'),
-  ),
-
   // one option of a generic CREATE / ALTER statement
   _generic_option: $ => choice(
     $._snowflake_property,
     seq($.keyword_with, $._snowflake_property),
-    seq($.keyword_with, $.generic_clause),
+    // TASK GRAPH: TASK_DEFAULTS (k = v, ..)
+    seq($.keyword_task_defaults, '(', $._snowflake_options, ')'),
     // TAG: ALLOWED_VALUES 'a', 'b'
     prec.right(seq($.keyword_allowed_values, comma_list(alias($._plain_literal, $.literal), true))),
     $.table_partition,
@@ -595,7 +579,6 @@ export default {
     $.clone_clause,
     $.copy_clause,
     $.cluster_by,
-    $.generic_clause,
     $._generic_scope_clause,
   ),
 

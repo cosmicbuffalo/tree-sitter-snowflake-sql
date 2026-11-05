@@ -520,5 +520,13 @@
  (keyword_convert)
  (keyword_upgrade)
  (keyword_optimize)
+ (keyword_materialization)
+ (keyword_version)
+ (keyword_retry)
+ (keyword_graph)
+ (keyword_run)
+ (keyword_location)
+ (keyword_discovery)
+ (keyword_task_defaults)
 ] @keyword
 ;; AUTO-KEYWORDS-END

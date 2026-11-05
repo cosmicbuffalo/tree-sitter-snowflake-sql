@@ -133,133 +133,6 @@ CREATE SNOWFLAKE.DATA_PRIVACY.CUSTOM_CLASSIFIER cc1();
       (class_instance_arguments))))
 
 ================================================================================
-Generic ALTER actions: SET, UNSET, tags, ADD lists, class instances
-================================================================================
-
-ALTER SHARE sh1 ADD ACCOUNTS = org1.acct1, org1.acct2;
-ALTER AGENT ag1 SET COMMENT = 'prod' PROFILE = 'p';
-ALTER AGENT ag1 UNSET TAG cost_center, dept;
-ALTER SNAPSHOT POLICY sp1 SET SCHEDULE = '120 MINUTE';
-ALTER BACKUP POLICY bp1 RENAME TO bp2;
-ALTER STREAMLIT app1 UNSET SECRETS, EXTERNAL_ACCESS_INTEGRATIONS;
-ALTER ARTIFACT REPOSITORY r1 SET TAG env = 'prod', owner = 'me';
-ALTER SNOWFLAKE.CORE.BUDGET b1 SET TAG dept = 'finance';
-ALTER NETWORK POLICY np1 SET ALLOWED_IP_LIST = ('1.2.3.4');
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (alter_snowflake_object
-      (keyword_alter)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (generic_action
-        (keyword_add)
-        (generic_clause
-          (identifier)
-          (object_reference
-            (identifier)
-            (identifier))
-          (object_reference
-            (identifier)
-            (identifier))))))
-  (statement
-    (alter_snowflake_object
-      (keyword_alter)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_set)
-      name: (keyword_comment)
-      value: (literal)
-      name: (identifier)
-      value: (literal)))
-  (statement
-    (alter_snowflake_object
-      (keyword_alter)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_unset)
-      (tag_names
-        (keyword_tag)
-        (object_reference
-          name: (identifier))
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (alter_snowflake_object
-      (keyword_alter)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_set)
-      name: (identifier)
-      value: (literal)))
-  (statement
-    (alter_snowflake_object
-      (keyword_alter)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (rename_object
-        (keyword_rename)
-        (keyword_to)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (alter_snowflake_object
-      (keyword_alter)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_unset)
-      (identifier)
-      (identifier)))
-  (statement
-    (alter_snowflake_object
-      (keyword_alter)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_set)
-      (tag_assignments
-        (keyword_tag)
-        (tag_assignment
-          name: (object_reference
-            name: (identifier))
-          value: (literal))
-        (tag_assignment
-          name: (object_reference
-            name: (identifier))
-          value: (literal)))))
-  (statement
-    (alter_snowflake_object
-      (keyword_alter)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_set)
-      (tag_assignments
-        (keyword_tag)
-        (tag_assignment
-          name: (object_reference
-            name: (identifier))
-          value: (literal)))))
-  (statement
-    (alter_snowflake_object
-      (keyword_alter)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_set)
-      name: (identifier)
-      value: (list
-        (literal)))))
-
-================================================================================
 Generic DROP, DESCRIBE and UNDROP
 ================================================================================
 
@@ -1935,200 +1808,6 @@ REMOVE @%tbl1;
         (stage_reference)))))
 
 ================================================================================
-EXECUTE for projects, bundles, services, notebooks, tasks and scripts
-================================================================================
-
-EXECUTE DBT PROJECT d1.s1.p1 ARGS = 'run --target dev' IMPORTS = ('@st/dir/' AS 'state');
-EXECUTE DCM PROJECT p1 PLAN DELTA USING CONFIGURATION DEV (wh => 'M') FROM '@d1.s1.st/p1';
-EXECUTE DCM PROJECT p1 DEPLOY AS "upd" USING CONFIGURATION PROD FROM '@d1.s1.st/p1';
-EXECUTE CODE BUNDLE b1 ENTRYPOINT = 'main.py' ARGUMENTS = ('--a', 'b');
-EXECUTE JOB SERVICE IN COMPUTE POOL cp1 NAME = js1 REPLICAS = 3 FROM SPECIFICATION $$ spec: {} $$;
-EXECUTE INFERENCE JOB SERVICE IN COMPUTE POOL cp1 WITH SPECIFICATION $$ x: 1 $$ FROM (SELECT id FROM reviews) MODEL = d1.s1.m1;
-EXECUTE NOTEBOOK d1.s1.nb1('a', 'b');
-EXECUTE NOTEBOOK PROJECT d1.s1.np1 MAIN_FILE = 'n.ipynb' COMPUTE_POOL = 'cp';
-EXECUTE ALERT al1;
-EXECUTE TASK t1 AWAIT;
-EXECUTE TASK GRAPH g1 RETRY LAST;
-EXECUTE IMMEDIATE FROM @st/scripts/setup.sql USING (env => 'dev', n => 0);
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (snowflake_object_type)
-        (object_reference
-          database: (identifier)
-          schema: (identifier)
-          name: (identifier))
-        name: (identifier)
-        value: (literal)
-        name: (identifier)
-        value: (list
-          (aliased_value
-            (literal)
-            (keyword_as)
-            (literal))))))
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (snowflake_object_type)
-        (object_reference
-          name: (identifier))
-        (generic_clause
-          (identifier)
-          (identifier))
-        (keyword_using)
-        (identifier)
-        (identifier)
-        (named_parameter
-          name: (identifier)
-          value: (literal))
-        (keyword_from)
-        (literal))))
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (snowflake_object_type)
-        (object_reference
-          name: (identifier))
-        (generic_clause
-          (identifier))
-        (keyword_as)
-        (identifier)
-        (keyword_using)
-        (identifier)
-        (identifier)
-        (keyword_from)
-        (literal))))
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (snowflake_object_type)
-        (object_reference
-          name: (identifier))
-        name: (identifier)
-        value: (literal)
-        name: (identifier)
-        value: (list
-          (literal)
-          (literal)))))
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (snowflake_object_type)
-        (keyword_in)
-        (snowflake_scope_type)
-        (object_reference
-          name: (identifier))
-        name: (identifier)
-        value: (identifier)
-        name: (identifier)
-        value: (literal)
-        (keyword_from)
-        (keyword_specification)
-        (literal))))
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (snowflake_object_type)
-        (keyword_in)
-        (snowflake_scope_type)
-        (object_reference
-          name: (identifier))
-        (keyword_with)
-        (keyword_specification)
-        (literal)
-        (keyword_from)
-        (select
-          (keyword_select)
-          (select_expression
-            (term
-              value: (field
-                name: (identifier)))))
-        (from
-          (keyword_from)
-          (relation
-            (object_reference
-              name: (identifier))))
-        name: (identifier)
-        value: (object_reference
-          (identifier)
-          (identifier)
-          (identifier)))))
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (snowflake_object_type)
-        (object_reference
-          database: (identifier)
-          schema: (identifier)
-          name: (identifier))
-        (literal)
-        (literal))))
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (snowflake_object_type)
-        (object_reference
-          database: (identifier)
-          schema: (identifier)
-          name: (identifier))
-        name: (identifier)
-        value: (literal)
-        name: (identifier)
-        value: (literal))))
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (snowflake_object_type)
-        (object_reference
-          name: (identifier)))))
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (keyword_task)
-        (object_reference
-          name: (identifier))
-        (generic_clause
-          (identifier)))))
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (snowflake_object_type)
-        (object_reference
-          name: (identifier))
-        (generic_clause
-          (identifier)
-          (identifier)))))
-  (statement
-    (snowflake_statement
-      (execute_statement
-        (keyword_execute)
-        (keyword_immediate)
-        (keyword_from)
-        (stage_reference)
-        (keyword_using)
-        (named_parameter
-          name: (identifier)
-          value: (literal))
-        (named_parameter
-          name: (identifier)
-          value: (literal))))))
-
-================================================================================
 Functions: OR ALTER, service functions, masking policy column actions
 ================================================================================
 
@@ -2712,298 +2391,6 @@ ALTER TABLE t1 ALTER COLUMN c1 SET TAG t1 = 'a';
             value: (literal)))))))
 
 ================================================================================
-Generic CREATE with modifiers, WITH phrases and policy bodies
-================================================================================
-
-CREATE TEMPORARY AGENT ag1 COMMENT = 'x';
-CREATE OR REPLACE SECURE AGENT ag2 FROM SPECIFICATION $$ a: 1 $$;
-CREATE EXTERNAL AGENT ea1 WITH VERSION "v1";
-CREATE CONNECTION c1 AS REPLICA OF org1.acct1.c0;
-CREATE AGGREGATION POLICY ap1 AS () RETURNS AGGREGATION_CONSTRAINT -> AGGREGATION_CONSTRAINT(MIN_GROUP_SIZE => 2);
-CREATE BACKUP SET bs1 FOR TABLE t1 WITH BACKUP POLICY bp1;
-CREATE OR ALTER SCHEMA s9;
-CREATE OR ALTER DATABASE db9;
-CREATE OR ALTER STAGE st9 URL = 's3://b/p/';
-CREATE SERVICE svc1 IN COMPUTE POOL cp1 FROM SPECIFICATION $$ spec: {} $$ MIN_INSTANCES = 1;
-CREATE POSTGRES INSTANCE pg2 FORK pg1;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (keyword_temporary)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      name: (keyword_comment)
-      value: (literal)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (keyword_or)
-      (keyword_replace)
-      (keyword_secure)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_from)
-      (keyword_specification)
-      (literal)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_with)
-      (generic_clause
-        (identifier)
-        (literal))))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_as)
-      (keyword_replica)
-      (keyword_of)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_as)
-      (function_arguments)
-      (keyword_returns)
-      custom_type: (object_reference
-        name: (identifier))
-      (invocation
-        (object_reference
-          name: (identifier))
-        parameter: (named_parameter
-          name: (identifier)
-          value: (literal)))))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (generic_clause
-        (keyword_for)
-        (keyword_table)
-        (identifier))
-      (keyword_with)
-      (generic_clause
-        (identifier)
-        (keyword_policy)
-        (identifier))))
-  (statement
-    (create_schema
-      (keyword_create)
-      (keyword_or)
-      (keyword_alter)
-      (keyword_schema)
-      (object_reference
-        name: (identifier))))
-  (statement
-    (create_database
-      (keyword_create)
-      (keyword_or)
-      (keyword_alter)
-      (keyword_database)
-      (object_reference
-        name: (identifier))))
-  (statement
-    (create_snowflake_named_object
-      (keyword_create)
-      (keyword_or)
-      (keyword_alter)
-      (snowflake_create_object_type)
-      (object_reference
-        name: (identifier))
-      name: (identifier)
-      value: (literal)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_in)
-      (snowflake_scope_type)
-      (object_reference
-        name: (identifier))
-      (keyword_from)
-      (keyword_specification)
-      (literal)
-      name: (identifier)
-      value: (literal)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (generic_clause
-        (identifier)
-        (identifier)))))
-
-================================================================================
-Generic CREATE with modifiers, WITH phrases and policy bodies
-================================================================================
-
-CREATE TEMPORARY AGENT ag1 COMMENT = 'x';
-CREATE OR REPLACE SECURE AGENT ag2 FROM SPECIFICATION $$ a: 1 $$;
-CREATE EXTERNAL AGENT ea1 WITH VERSION "v1";
-CREATE CONNECTION c1 AS REPLICA OF org1.acct1.c0;
-CREATE AGGREGATION POLICY ap1 AS () RETURNS AGGREGATION_CONSTRAINT -> AGGREGATION_CONSTRAINT(MIN_GROUP_SIZE => 2);
-CREATE BACKUP SET bs1 FOR TABLE t1 WITH BACKUP POLICY bp1;
-CREATE OR ALTER SCHEMA s9;
-CREATE OR ALTER DATABASE db9;
-CREATE OR ALTER STAGE st9 URL = 's3://b/p/';
-CREATE SERVICE svc1 IN COMPUTE POOL cp1 FROM SPECIFICATION $$ spec: {} $$ MIN_INSTANCES = 1;
-CREATE POSTGRES INSTANCE pg2 FORK pg1;
-
---------------------------------------------------------------------------------
-
-(program
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (keyword_temporary)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      name: (keyword_comment)
-      value: (literal)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (keyword_or)
-      (keyword_replace)
-      (keyword_secure)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_from)
-      (keyword_specification)
-      (literal)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_with)
-      (generic_clause
-        (identifier)
-        (literal))))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_as)
-      (keyword_replica)
-      (keyword_of)
-      (object_reference
-        database: (identifier)
-        schema: (identifier)
-        name: (identifier))))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_as)
-      (function_arguments)
-      (keyword_returns)
-      custom_type: (object_reference
-        name: (identifier))
-      (invocation
-        (object_reference
-          name: (identifier))
-        parameter: (named_parameter
-          name: (identifier)
-          value: (literal)))))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (generic_clause
-        (keyword_for)
-        (keyword_table)
-        (identifier))
-      (keyword_with)
-      (generic_clause
-        (identifier)
-        (keyword_policy)
-        (identifier))))
-  (statement
-    (create_schema
-      (keyword_create)
-      (keyword_or)
-      (keyword_alter)
-      (keyword_schema)
-      (object_reference
-        name: (identifier))))
-  (statement
-    (create_database
-      (keyword_create)
-      (keyword_or)
-      (keyword_alter)
-      (keyword_database)
-      (object_reference
-        name: (identifier))))
-  (statement
-    (create_snowflake_named_object
-      (keyword_create)
-      (keyword_or)
-      (keyword_alter)
-      (snowflake_create_object_type)
-      (object_reference
-        name: (identifier))
-      name: (identifier)
-      value: (literal)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (keyword_in)
-      (snowflake_scope_type)
-      (object_reference
-        name: (identifier))
-      (keyword_from)
-      (keyword_specification)
-      (literal)
-      name: (identifier)
-      value: (literal)))
-  (statement
-    (create_snowflake_object
-      (keyword_create)
-      (snowflake_object_type)
-      (object_reference
-        name: (identifier))
-      (generic_clause
-        (identifier)
-        (identifier)))))
-
-================================================================================
 Iceberg, pipe, alert, tag, external table options, transactions, DMF attachment
 ================================================================================
 
@@ -3360,6 +2747,7 @@ SELECT SNOWFLAKE.CORE.AVG(SELECT salary FROM hr.t) AS a;
                   name: (identifier)))))
           (keyword_as)
           alias: (identifier))))))
+
 ================================================================================
 CREATE SEMANTIC VIEW and spaced SEMANTIC VIEW() call
 ================================================================================
@@ -3626,10 +3014,9 @@ MERGE INTO t USING s ON t.id = s.id WHEN MATCHED THEN UPDATE ALL BY NAME WHEN NO
         name: (identifier))
       (keyword_convert)
       (keyword_to)
-      (generic_clause
-        (identifier)
-        (identifier)
-        (literal))))
+      (keyword_managed)
+      name: (identifier)
+      value: (literal)))
   (statement
     (alter_table
       (keyword_alter)
@@ -3639,10 +3026,9 @@ MERGE INTO t USING s ON t.id = s.id WHEN MATCHED THEN UPDATE ALL BY NAME WHEN NO
         name: (identifier))
       (keyword_upgrade)
       (keyword_to)
-      (generic_clause
-        (identifier)
-        (identifier)
-        (literal))))
+      (keyword_iceberg)
+      (keyword_version)
+      (literal)))
   (statement
     (alter_table
       (keyword_alter)
@@ -3741,28 +3127,24 @@ MERGE INTO t USING s ON t.id = s.id WHEN MATCHED THEN UPDATE ALL BY NAME WHEN NO
       (snowflake_object_type)
       (object_reference
         name: (identifier))
-      (generic_action
-        (keyword_add)
-        (keyword_partition)
-        name: (identifier)
-        value: (literal)
-        name: (identifier)
-        value: (literal)
-        (generic_clause
-          (identifier)
-          (literal)))))
+      (keyword_add)
+      (keyword_partition)
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (literal)
+      (keyword_location)
+      (literal)))
   (statement
     (alter_snowflake_object
       (keyword_alter)
       (snowflake_object_type)
       (object_reference
         name: (identifier))
-      (generic_action
-        (keyword_drop)
-        (keyword_partition)
-        (generic_clause
-          (identifier)
-          (literal)))))
+      (keyword_drop)
+      (keyword_partition)
+      (keyword_location)
+      (literal)))
   (statement
     (alter_table
       (keyword_alter)
@@ -3886,3 +3268,550 @@ MERGE INTO t USING s ON t.id = s.id WHEN MATCHED THEN UPDATE ALL BY NAME WHEN NO
       (keyword_by)
       (keyword_name))))
 
+================================================================================
+Structured ALTER actions for in-scope objects
+================================================================================
+
+ALTER TAG tg1 RENAME TO tg2;
+ALTER ALERT al1 SET CONFIG = $${ "on": true }$$;
+ALTER ALERT al1 UNSET CONFIG;
+ALTER ALERT d1.s1.al2 FROM TEMPLATE tpl1 SET TEMPLATE_PARAMS = '{ "x": 1 }';
+ALTER STREAM st1 SET COMMENT = 'changes';
+ALTER TASK tk1 UNSET WAREHOUSE, SCHEDULE;
+ALTER TASK GRAPH g1 COMMIT;
+ALTER EXTERNAL TABLE et1 ADD FILES ('p/a.json.gz', 'p/b.json.gz');
+ALTER EXTERNAL TABLE et1 REMOVE FILES ('p/a.json.gz');
+ALTER EXTERNAL TABLE et1 REFRESH 'p/';
+ALTER PIPE pp1 REFRESH PREFIX = 'd1/' MODIFIED_AFTER = '2024-01-01T00:00:00Z';
+ALTER STAGE sg1 REFRESH SUBPATH = 'data';
+ALTER DYNAMIC TABLE dt1 REFRESH COPY SESSION;
+ALTER DYNAMIC TABLE dt1 UNSET FROZEN WHERE;
+ALTER DYNAMIC TABLE dt1 DROP STORAGE LIFECYCLE POLICY;
+ALTER MATERIALIZED VIEW mv1 SUSPEND RECLUSTER;
+ALTER MATERIALIZED VIEW mv1 SET SECURE;
+ALTER SEMANTIC VIEW sv1 REFRESH MATERIALIZATION m1;
+ALTER SEMANTIC VIEW sv1 DROP MATERIALIZATION m1;
+ALTER SCHEMA sc1 ENABLE MANAGED ACCESS;
+ALTER DATABASE ROLE d1.dr1 SET COMMENT = 'readers';
+ALTER MASKING POLICY mp1 SET BODY -> '***';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (rename_object
+        (keyword_rename)
+        (keyword_to)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_unset)
+      (identifier)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        database: (identifier)
+        schema: (identifier)
+        name: (identifier))
+      (keyword_from)
+      (keyword_template)
+      (identifier)
+      (keyword_set)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      name: (keyword_comment)
+      value: (literal)))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_unset)
+      (identifier)
+      (identifier)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_commit)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_add)
+      (keyword_files)
+      (literal)
+      (literal)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_remove)
+      (keyword_files)
+      (literal)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (refresh_action
+        (keyword_refresh)
+        (literal))))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (refresh_action
+        (keyword_refresh)
+        name: (identifier)
+        value: (literal)
+        name: (identifier)
+        value: (literal))))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (refresh_action
+        (keyword_refresh)
+        name: (identifier)
+        value: (literal))))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (refresh_action
+        (keyword_refresh)
+        (keyword_copy)
+        (keyword_session))))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_unset)
+      (keyword_frozen)
+      (keyword_where)))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_drop)
+      (keyword_storage)
+      (keyword_lifecycle)
+      (keyword_policy)))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_suspend)
+      (keyword_recluster)))
+  (statement
+    (alter_snowflake_named_object
+      (keyword_alter)
+      (snowflake_alter_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      (keyword_secure)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (refresh_action
+        (keyword_refresh)
+        (keyword_materialization)
+        (identifier))))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_drop)
+      (keyword_materialization)
+      (identifier)))
+  (statement
+    (alter_schema
+      (keyword_alter)
+      (keyword_schema)
+      (object_reference
+        name: (identifier))
+      (keyword_enable)
+      (keyword_managed)
+      (keyword_access)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        schema: (identifier)
+        name: (identifier))
+      (keyword_set)
+      name: (keyword_comment)
+      value: (literal)))
+  (statement
+    (alter_snowflake_object
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_set)
+      (keyword_body)
+      (literal))))
+
+================================================================================
+EXECUTE TASK, EXECUTE IMMEDIATE FROM, EXECUTE USING POLICY_CONTEXT
+================================================================================
+
+EXECUTE TASK tk1;
+EXECUTE TASK tk1 AWAIT;
+EXECUTE TASK tk1 RETRY LAST;
+EXECUTE TASK tk1 RETRY GRAPH RUN GROUP 'abc-123';
+EXECUTE TASK tk1 USING CONFIG = $${ "env": "test" }$$;
+EXECUTE IMMEDIATE FROM @st/scripts/setup.sql USING (env => 'dev', n => 0);
+EXECUTE USING POLICY_CONTEXT(CURRENT_ROLE => 'PUBLIC') AS SELECT * FROM t1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_task)
+        (object_reference
+          name: (identifier)))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_task)
+        (object_reference
+          name: (identifier))
+        (keyword_await))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_task)
+        (object_reference
+          name: (identifier))
+        (keyword_retry)
+        (keyword_last))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_task)
+        (object_reference
+          name: (identifier))
+        (keyword_retry)
+        (keyword_graph)
+        (keyword_run)
+        (keyword_group)
+        (literal))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_task)
+        (object_reference
+          name: (identifier))
+        (keyword_using)
+        name: (identifier)
+        value: (literal))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_immediate)
+        (keyword_from)
+        (stage_reference)
+        (keyword_using)
+        (named_parameter
+          name: (identifier)
+          value: (literal))
+        (named_parameter
+          name: (identifier)
+          value: (literal)))))
+  (statement
+    (snowflake_statement
+      (execute_statement
+        (keyword_execute)
+        (keyword_using)
+        (keyword_policy_context)
+        (named_parameter
+          name: (identifier)
+          value: (literal))
+        (keyword_as)
+        (select
+          (keyword_select)
+          (select_expression
+            (term
+              value: (all_fields))))
+        (from
+          (keyword_from)
+          (relation
+            (object_reference
+              name: (identifier))))))))
+
+================================================================================
+CREATE alert, tag, event/external table, task graph, row access policy
+================================================================================
+
+CREATE OR REPLACE ALERT al1 WAREHOUSE = w1 SCHEDULE = '5 MINUTE' IF (EXISTS (SELECT 1 FROM t WHERE bad)) THEN CALL notify();
+CREATE OR REPLACE ALERT al2 FROM TEMPLATE tpl1 WAREHOUSE = w1 TEMPLATE_PARAMS = '{ "a": 1 }';
+CREATE TAG IF NOT EXISTS tg1 ALLOWED_VALUES 'blue', 'red' PROPAGATE = ON_DEPENDENCY COMMENT = 'colour';
+CREATE EVENT TABLE ev1 CHANGE_TRACKING = TRUE;
+CREATE EXTERNAL TABLE et1 (c1 VARCHAR AS (value:c1::VARCHAR)) PARTITION BY (c1) LOCATION = @s1/logs/ AUTO_REFRESH = FALSE FILE_FORMAT = (TYPE = PARQUET);
+CREATE EXTERNAL TABLE et2 USING TEMPLATE (SELECT ARRAY_AGG(OBJECT_CONSTRUCT(*)) FROM TABLE(INFER_SCHEMA(LOCATION => '@s1', FILE_FORMAT => 'ff1'))) LOCATION = @s1 FILE_FORMAT = ff1;
+CREATE OR ALTER TASK GRAPH g1 SCHEDULE = 'USING CRON 0 * * * * UTC' ROOTS = (t_root) FINALIZER = t_fin TASK_DEFAULTS (WAREHOUSE = w1, LOG_LEVEL = 'INFO');
+CREATE OR REPLACE ROW ACCESS POLICY rap1 AS (region VARCHAR) RETURNS BOOLEAN -> region = 'EU';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (literal)
+      (alert_condition
+        (keyword_if)
+        (exists
+          (keyword_exists)
+          (subquery
+            (select
+              (keyword_select)
+              (select_expression
+                (term
+                  value: (literal))))
+            (from
+              (keyword_from)
+              (relation
+                (object_reference
+                  name: (identifier))))
+            (where
+              (keyword_where)
+              predicate: (field
+                name: (identifier)))))
+        (keyword_then)
+        (statement
+          (snowflake_statement
+            (call_statement
+              (keyword_call)
+              (invocation
+                (object_reference
+                  name: (identifier)))))))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_from)
+      (keyword_template)
+      (identifier)
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (keyword_if)
+      (keyword_not)
+      (keyword_exists)
+      (object_reference
+        name: (identifier))
+      (keyword_allowed_values)
+      (literal)
+      (literal)
+      name: (identifier)
+      value: (identifier)
+      name: (keyword_comment)
+      value: (literal)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (literal
+        (keyword_true))))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (column_definitions
+        (column_definition
+          name: (identifier)
+          type: (varchar
+            (keyword_varchar))
+          (keyword_as)
+          (parenthesized_expression
+            (cast
+              (variant_access
+                expression: (field
+                  name: (identifier))
+                path: (identifier))
+              (varchar
+                (keyword_varchar))))))
+      (table_partition
+        (keyword_partition)
+        (keyword_by)
+        (field
+          name: (identifier)))
+      name: (identifier)
+      value: (stage_reference)
+      name: (identifier)
+      value: (literal
+        (keyword_false))
+      name: (identifier)
+      name: (identifier)
+      value: (identifier)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      (keyword_using)
+      (keyword_template)
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            value: (invocation
+              (object_reference
+                name: (identifier))
+              parameter: (term
+                value: (invocation
+                  (object_reference
+                    name: (identifier))
+                  parameter: (term
+                    value: (all_fields))))))))
+      (from
+        (keyword_from)
+        (relation
+          (invocation
+            (object_reference
+              name: (identifier))
+            parameter: (term
+              value: (invocation
+                (object_reference
+                  name: (identifier))
+                parameter: (named_parameter
+                  name: (identifier)
+                  value: (literal))
+                parameter: (named_parameter
+                  name: (identifier)
+                  value: (literal)))))))
+      name: (identifier)
+      value: (stage_reference)
+      name: (identifier)
+      value: (identifier)))
+  (statement
+    (create_snowflake_object
+      (keyword_create)
+      (keyword_or)
+      (keyword_alter)
+      (snowflake_object_type)
+      (object_reference
+        name: (identifier))
+      name: (identifier)
+      value: (literal)
+      name: (identifier)
+      value: (list
+        (identifier))
+      name: (identifier)
+      value: (identifier)
+      (keyword_task_defaults)
+      name: (identifier)
+      value: (identifier)
+      name: (identifier)
+      value: (literal)))
+  (statement
+    (create_policy
+      (keyword_create)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_row)
+      (keyword_access)
+      (keyword_policy)
+      (object_reference
+        name: (identifier))
+      (keyword_as)
+      (function_arguments
+        (function_argument
+          (identifier)
+          (varchar
+            (keyword_varchar))))
+      (keyword_returns)
+      (keyword_boolean)
+      (binary_expression
+        left: (field
+          name: (identifier))
+        right: (literal)))))

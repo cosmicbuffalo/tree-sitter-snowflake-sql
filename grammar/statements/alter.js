@@ -61,7 +61,10 @@ export default {
     prec.right(seq($.keyword_add, $.keyword_search, $.keyword_optimization,
       optional(seq($.keyword_on, comma_list($.invocation, true))))),
     // Snowflake Iceberg: CONVERT TO MANAGED, UPGRADE TO ICEBERG VERSION 3, OPTIMIZE (opts)
-    seq(choice($.keyword_convert, $.keyword_upgrade), $.keyword_to, alias($._action_clause, $.generic_clause)),
+    // CONVERT TO MANAGED [BASE_LOCATION = '..']
+    prec.right(seq($.keyword_convert, $.keyword_to, $.keyword_managed, optional($._snowflake_options))),
+    // UPGRADE TO ICEBERG VERSION n
+    seq($.keyword_upgrade, $.keyword_to, $.keyword_iceberg, $.keyword_version, $.literal),
     seq($.keyword_optimize, paren_list($.identifier, true)),
     // Snowflake: REFRESH ['metadata path']
     seq($.keyword_refresh, optional($.literal)),

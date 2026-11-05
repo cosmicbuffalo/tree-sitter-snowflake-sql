@@ -579,8 +579,7 @@ ALTER DATABASE test UNSET COMMENT;
       (object_reference
         (identifier))
       (keyword_unset)
-      (generic_clause
-        (identifier)))))
+      (identifier))))
 
 ================================================================================
 Alter role rename
@@ -631,8 +630,7 @@ ALTER ROLE IF EXISTS worker_bee UNSET COMMENT;
       (object_reference
         (identifier))
       (keyword_unset)
-      (generic_clause
-        (identifier)))))
+      (identifier))))
 
 ================================================================================
 Add foreign key constraint

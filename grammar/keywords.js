@@ -439,5 +439,13 @@ export default {
   keyword_convert: _ => make_keyword("convert"),
   keyword_upgrade: _ => make_keyword("upgrade"),
   keyword_optimize: _ => make_keyword("optimize"),
+  keyword_materialization: _ => make_keyword("materialization"),
+  keyword_version: _ => make_keyword("version"),
+  keyword_retry: _ => make_keyword("retry"),
+  keyword_graph: _ => make_keyword("graph"),
+  keyword_run: _ => make_keyword("run"),
+  keyword_location: _ => make_keyword("location"),
+  keyword_discovery: _ => make_keyword("discovery"),
+  keyword_task_defaults: _ => make_keyword("task_defaults"),
 
 }

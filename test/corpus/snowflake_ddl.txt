@@ -1367,7 +1367,8 @@ ALTER STAGE my_stage REFRESH;
       (snowflake_alter_object_type)
       (object_reference
         name: (identifier))
-      (keyword_refresh))))
+      (refresh_action
+        (keyword_refresh)))))
 
 ================================================================================
 ALTER STAGE SET with parenthesized property
@@ -1762,7 +1763,8 @@ ALTER DYNAMIC TABLE t1 SUSPEND;
       (snowflake_alter_object_type)
       (object_reference
         name: (identifier))
-      (keyword_refresh)))
+      (refresh_action
+        (keyword_refresh))))
   (statement
     (alter_snowflake_named_object
       (keyword_alter)
