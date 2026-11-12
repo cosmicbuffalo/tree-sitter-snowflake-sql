@@ -2726,7 +2726,7 @@ BEGIN
   rs1 := (EXECUTE IMMEDIATE :sql);
   LET r3 RESULTSET := (EXECUTE IMMEDIATE :q USING (a, b));
   x := (CALL CACHE_RATE(:items, NULL, NULL));
-  CALL RETRY_ERRORS('x') INTO out_var;
+  CALL RETRY_FAILED('x') INTO out_var;
   CASE :EBB_KIND
     WHEN 'A' THEN
       RETURN 1;

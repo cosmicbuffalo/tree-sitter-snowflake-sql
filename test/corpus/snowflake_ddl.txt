@@ -2666,7 +2666,7 @@ SCHEDULE = '5 MINUTE'
 IF (EXISTS(
     SELECT *
     FROM EVENTS
-    WHERE RECORD:"severity_text"::STRING = 'ERROR'
+    WHERE RECORD:"severity_text"::STRING = 'FATAL'
 ))
 THEN
 EXECUTE IMMEDIATE $$
@@ -2926,7 +2926,7 @@ SCHEDULE = '5 MINUTE'
 IF (EXISTS(
     SELECT 1
     FROM events
-    WHERE severity = 'ERROR'
+    WHERE severity = 'FATAL'
 ))
 THEN
     CALL PROCESS_ALERTS()

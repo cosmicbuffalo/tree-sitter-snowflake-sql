@@ -529,7 +529,7 @@ COPY INTO table and location, COPY FILES
 
 COPY INTO tgt FILE_FORMAT = (TYPE = CSV);
 COPY INTO tgt (a, b) FROM s3://bucket/data/files STORAGE_INTEGRATION = si1 FILE_FORMAT = (FORMAT_NAME = ff1) PATTERN = '.*[.]csv' PURGE = TRUE;
-COPY INTO tgt FROM 'azure://acct.blob.core.windows.net/c/p' CREDENTIALS = (AZURE_SAS_TOKEN = 'x') ON_ERROR = CONTINUE;
+COPY INTO tgt FROM 'azure://acct.blob.core.windows.net/c/p' CREDENTIALS = (AZURE_SAS_TOKEN = 'x') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
 COPY INTO 's3://bucket/unload/' FROM tgt STORAGE_INTEGRATION = si1 FILE_FORMAT = (TYPE = PARQUET);
 COPY INTO @st/out/ FROM (SELECT a FROM tgt) PARTITION BY ('d=' || TO_VARCHAR(dt)) HEADER = TRUE;
 COPY FILES INTO @dst FROM @src PATTERN = '.*sales.*[.]csv' DETAILED_OUTPUT = TRUE;
